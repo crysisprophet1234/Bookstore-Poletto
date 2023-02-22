@@ -19,18 +19,16 @@ public class SecurityConfig {
 	
 	@Autowired
 	private AuthenticationProvider authenticationProvider;
+	
+	//TODO
 
 	@Bean
 	SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 	    http
 	        .csrf().disable()
 	        .authorizeHttpRequests()
-	        //.requestMatchers("/api/v1/auth/**", "/h2-console/**").permitAll()
-	        .requestMatchers("/").permitAll()
-            .requestMatchers("/**").permitAll()
+	        .requestMatchers("/api/v1/auth/**", "/h2-console/**").permitAll()
 	        .anyRequest().authenticated()
-	        .and()
-	        .headers().frameOptions().disable()
 	        .and()
 	        .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
 	        .and()

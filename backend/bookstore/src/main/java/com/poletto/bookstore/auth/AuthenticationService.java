@@ -8,6 +8,9 @@ import org.springframework.stereotype.Service;
 
 import com.poletto.bookstore.config.JwtService;
 import com.poletto.bookstore.dto.RoleDTO;
+import com.poletto.bookstore.dto.UserDTO;
+import com.poletto.bookstore.dto.UserInsertDTO;
+import com.poletto.bookstore.dto.UserLoginDTO;
 import com.poletto.bookstore.entities.Role;
 import com.poletto.bookstore.entities.User;
 import com.poletto.bookstore.repositories.RoleRepository;
@@ -31,43 +34,45 @@ public class AuthenticationService {
 	@Autowired
 	private AuthenticationManager authenticationManager;
 
-	public AuthenticationResponse register(RegisterRequest request) {
+	public UserDTO register(UserInsertDTO dto) {
 
 		User entity = new User();
 		
-		copyRequestToEntity(request, entity);
+		copyDtoToEntity(dto, entity);
 		
-		entity.setPassword(passwordEncoder.encode(request.getPassword()));
+		entity.setPassword(passwordEncoder.encode(dto.getPassword()));
 		
-		userRepository.save(entity);
+		entity = userRepository.save(entity);
+
+		return new UserDTO(entity);
+
+	}
+
+	public UserLoginDTO authenticate(UserLoginDTO dto) {  //TODO verificar dados presentes na response
+
+		authenticationManager.authenticate(
+								new UsernamePasswordAuthenticationToken(
+										dto.getEmail(),
+										dto.getPassword()
+										)
+								);
+
+		User entity = userRepository.findByEmail(dto.getEmail()).orElseThrow();
 
 		String jwtToken = jwtService.generateToken(entity);
 
-		return new AuthenticationResponse(jwtToken);
+		return new UserLoginDTO(entity.getId(), entity.getEmail(), jwtToken);
 
 	}
 
-	public AuthenticationResponse authenticate(AuthenticationRequest request) {
+	private void copyDtoToEntity(UserDTO dto, User entity) {
 
-		authenticationManager
-				.authenticate(new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword()));
-
-		var user = userRepository.findByEmail(request.getEmail()).orElseThrow();
-
-		var jwtToken = jwtService.generateToken(user);
-
-		return new AuthenticationResponse(jwtToken);
-
-	}
-
-	private void copyRequestToEntity(RegisterRequest request, User entity) {
-
-		entity.setFirstname(request.getFirstname());
-		entity.setLastname(request.getLastname());
-		entity.setEmail(request.getEmail());
+		entity.setFirstname(dto.getFirstname());
+		entity.setLastname(dto.getLastname());
+		entity.setEmail(dto.getEmail());
 
 		entity.getRoles().clear();
-		for (RoleDTO roleDto : request.getRoles()) {
+		for (RoleDTO roleDto : dto.getRoles()) {
 			Role role = roleRepository.getOne(roleDto.getId());
 			entity.getRoles().add(role);
 		}

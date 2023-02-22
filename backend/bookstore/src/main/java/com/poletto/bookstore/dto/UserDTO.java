@@ -11,8 +11,8 @@ public class UserDTO implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	private Long id;
-	private String firstName;
-	private String lastName;
+	private String firstname;
+	private String lastname;
 	private String email;
 
 	Set<RoleDTO> roles = new HashSet<>();
@@ -20,17 +20,17 @@ public class UserDTO implements Serializable {
 	public UserDTO() {
 	}
 
-	public UserDTO(Long id, String firstName, String lastName, String email) {
+	public UserDTO(Long id, String firstname, String lastname, String email) {
 		this.id = id;
-		this.firstName = firstName;
-		this.lastName = lastName;
+		this.firstname = firstname;
+		this.lastname = lastname;
 		this.email = email;
 	}
 
 	public UserDTO(User entity) {
 		id = entity.getId();
-		firstName = entity.getFirstname();
-		lastName = entity.getLastname();
+		firstname = entity.getFirstname();
+		lastname = entity.getLastname();
 		email = entity.getEmail();
 		entity.getRoles().forEach(role -> this.roles.add(new RoleDTO(role)));
 	}
@@ -43,20 +43,20 @@ public class UserDTO implements Serializable {
 		this.id = id;
 	}
 
-	public String getFirstName() {
-		return firstName;
+	public String getFirstname() {
+		return firstname;
 	}
 
-	public void setFirstName(String firstName) {
-		this.firstName = firstName;
+	public void setFirstname(String firstname) {
+		this.firstname = firstname;
 	}
 
-	public String getLastName() {
-		return lastName;
+	public String getLastname() {
+		return lastname;
 	}
 
-	public void setLastName(String lastName) {
-		this.lastName = lastName;
+	public void setLastname(String lastname) {
+		this.lastname = lastname;
 	}
 
 	public String getEmail() {

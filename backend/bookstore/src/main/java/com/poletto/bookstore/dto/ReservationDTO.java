@@ -94,8 +94,8 @@ public class ReservationDTO implements Serializable {
 	public UserDTO createUser(User user) {
 		UserDTO userDTO = new UserDTO();
 		userDTO.setId(user.getId());
-		userDTO.setFirstName(user.getFirstname());
-		userDTO.setLastName(user.getLastname());
+		userDTO.setFirstname(user.getFirstname());
+		userDTO.setLastname(user.getLastname());
 		userDTO.setEmail(user.getEmail());
 		return userDTO;
 	}
