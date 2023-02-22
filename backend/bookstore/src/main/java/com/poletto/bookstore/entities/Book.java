@@ -1,6 +1,7 @@
 package com.poletto.bookstore.entities;
 
 import java.io.Serializable;
+import java.time.Instant;
 import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Objects;
@@ -34,6 +35,8 @@ public class Book implements Serializable {
 	private LocalDate releaseDate;
 	private String imgUrl;
 	
+	@Column (columnDefinition = "TIMESTAMP WITHOUT TIME ZONE DEFAULT (CURRENT_TIMESTAMP::timestamp(0))")
+	private Instant registerDate;
 
 	@Column(columnDefinition = "VARCHAR(255) CHECK (upper(status) IN ('AVAILABLE', 'BOOKED'))")
 	private String status;

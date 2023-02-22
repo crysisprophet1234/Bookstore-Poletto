@@ -10,30 +10,33 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.poletto.bookstore.dto.UserDTO;
 import com.poletto.bookstore.entities.User;
+import com.poletto.bookstore.repositories.RoleRepository;
 import com.poletto.bookstore.repositories.UserRepository;
 import com.poletto.bookstore.services.exceptions.ResourceNotFoundException;
 
 @Service
 public class UserService {
 	
-	/*
-	@Autowired
-	private BCryptPasswordEncoder passwordEncoder;
-	*/
+	//@Autowired
+	//private BCryptPasswordEncoder passwordEncoder;
+	
 	
 	@Autowired
 	private UserRepository userRepository;
 	
+	@Autowired
+	private RoleRepository roleRepository;
+	
 	@Transactional(readOnly = true)
 	public List<UserDTO> findAll() {
 		List<User> list = userRepository.findAll();
-		return list.stream().map(x -> new UserDTO(x)).toList();
+		return list.stream().map(x -> new UserDTO(x)).toList(); //verificar sorted()
 	}
 	
 	@Transactional(readOnly = true)
 	public UserDTO findById(Long id) {
 		Optional<User> user = userRepository.findById(id);
-		User entity = user.orElseThrow(() -> new ResourceNotFoundException("Entity not found"));
+		User entity = user.orElseThrow(() -> new ResourceNotFoundException(id));
 		return new UserDTO(entity);
 	}
 

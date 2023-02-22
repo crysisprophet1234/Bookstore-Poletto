@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.poletto.bookstore.entities.Book;
+import com.poletto.bookstore.dto.BookDTO;
 import com.poletto.bookstore.services.BookService;
 
 @RestController
@@ -20,14 +20,14 @@ public class BookController {
 	private BookService bookService;
 
 	@GetMapping
-	public ResponseEntity<List<Book>> findAll() {
-		List<Book> books = bookService.findAll();
+	public ResponseEntity<List<BookDTO>> findAll() {
+		List<BookDTO> books = bookService.findAll();
 		return ResponseEntity.ok().body(books);
 	}
 
 	@GetMapping(value = "/{id}")
-	public ResponseEntity<Book> findById(@PathVariable Long id) {
-		Book book = bookService.findById(id);
+	public ResponseEntity<BookDTO> findById(@PathVariable Long id) {
+		BookDTO book = bookService.findById(id);
 		return ResponseEntity.ok().body(book);
 	}
 
