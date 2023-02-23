@@ -3,6 +3,7 @@ package com.poletto.bookstore.dto;
 import java.io.Serializable;
 import java.time.Instant;
 import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -19,22 +20,25 @@ public class ReservationDTO implements Serializable {
 	private Instant moment;
 	private LocalDate devolution;
 	private Integer weeks;
+	private String status;
 	
 	@JsonIgnoreProperties("roles")
 	private UserDTO client;
 
+	@JsonIgnoreProperties({"imgUrl", "status", "categories", "releaseDate"})
 	private Set<BookDTO> books = new HashSet<>();
 
 	public ReservationDTO() {
 
 	}
 
-	public ReservationDTO(Long id, Instant moment, LocalDate devolution, Integer weeks, User client) {
+	public ReservationDTO(Long id, Instant moment, String status, LocalDate devolution, Integer weeks, User client) {
 		this.id = id;
 		this.moment = moment;
-		this.devolution = devolution;
 		this.weeks = weeks;
+		this.status = status;
 		this.client = new UserDTO(client);
+		this.devolution = LocalDate.ofInstant(moment, ZoneId.of("America/Sao_Paulo")).plusWeeks(weeks);
 	}
 
 	public ReservationDTO(Reservation entity) {
@@ -42,6 +46,7 @@ public class ReservationDTO implements Serializable {
 		moment = entity.getMoment();
 		devolution = entity.getDevolution();
 		weeks = entity.getWeeks();
+		status = entity.getStatus().name();
 		client = createUser(entity.getClient());
 		books = entity.getBooks().stream().map(x -> new BookDTO(x.getBook())).collect(Collectors.toSet());
 		
@@ -77,6 +82,14 @@ public class ReservationDTO implements Serializable {
 
 	public void setWeeks(Integer weeks) {
 		this.weeks = weeks;
+	}
+	
+	public String getStatus() {
+		return status;
+	}
+
+	public void setStatus(String status) {
+		this.status = status;
 	}
 
 	public UserDTO getClient() {

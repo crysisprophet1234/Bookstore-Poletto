@@ -4,13 +4,23 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.poletto.bookstore.dto.BookDTO;
+import com.poletto.bookstore.dto.CategoryDTO;
 import com.poletto.bookstore.entities.Book;
+import com.poletto.bookstore.entities.Category;
+import com.poletto.bookstore.entities.enums.BookStatus;
+import com.poletto.bookstore.repositories.AuthorRepository;
 import com.poletto.bookstore.repositories.BookRepository;
+import com.poletto.bookstore.repositories.CategoryRepository;
+import com.poletto.bookstore.services.exceptions.DatabaseException;
 import com.poletto.bookstore.services.exceptions.ResourceNotFoundException;
+
+import jakarta.persistence.EntityNotFoundException;
 
 @Service
 public class BookService {
@@ -18,10 +28,16 @@ public class BookService {
 	@Autowired
 	private BookRepository bookRepository;
 
+	@Autowired
+	private CategoryRepository categoryRepository;
+
+	@Autowired
+	private AuthorRepository authorRepository;
+
 	@Transactional(readOnly = true)
 	public List<BookDTO> findAll() {
 		List<Book> list = bookRepository.findAll();
-		return list.stream().map(x -> new BookDTO(x)).toList(); //verificar sorted()
+		return list.stream().map(x -> new BookDTO(x)).toList(); // verificar sorted()
 	}
 
 	@Transactional(readOnly = true)
@@ -29,6 +45,79 @@ public class BookService {
 		Optional<Book> obj = bookRepository.findById(id);
 		Book book = obj.orElseThrow(() -> new ResourceNotFoundException(id));
 		return new BookDTO(book);
+	}
+
+	@Transactional
+	public BookDTO insert(BookDTO dto) {
+
+		Book entity = new Book();
+
+		copyDtoToEntity(dto, entity);
+
+		entity.setStatus(BookStatus.AVAILABLE);
+
+		entity = bookRepository.save(entity);
+
+		return new BookDTO(entity);
+
+	}
+
+	@Transactional
+	public BookDTO update(Long id, BookDTO dto) {
+
+		try {
+
+			Book entity = bookRepository.getReferenceById(id);
+
+			copyDtoToEntity(dto, entity);
+
+			entity = bookRepository.save(entity);
+
+			return new BookDTO(entity);
+
+		} catch (EntityNotFoundException e) {
+
+			throw new ResourceNotFoundException(id);
+
+		}
+
+	}
+
+	public void delete(Long id) {
+
+		try {
+
+			bookRepository.deleteById(id);
+
+		} catch (EmptyResultDataAccessException e) {
+
+			throw new ResourceNotFoundException(id);
+
+		} catch (DataIntegrityViolationException e) {
+
+			throw new DatabaseException("Integrity violation");
+
+		}
+
+	}
+
+	private void copyDtoToEntity(BookDTO dto, Book entity) {
+
+		entity.setName(dto.getName());
+		entity.setReleaseDate(dto.getReleaseDate());
+		entity.setImgUrl(dto.getImgUrl());
+		entity.setAuthor(authorRepository.findById(dto.getAuthor().getId())
+				.orElseThrow(() -> new ResourceNotFoundException(dto.getAuthor().getId())));
+
+		// entity.setStatus(Status.valueOf(dto.getStatus()));
+
+		entity.getCategories().clear();
+
+		for (CategoryDTO categoryDTO : dto.getCategories()) {
+			Category category = categoryRepository.getReferenceById(categoryDTO.getId());
+			entity.getCategories().add(category);
+		}
+
 	}
 
 }

@@ -1,13 +1,12 @@
 package com.poletto.bookstore.entities;
 
 import java.io.Serializable;
-import java.time.Instant;
 import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
-import com.poletto.bookstore.entities.enums.Status;
+import com.poletto.bookstore.entities.enums.BookStatus;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -34,9 +33,6 @@ public class Book implements Serializable {
 	private String name;
 	private LocalDate releaseDate;
 	private String imgUrl;
-	
-	@Column (columnDefinition = "TIMESTAMP WITHOUT TIME ZONE DEFAULT (CURRENT_TIMESTAMP::timestamp(0))")
-	private Instant registerDate;
 
 	@Column(columnDefinition = "VARCHAR(255) CHECK (upper(status) IN ('AVAILABLE', 'BOOKED'))")
 	private String status;
@@ -57,7 +53,7 @@ public class Book implements Serializable {
 
 	}
 
-	public Book(Long id, String name, Status status, Author author, LocalDate releaseDate, String imgUrl) {
+	public Book(Long id, String name, BookStatus status, Author author, LocalDate releaseDate, String imgUrl) {
 		this.id = id;
 		this.name = name;
 		this.status = status.name();
@@ -82,11 +78,11 @@ public class Book implements Serializable {
 		this.name = name;
 	}
 
-	public Status getStatus() {
-		return Status.valueOf(status);
+	public BookStatus getStatus() {
+		return BookStatus.valueOf(status);
 	}
 
-	public void setStatus(Status status) {
+	public void setStatus(BookStatus status) {
 		this.status = status.name();
 	}
 

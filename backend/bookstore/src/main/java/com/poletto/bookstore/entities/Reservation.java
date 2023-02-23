@@ -10,7 +10,9 @@ import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.poletto.bookstore.entities.enums.ReservationStatus;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -33,6 +35,9 @@ public class Reservation implements Serializable {
 	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm'Z'", timezone = "GMT")
 	private Instant moment;
 	
+	@Column(columnDefinition = "VARCHAR(255) CHECK (upper(status) IN ('IN_PROGRESS', 'FINISHED')) DEFAULT 'IN_PROGRESS'")
+	private String status;
+	
 	private LocalDate devolution;
 	private Integer weeks;
 
@@ -48,13 +53,14 @@ public class Reservation implements Serializable {
 
 	}
 
-	public Reservation(Long id, Instant moment, User client, Integer semanas) {
+	public Reservation(Long id, ReservationStatus status, Instant moment, User client, Integer weeks) {
 		super();
 		this.id = id;
 		this.client = client;
+		this.status = status.name();
 		this.moment = moment;
-		this.weeks = semanas;
-		this.devolution = LocalDate.ofInstant(moment, ZoneId.of("America/Sao_Paulo")).plusWeeks(semanas);
+		this.weeks = weeks;
+		this.devolution = devolutionCalc(weeks);
 	}
 
 	public Long getId() {
@@ -88,6 +94,14 @@ public class Reservation implements Serializable {
 	public void setDevolution(LocalDate devolution) {
 		this.devolution = devolution;
 	}
+	
+	public ReservationStatus getStatus() {
+		return ReservationStatus.valueOf(status);
+	}
+
+	public void setStatus(ReservationStatus status) {
+		this.status = status.name();
+	}
 
 	public Integer getWeeks() {
 		return weeks;
@@ -99,6 +113,10 @@ public class Reservation implements Serializable {
 
 	public Set<BookReservation> getBooks() {
 		return books;
+	}
+	
+	public LocalDate devolutionCalc(Integer weeks) {
+		return LocalDate.ofInstant(Instant.now(), ZoneId.of("America/Sao_Paulo")).plusWeeks(weeks);
 	}
 
 	@Override

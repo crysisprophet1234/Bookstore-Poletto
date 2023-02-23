@@ -1,6 +1,6 @@
 package com.poletto.bookstore.entities.enums;
 
-public enum Status {
+public enum BookStatus {
 	
 	AVAILABLE, BOOKED;
 
