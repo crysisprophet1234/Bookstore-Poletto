@@ -4,24 +4,7 @@
 
 ## 📦 Projeto
 
- Este repositório é um projeto que contempla um sistema de livraria, sendo possível cadastrar e admnistrar livros e usuários assim como disponibilizar a reserva de livros. A intenção do projeto é dispor o conhecimento em recursos necessário para criação de aplicações Web que se comunicam com bases de dados, o mesmo é divido em duas partes, backend e frontend, no qual ambos funcionam de maneira independente apesar do backend popular o frontend. O sistema foi pensando de maneira que o usuário cliente ou operador apenas controle os livros e pessoas, sendo assim outras entidades estáticas como autores, categorias de livro e roles de usuário serão inicializadas no boot do projeto ou no banco de dados.
-
- <details>
-    <summary><u>Rotas da API</u></summary>
-    
-```
-| Verbo HTTP 	|                  CRUD                  	|                         URL                        	|                                   Valor                                   	|
-|:----------:	|:--------------------------------------:	|:--------------------------------------------------:	|:-------------------------------------------------------------------------:	|
-|     GET    	|              Read all books            	|             localhost:8080/api/v1/books            	|                                    -/-                                    	|
-|     GET    	|             Read book by id            	|        localhost:8080/api/v1/books/${valor}        	|                                ID do livro                                	|
-|     GET    	|           Read book by status          	|     localhost:8080/api/v1books?booked=${valor}     	|                        0 = disponível 1 = reservado                       	|
-|    POST    	|               Create book              	|             localhost:8080/api/v1/books            	| raw/JSON: { name, releaseDate, imgUrl, author { id }, categories { id } } 	|
-|     PUT    	|               Update book              	|        localhost:8080/api/v1/books/${valor}        	|                 ID do livro  raw/JSON: { dados de insert }                	|
-|    POST    	| Create reservation, update book status 	|         localhost:8080/api/v1/reservations         	|              raw/JSON:  { weeks, cliente { id }, books { id }             	|
-|     PUT    	| Update reservation, update book status 	| localhost:8080/api/v1/reservations/return/${valor} 	|                        ID do livro a ser devolvido                        	| 
-```
-
- </details>
+> Este repositório é um projeto que contempla um sistema de livraria, sendo possível cadastrar e admnistrar livros e usuários assim como disponibilizar a reserva de livros. A intenção do projeto é dispor o conhecimento em recursos necessário para criação de aplicações Web que se comunicam com bases de dados, o mesmo é divido em duas partes, backend e frontend, no qual ambos funcionam de maneira independente apesar do backend popular o frontend. 
 
 [![Top Langs](https://github-readme-stats-crysisprophet1234.vercel.app/api/top-langs/?username=crysisprophet1234&exclude_repo=DSCatalog,springboot3-jpa-demo,springboot3-security6-JWT-demo,cv-poletto,DSViaCEP,github-readme-stats&custom_title=Tecnologias%20utilizadas&langs_count=10&layout=compact)](https://github.com/anuraghazra/github-readme-stats)
 
@@ -87,7 +70,7 @@
 
 ## ⚙️ Configuração
 
-<h3>Backend</h3>
+**Backend**
 
 <p> Projeto criado e desenvolvido na IDE STS4, a versão adaptada do Eclipse voltada para desenvolvimento Spring. Build e dependências em Maven, linguagem Java 17, Spring Boot 3.0.2, packaging Jar, as dependências estão abaixo no pom.xml.
 </p>
@@ -296,10 +279,9 @@ INSERT INTO tb_book_reservation (reservation_id, book_id)  VALUES (5, 3);
 
 <br>
 
-<h3>Frontend</h3>
+**Frontend**
 
 <p> O frontend do projeto foi criado utilizando o <b>npx create-react-app --template typescript</b> e na sequência instalado diversas dependências utilizando o Yarn. Para que o servidor consiga ser inicializado, apenas baixar o projeto com o package.json e inicializar o Node e seus módulos com <b>npm run</b> ou <b>yarn start</b>.
-</p>
 
 <details>
     <summary><u>package.json</u></summary>
