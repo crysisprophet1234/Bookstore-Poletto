@@ -8,8 +8,7 @@
 
  <details>
     <summary><u>Rotas da API</u></summary>
-    
-```
+
 | Verbo HTTP 	|                  CRUD                  	|                         URL                        	|                                   Valor                                   	|
 |:----------:	|:--------------------------------------:	|:--------------------------------------------------:	|:-------------------------------------------------------------------------:	|
 |     GET    	|              Read all books            	|             localhost:8080/api/v1/books            	|                                    -/-                                    	|
@@ -19,9 +18,10 @@
 |     PUT    	|               Update book              	|        localhost:8080/api/v1/books/${valor}        	|                 ID do livro  raw/JSON: { dados de insert }                	|
 |    POST    	| Create reservation, update book status 	|         localhost:8080/api/v1/reservations         	|              raw/JSON:  { weeks, cliente { id }, books { id }             	|
 |     PUT    	| Update reservation, update book status 	| localhost:8080/api/v1/reservations/return/${valor} 	|                        ID do livro a ser devolvido                        	| 
-```
 
  </details>
+
+ <br>
 
 [![Top Langs](https://github-readme-stats-crysisprophet1234.vercel.app/api/top-langs/?username=crysisprophet1234&exclude_repo=DSCatalog,springboot3-jpa-demo,springboot3-security6-JWT-demo,cv-poletto,DSViaCEP,github-readme-stats&custom_title=Tecnologias%20utilizadas&langs_count=10&layout=compact)](https://github.com/anuraghazra/github-readme-stats)
 
