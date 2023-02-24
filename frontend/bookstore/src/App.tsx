@@ -1,9 +1,10 @@
 import './assets/styles/custom.scss';
 import './App.css';
+import AppRoutes from './Routes';
 
 function App() {
   return (
-    <h1>Bookstore Interact</h1>
+    <AppRoutes />
   );
 }
 
