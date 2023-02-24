@@ -9,7 +9,6 @@ import java.util.Objects;
 import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.poletto.bookstore.entities.enums.ReservationStatus;
 
 import jakarta.persistence.Column;
@@ -45,8 +44,7 @@ public class Reservation implements Serializable {
 	@JoinColumn(name = "client_id")
 	private User client;
 	
-	@JsonIgnore
-	@OneToMany(mappedBy = "reservation")
+	@OneToMany(mappedBy = "id.reservation")
 	private Set<BookReservation> books = new HashSet<>();
 
 	public Reservation() {

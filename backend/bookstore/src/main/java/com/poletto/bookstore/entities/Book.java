@@ -41,8 +41,7 @@ public class Book implements Serializable {
 	@JoinColumn (name = "author_id")
 	private Author author;
 	
-	
-	@OneToMany (mappedBy = "book")
+	@OneToMany (mappedBy = "id.book")
 	private Set<BookReservation> reservations = new HashSet<>();
 	
 	@ManyToMany
@@ -110,8 +109,12 @@ public class Book implements Serializable {
 		this.imgUrl = imgUrl;
 	}
 
-	public Set<BookReservation> getReservations() {
-		return reservations;
+	public Set<Reservation> getReservations() {
+		Set<Reservation> set = new HashSet<>();
+		for (BookReservation x : reservations) {
+			set.add(x.getReservation());
+		}
+		return set;
 	}
 
 	public Set<Category> getCategories() {

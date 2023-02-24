@@ -3,14 +3,8 @@ package com.poletto.bookstore.entities;
 import java.io.Serializable;
 import java.util.Objects;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
+import jakarta.persistence.EmbeddedId;
 import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
 @Entity
@@ -19,57 +13,38 @@ public class BookReservation implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long id;
-
-	@ManyToOne
-	@JoinColumn(name = "reservation_id")
-	private Reservation reservation;
-
-	@JsonIgnore
-	@ManyToOne
-	@JoinColumn(name = "book_id")
-	private Book book;
+	@EmbeddedId
+	private BookReservationPK id = new BookReservationPK();
 
 	public BookReservation() {
 
 	}
 
-	public BookReservation(Long id, Reservation reservation, Book book) {
+	public BookReservation(Reservation reservation, Book book) {
 		super();
-		this.id = id;
-		this.reservation = reservation;
-		this.book = book;
+		id.setReservation(reservation);
+		id.setBook(book);
 	}
 
-	public Long getId() {
-		return id;
+	public Reservation getReservation () {
+		return id.getReservation();
 	}
-
-	public void setId(Long id) {
-		this.id = id;
+	
+	public void setReservation (Reservation reservation) {
+		id.setReservation(reservation);
 	}
-
-	public Reservation getReservation() {
-		return reservation;
+	
+	public Book getBook () {
+		return id.getBook();
 	}
-
-	public void setReservation(Reservation reservation) {
-		this.reservation = reservation;
-	}
-
-	public Book getBook() {
-		return book;
-	}
-
-	public void setBook(Book book) {
-		this.book = book;
+	
+	public void setBook (Book book) {
+		id.setBook(book);
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(book, id, reservation);
+		return Objects.hash(id);
 	}
 
 	@Override
@@ -81,13 +56,7 @@ public class BookReservation implements Serializable {
 		if (getClass() != obj.getClass())
 			return false;
 		BookReservation other = (BookReservation) obj;
-		return Objects.equals(book, other.book) && Objects.equals(id, other.id)
-				&& Objects.equals(reservation, other.reservation);
+		return Objects.equals(id, other.id);
 	}
-
-	@Override
-	public String toString() {
-		return "BookReservation [id=" + id + ", reservation=" + reservation + ", book=" + book + "]";
-	}
-
+	
 }

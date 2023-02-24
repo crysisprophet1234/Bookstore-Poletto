@@ -6,9 +6,9 @@ import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.poletto.bookstore.entities.BookReservation;
 import com.poletto.bookstore.entities.Reservation;
 import com.poletto.bookstore.entities.User;
 
@@ -25,7 +25,8 @@ public class ReservationDTO implements Serializable {
 	@JsonIgnoreProperties("roles")
 	private UserDTO client;
 
-	@JsonIgnoreProperties({"imgUrl", "status", "categories", "releaseDate"})
+	
+	@JsonIgnoreProperties({"imgUrl", "categories", "releaseDate"})
 	private Set<BookDTO> books = new HashSet<>();
 
 	public ReservationDTO() {
@@ -48,7 +49,9 @@ public class ReservationDTO implements Serializable {
 		weeks = entity.getWeeks();
 		status = entity.getStatus().name();
 		client = createUser(entity.getClient());
-		books = entity.getBooks().stream().map(x -> new BookDTO(x.getBook())).collect(Collectors.toSet());
+		for (BookReservation bookReservation : entity.getBooks()) {
+			books.add(new BookDTO(bookReservation.getBook()));
+		}
 		
 	}
 

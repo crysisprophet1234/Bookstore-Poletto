@@ -109,7 +109,7 @@ public class BookService {
 		entity.setAuthor(authorRepository.findById(dto.getAuthor().getId())
 				.orElseThrow(() -> new ResourceNotFoundException(dto.getAuthor().getId())));
 
-		// entity.setStatus(Status.valueOf(dto.getStatus()));
+		entity.setStatus(BookStatus.valueOf(dto.getStatus()));
 
 		entity.getCategories().clear();
 
