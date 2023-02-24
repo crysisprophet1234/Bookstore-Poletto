@@ -7,7 +7,7 @@
  Este repositório é um projeto que contempla um sistema de livraria, sendo possível cadastrar e admnistrar livros e usuários assim como disponibilizar a reserva de livros. A intenção do projeto é dispor o conhecimento em recursos necessário para criação de aplicações Web que se comunicam com bases de dados, o mesmo é divido em duas partes, backend e frontend, no qual ambos funcionam de maneira independente apesar do backend popular o frontend. O sistema foi pensando de maneira que o usuário cliente ou operador apenas controle os livros e pessoas, sendo assim outras entidades estáticas como autores, categorias de livro e roles de usuário serão inicializadas no boot do projeto ou no banco de dados.
 
  <details>
-    <summary><u>Rotas da API (restante das requisições na pasta /postman collections</u></summary>
+    <summary><u>Rotas da API (restante das requisições na pasta /postman collections)</u></summary>
 
 | Verbo HTTP 	|                  CRUD                  	|                         URL                        	|                                   Valor                                   	|
 |:----------:	|:--------------------------------------:	|:--------------------------------------------------:	|:-------------------------------------------------------------------------:	|
