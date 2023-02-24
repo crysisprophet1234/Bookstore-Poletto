@@ -18,6 +18,8 @@
 |     PUT    	|               Update book              	|        localhost:8080/api/v1/books/${valor}        	|                 ID do livro  raw/JSON: { dados de insert }                	|
 |    POST    	| Create reservation, update book status 	|         localhost:8080/api/v1/reservations         	|              raw/JSON:  { weeks, cliente { id }, books { id }             	|
 |     PUT    	| Update reservation, update book status 	| localhost:8080/api/v1/reservations/return/${valor} 	|                        ID do livro a ser devolvido                        	| 
+|	 POST		|			Authenticate user				|		localhost:8080/api/v1/authenticate				|						raw/JSON: { email, password }							|
+|	 POST		|			   Create user					|		   localhost:8080/api/v1/register				| 		raw/JSON: { firstname, lastname, email, password, roles { id } }		| 
 
  </details>
 
