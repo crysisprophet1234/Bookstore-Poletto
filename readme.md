@@ -25,7 +25,16 @@
 
  <br>
 
+ <h3 align="center">Modelo relacional</h3>
+
+<p align="right">
+ <img src="model.png" />
+</p>
+
+ <br>
+
 [![Top Langs](https://github-readme-stats-crysisprophet1234.vercel.app/api/top-langs/?username=crysisprophet1234&exclude_repo=DSCatalog,springboot3-jpa-demo,springboot3-security6-JWT-demo,cv-poletto,DSViaCEP,github-readme-stats&custom_title=Tecnologias%20utilizadas&langs_count=10&layout=compact)](https://github.com/anuraghazra/github-readme-stats)
+
 
 ---
 
