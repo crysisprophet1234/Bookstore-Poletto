@@ -22,13 +22,9 @@ const Catalog = () => {
     const params = {
 
       method: 'GET',
-      url: "/products",
+      url: "/api/v1/books",
       headers: {} as AxiosRequestHeaders,
-      sort: 'name',
-      params: {
-        page: 0,
-        size: 12
-      }
+      withCredentials: true
 
     }
 
@@ -36,6 +32,7 @@ const Catalog = () => {
 
     requestBackend(params)
       .then(response => {
+        console.log(response.data)
         setPage(response.data);
       })
       .finally(() => {
