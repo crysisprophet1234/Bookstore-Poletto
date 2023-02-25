@@ -35,8 +35,29 @@ public class BookService {
 	private AuthorRepository authorRepository;
 
 	@Transactional(readOnly = true)
-	public List<BookDTO> findAll() {
-		List<Book> list = bookRepository.findAll();
+	public List<BookDTO> findAll(Integer booked) {
+		
+		List<Book> list;
+		
+		System.out.println("booked = " + booked);
+
+		switch (booked) {
+
+		case 0:
+			list = bookRepository.findByStatus(BookStatus.AVAILABLE.toString());
+			break;
+
+		case 1:
+			list = bookRepository.findByStatus(BookStatus.BOOKED.toString());
+			break;
+
+		default:
+			list = bookRepository.findAll();
+			break;
+
+		}
+
+		System.out.println(list);
 		return list.stream().map(x -> new BookDTO(x)).toList(); // verificar sorted()
 	}
 

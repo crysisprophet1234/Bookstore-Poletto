@@ -2,6 +2,7 @@ package com.poletto.bookstore.controllers;
 
 import java.net.URI;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
@@ -24,10 +26,10 @@ public class BookController {
 
 	@Autowired
 	private BookService bookService;
-
+	
 	@GetMapping
-	public ResponseEntity<List<BookDTO>> findAll() {
-		List<BookDTO> books = bookService.findAll();
+	public ResponseEntity<List<BookDTO>> findAll(@RequestParam Optional<Integer> booked) {
+		List<BookDTO> books = bookService.findAll(booked.orElse(-1));
 		return ResponseEntity.ok().body(books);
 	}
 
