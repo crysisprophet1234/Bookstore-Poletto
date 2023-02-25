@@ -1,38 +1,53 @@
-
-
-import { Redirect, Route, Router, Switch } from 'react-router-dom';
+import { Router, Switch, Route, Redirect } from 'react-router-dom';
 import Navbar from './components/Navbar';
-import PrivateRoute from './components/PrivateRoute';
-import Auth from './pages/Auth';
 import Home from './pages/Home';
+import Catalog from './pages/Catalog';
+import Admin from './pages/Admin';
+import ProductDetails from './pages/ProductDetails';
+import Auth from './pages/Auth';
 import history from './utils/history';
 
-const AppRoutes = () => {
+const Routes = () => (
 
-    return (
+    <Router history={history}>
 
-        <Router history={history}>
+        <Navbar />
 
-            <Navbar />
+        <Switch>
 
-            <Switch>
+            <Route path="/" exact>
+                <Home />
+            </Route>
 
-                <PrivateRoute path="/">
-                    <Home />
-                </PrivateRoute>
+            <Route path="/products" exact>
+                <Catalog />
+            </Route>
 
-                <Redirect from="/auth" to="/auth/login" exact />
+            <Redirect from="/auth" to="/auth/login" exact />
 
-                <Route path="/auth">
-                    <Auth />
-                </Route>
+            <Route path="/auth">
+                <Auth />
+            </Route>
 
-            </Switch>
+            <Redirect from="/admin" to="/admin/products" exact />
 
-        </Router>
+            <Route path="/admin">
+                <Admin />
+            </Route>
 
-    )
+            <Route path="/products/:productId">
+                <ProductDetails />
+            </Route>
 
-}
+            <Route path="*"> {/*verificar rota default 404*/}
+                <p>Ops! A página não foi encontrada.</p>
+                <p>Se o erro persistir, nos informe por favor: atendimento@dscatalog.com.br</p>
+                <p>Erro 404: O conteúdo não está mais disponível ou você digitou o endereço errado.</p>
+            </Route>
 
-export default AppRoutes;
+        </Switch>
+    </Router>
+
+);
+
+export default Routes;

@@ -1,31 +1,46 @@
-import { Route, Switch } from "react-router-dom";
-import Login from "./Login";
-import Signup from "./Signup";
+import { ReactComponent as AuthImg } from '../../assets/images/auth-img.svg';
+import { Route, Switch } from 'react-router-dom';
 
-
-
+import './styles.css';
+import Login from './Login';
 
 const Auth = () => {
 
     return (
 
-        <>
+        <div className="auth-container">
 
-        <h1>Auth</h1>
+            <div className="auth-banner-container">
 
-        <Switch>
+                <h1>Divulgue seus produtos no DSCatalog</h1>
 
-            <Route path="/auth/login">
-                <Login />
-            </Route>
+                <p>Faça parte do nosso catálogo de divulgação e aumente a venda dos seus produtos.</p>
 
-            <Route path="/auth/signup">
-                <Signup />
-            </Route>
+                <AuthImg />
 
-        </Switch>
+            </div>
 
-        </>
+            <div className="auth-form-container">
+
+                <Switch>
+
+                    <Route path="/auth/login">
+                        <Login />
+                    </Route>
+
+                    <Route path="/auth/signup">
+                        <h1>Card de signup</h1>
+                    </Route>
+
+                    <Route path="/auth/recover">
+                        <h1>Card de recover</h1>
+                    </Route>
+
+                </Switch>
+
+            </div>
+
+        </div>
 
     )
 

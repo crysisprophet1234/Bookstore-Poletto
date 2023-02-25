@@ -3,6 +3,9 @@ import jwtDecode from 'jwt-decode';
 import qs from 'qs';
 import history from './history';
 
+//import * as dotenv from 'dotenv'
+//dotenv.config();
+
 type LoginResponse = {
 
     access_token: string;
@@ -14,6 +17,15 @@ type LoginResponse = {
 
 }
 
+/*
+enum Role {
+
+    ROLE_OPERATOR = 'ROLE_OPERATOR',
+    ROLE_ADMIN = 'ROLE_ADMIN'
+
+}
+*/
+
 type Role = 'ROLE_OPERATOR' | 'ROLE_ADMIN';
 
 export type TokenData = {
@@ -24,25 +36,57 @@ export type TokenData = {
 
 }
 
-export const getTokenData = (): TokenData | undefined => {
+//export const BASE_URL = process.env.BASE_URL;
 
-    try {
+export const BASE_URL = process.env.REACT_APP_BACKEND_URL ?? 'http://localhost:8080';
 
-        return jwtDecode(getAuthData()!.access_token) as TokenData;
+const CLIENT_ID = process.env.REACT_APP_CLIENT_ID ?? 'dscatalog';
 
-    } catch (error) {
+const CLIENT_SECRET = process.env.REACT_APP_CLIENT_SECRET ?? 'dscatalog123';
 
-        return undefined;
+type LoginData = {
 
-    }
+    username: string
+    password: string
 
 }
 
-export const isAuthenticated = (): boolean | undefined => {
+export const requestBackend = (config: AxiosRequestConfig) => {
 
-    const tokenData = getTokenData();
+    const headers : any = { ...config.headers };
 
-    return (tokenData && tokenData.exp * 1000 > Date.now()) ? true : false;
+    if (config.withCredentials) {
+
+        headers.Authorization = `Bearer ${getAuthData()?.access_token}`;
+
+    }
+
+    return axios({ ...config, baseURL: BASE_URL, headers });
+
+}
+
+export const requestBackendLogin = (loginData: LoginData) => {
+
+    const headers = {
+        'Content-Type': 'application/x-www-form-urlencoded',
+        'Authorization': 'Basic ' + window.btoa(CLIENT_ID + ':' + CLIENT_SECRET)
+    }
+
+    const data = qs.stringify({
+
+        username: loginData.username,
+        password: loginData.password,
+        grant_type: 'password'
+
+    });
+
+    return axios({ method: 'POST', baseURL: BASE_URL, url: '/oauth/token', data, headers });
+
+}
+
+export const saveAuthData = (loginResponse: LoginResponse) => {
+
+    localStorage.setItem('authData', JSON.stringify(loginResponse));
 
 }
 
@@ -87,3 +131,58 @@ axios.interceptors.response.use(function (response) {
 
     return Promise.reject(error);
 });
+
+export const getTokenData = (): TokenData | undefined => {
+
+    try {
+
+        return jwtDecode(getAuthData()!.access_token) as TokenData;
+
+    } catch (error) {
+
+        return undefined;
+
+    }
+
+}
+
+export const isAuthenticated = (): boolean | undefined => {
+
+    const tokenData = getTokenData();
+
+    return (tokenData && tokenData.exp * 1000 > Date.now()) ? true : false;
+
+}
+
+export const hasAnyRoles = (roles: Role[]): boolean => {
+
+    if (roles.length === 0) {
+        return true;
+    }
+
+    const tokenData = getTokenData();
+
+    if (tokenData) {
+
+        roles.forEach((role) => {
+
+
+            return tokenData.authorities.includes(role);
+
+            /*
+            if (tokenData.authorities.includes(role)) {
+                //console.log('tokendata auth -> ' + tokenData.authorities)
+                //console.log('role -> ' + role)
+                //console.log('teste -> ' + tokenData.authorities + ' includes('+ role +') -> ' + tokenData.authorities.includes(role))
+                console.log('returning -> ' + tokenData.authorities.includes(role))
+                return true;
+            }
+            */
+
+        })
+
+    }
+
+    return false;
+
+}
