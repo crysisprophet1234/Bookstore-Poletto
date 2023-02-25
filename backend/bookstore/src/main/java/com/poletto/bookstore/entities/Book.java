@@ -82,7 +82,7 @@ public class Book implements Serializable {
 	}
 
 	public void setStatus(BookStatus status) {
-		this.status = status.name();
+		this.status = status.toString();
 	}
 
 	public Author getAuthor() {

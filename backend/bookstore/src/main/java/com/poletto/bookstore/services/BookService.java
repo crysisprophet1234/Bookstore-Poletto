@@ -6,6 +6,8 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -60,6 +62,17 @@ public class BookService {
 		System.out.println(list);
 		return list.stream().map(x -> new BookDTO(x)).toList(); // verificar sorted()
 	}
+	
+	@Transactional(readOnly = true)
+	public Page<BookDTO> findAllPaged(Pageable pageable) {
+		
+		var bookPage = bookRepository.findAll(pageable);
+		
+		var bookDtoPage = bookPage.map(p -> new BookDTO(p));
+		
+		return bookDtoPage;
+		
+	}
 
 	@Transactional(readOnly = true)
 	public BookDTO findById(Long id) {
@@ -72,10 +85,10 @@ public class BookService {
 	public BookDTO insert(BookDTO dto) {
 
 		Book entity = new Book();
+		
+		dto.setStatus("AVAILABLE");
 
 		copyDtoToEntity(dto, entity);
-
-		entity.setStatus(BookStatus.AVAILABLE);
 
 		entity = bookRepository.save(entity);
 
@@ -129,6 +142,8 @@ public class BookService {
 		entity.setImgUrl(dto.getImgUrl());
 		entity.setAuthor(authorRepository.findById(dto.getAuthor().getId())
 				.orElseThrow(() -> new ResourceNotFoundException(dto.getAuthor().getId())));
+		
+		System.out.println(dto.getStatus());
 
 		entity.setStatus(BookStatus.valueOf(dto.getStatus()));
 

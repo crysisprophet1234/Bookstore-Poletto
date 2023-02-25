@@ -5,6 +5,9 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -26,11 +29,21 @@ public class BookController {
 
 	@Autowired
 	private BookService bookService;
-	
+
 	@GetMapping
-	public ResponseEntity<List<BookDTO>> findAll(@RequestParam Optional<Integer> booked) {
+	public ResponseEntity<List<BookDTO>> findAll(@RequestParam(value = "booked") Optional<Integer> booked) {
 		List<BookDTO> books = bookService.findAll(booked.orElse(-1));
 		return ResponseEntity.ok().body(books);
+	}
+
+	@GetMapping(value = "/paged")
+	public ResponseEntity<Page<BookDTO>> findAllPaged(
+			@RequestParam(value = "page", defaultValue = "0") Integer page,
+			@RequestParam(value = "limit", defaultValue = "12") Integer limit) {
+
+		Pageable pageable = PageRequest.of(page, limit);
+		return ResponseEntity.ok(bookService.findAllPaged(pageable));
+
 	}
 
 	@GetMapping(value = "/{id}")
