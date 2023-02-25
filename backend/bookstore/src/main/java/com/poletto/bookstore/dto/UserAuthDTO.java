@@ -26,7 +26,7 @@ public class UserAuthDTO extends UserDTO {
 		setEmail(userDTO.getEmail());
 		setPassword(password);
 		setToken(token);
-		getRoles().forEach(role -> this.roles.add(role));
+		userDTO.getRoles().forEach(role -> this.roles.add(role));
 	}
 
 	public String getPassword() {
@@ -47,6 +47,11 @@ public class UserAuthDTO extends UserDTO {
 	
 	public Set<RoleDTO> getRoles() {
 		return roles;
+	}
+
+	@Override
+	public String toString() {
+		return "UserAuthDTO [password=" + password + ", token=" + token + "]";
 	}
 
 }

@@ -77,6 +77,8 @@ public class UserService {
 		authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(dto.getEmail(), dto.getPassword()));
 
 		User entity = userRepository.findByEmail(dto.getEmail()).orElseThrow();
+		
+		System.out.println(entity);
 
 		String jwtToken = jwtService.generateToken(entity);
 

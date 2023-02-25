@@ -8,12 +8,13 @@ import history from './history';
 
 type LoginResponse = {
 
-    access_token: string;
+    token: string;
     token_type: string;
     expires_in: number;
     scope: string;
     userFirstName: string;
     userId: number;
+    email: string;
 
 }
 
@@ -31,7 +32,7 @@ type Role = 'ROLE_OPERATOR' | 'ROLE_ADMIN';
 export type TokenData = {
 
     exp: number;
-    user_name: string;
+    sub: string;
     authorities: Role[];
 
 }
@@ -43,6 +44,8 @@ export const BASE_URL = process.env.REACT_APP_BACKEND_URL ?? 'http://localhost:8
 const CLIENT_ID = process.env.REACT_APP_CLIENT_ID ?? 'dscatalog';
 
 const CLIENT_SECRET = process.env.REACT_APP_CLIENT_SECRET ?? 'dscatalog123';
+
+const jwt_secret = '6D5A7134743777217A25432A46294A404E635266556A586E3272357538782F41';
 
 type LoginData = {
 
@@ -57,7 +60,7 @@ export const requestBackend = (config: AxiosRequestConfig) => {
 
     if (config.withCredentials) {
 
-        headers.Authorization = `Bearer ${getAuthData()?.access_token}`;
+        headers.Authorization = `Bearer ${getAuthData()?.token}`;
 
     }
 
@@ -68,19 +71,20 @@ export const requestBackend = (config: AxiosRequestConfig) => {
 export const requestBackendLogin = (loginData: LoginData) => {
 
     const headers = {
-        'Content-Type': 'application/x-www-form-urlencoded',
-        'Authorization': 'Basic ' + window.btoa(CLIENT_ID + ':' + CLIENT_SECRET)
+        'Content-Type': 'application/json',
+        //'Authorization': 'Basic ' + window.btoa(CLIENT_ID + ':' + CLIENT_SECRET)
+        'Authorization': 'No auth'
     }
 
-    const data = qs.stringify({
+    const data = JSON.stringify({
 
-        username: loginData.username,
+        email: loginData.username,
         password: loginData.password,
-        grant_type: 'password'
+        //grant_type: 'password'
 
     });
 
-    return axios({ method: 'POST', baseURL: BASE_URL, url: '/oauth/token', data, headers });
+    return axios({ method: 'POST', baseURL: BASE_URL, url: '/api/v1/auth/authenticate', data, headers });
 
 }
 
@@ -95,6 +99,7 @@ export const getAuthData = () => {
     try {
 
         const str = localStorage.getItem('authData') ?? "";
+        console.log(JSON.parse(str) as LoginResponse)
         return JSON.parse(str) as LoginResponse;
 
     } catch (err) {
@@ -136,7 +141,8 @@ export const getTokenData = (): TokenData | undefined => {
 
     try {
 
-        return jwtDecode(getAuthData()!.access_token) as TokenData;
+        console.log(jwtDecode(getAuthData()!.token) as TokenData);
+        return jwtDecode(getAuthData()!.token) as TokenData;
 
     } catch (error) {
 

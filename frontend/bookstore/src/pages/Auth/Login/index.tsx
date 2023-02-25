@@ -48,6 +48,7 @@ const Login = () => {
                 history.replace(from);
             })
             .catch(err => {
+                console.log(err)
                 setHasError(true);
             })
 

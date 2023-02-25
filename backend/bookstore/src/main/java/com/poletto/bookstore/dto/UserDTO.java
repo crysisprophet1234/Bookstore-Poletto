@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 
+import com.poletto.bookstore.entities.Role;
 import com.poletto.bookstore.entities.User;
 
 public class UserDTO implements Serializable {
@@ -32,7 +33,9 @@ public class UserDTO implements Serializable {
 		firstname = entity.getFirstname();
 		lastname = entity.getLastname();
 		email = entity.getEmail();
-		entity.getRoles().forEach(role -> this.roles.add(new RoleDTO(role)));
+		for (Role role : entity.getRoles()) {
+			this.roles.add(new RoleDTO(role));
+		}
 	}
 
 	public Long getId() {
