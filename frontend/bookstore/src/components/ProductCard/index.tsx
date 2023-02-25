@@ -1,12 +1,12 @@
 import './styles.css';
 
 
-import { Product } from '../../types/product';
+import { Books } from '../../types/books';
 import ProductPrice from '../ProductPrice';
 
 type Props = {
 
-    product : Product;
+    product : Books;
 
 }
 
@@ -19,7 +19,7 @@ const ProductCard = ( { product } : Props) => {
             </div>
             <div className="card-bottom-container">
                 <h6>{product.name}</h6>
-                <ProductPrice price = {product.price}/>
+                <ProductPrice price = {product.id}/>
             </div>
         </div>
     );

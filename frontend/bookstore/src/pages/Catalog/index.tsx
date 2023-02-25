@@ -3,17 +3,16 @@ import ProductCard from '../../components/ProductCard';
 import Pagination from '../../components/Pagination';
 import CardLoader from './cardLoader/index';
 import { Link } from 'react-router-dom';
-import { Product } from '../../types/product';
-import { SpringPage } from '../../types/vendor/spring';
+import { Books } from '../../types/books';
+//import { BookPage } from '../../types/vendor/bookPage';
 
 import { AxiosRequestHeaders } from 'axios';
 import { useEffect, useState } from 'react';
 import { requestBackend } from '../../utils/requests';
 
-
 const Catalog = () => {
 
-  const [page, setPage] = useState<SpringPage<Product>>();
+  const [page, setPage] = useState();
 
   const [isLoading, setIsLoading] = useState(false);
 
@@ -36,6 +35,7 @@ const Catalog = () => {
         setPage(response.data);
       })
       .finally(() => {
+        console.log(page)
         setIsLoading(false)
       })
   }, [])
@@ -49,6 +49,8 @@ const Catalog = () => {
       </div>
 
       <div className="row">
+
+        {/*
 
         {isLoading || !page ? <CardLoader /> :
 
@@ -69,6 +71,8 @@ const Catalog = () => {
             })
           )
         }
+
+      */}
 
       </div>
 
