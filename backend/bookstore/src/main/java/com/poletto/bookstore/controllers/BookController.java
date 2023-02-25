@@ -8,6 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Sort.Direction;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -39,9 +41,14 @@ public class BookController {
 	@GetMapping(value = "/paged")
 	public ResponseEntity<Page<BookDTO>> findAllPaged(
 			@RequestParam(value = "page", defaultValue = "0") Integer page,
-			@RequestParam(value = "limit", defaultValue = "12") Integer limit) {
-
-		Pageable pageable = PageRequest.of(page, limit);
+			@RequestParam(value = "size", defaultValue = "12") Integer size,
+			@RequestParam(value = "sort", defaultValue = "asc") String sort,
+			@RequestParam(value = "orderBy", defaultValue = "name") String orderBy) {
+		
+		Direction sortDirection = "desc".equalsIgnoreCase(sort) ? Direction.DESC : Direction.ASC;
+				
+		Pageable pageable = PageRequest.of(page, size, Sort.by(sortDirection, orderBy));
+		
 		return ResponseEntity.ok(bookService.findAllPaged(pageable));
 
 	}
