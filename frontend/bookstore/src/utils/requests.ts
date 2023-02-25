@@ -12,8 +12,8 @@ type LoginResponse = {
     token_type: string;
     expires_in: number;
     scope: string;
-    userFirstName: string;
-    userId: number;
+    firstName: string;
+    id: number;
     email: string;
 
 }
@@ -99,7 +99,6 @@ export const getAuthData = () => {
     try {
 
         const str = localStorage.getItem('authData') ?? "";
-        console.log(JSON.parse(str) as LoginResponse)
         return JSON.parse(str) as LoginResponse;
 
     } catch (err) {
@@ -141,7 +140,6 @@ export const getTokenData = (): TokenData | undefined => {
 
     try {
 
-        console.log(jwtDecode(getAuthData()!.token) as TokenData);
         return jwtDecode(getAuthData()!.token) as TokenData;
 
     } catch (error) {
