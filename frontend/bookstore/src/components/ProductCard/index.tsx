@@ -1,12 +1,12 @@
 import './styles.css';
 
 
-import { Books } from '../../types/books';
+import { Book } from '../../types/book';
 import ProductPrice from '../ProductPrice';
 
 type Props = {
 
-    product : Books;
+    product : Book;
 
 }
 

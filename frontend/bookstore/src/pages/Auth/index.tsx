@@ -3,6 +3,7 @@ import { Route, Switch } from 'react-router-dom';
 
 import './styles.css';
 import Login from './Login';
+import Signup from './Signup';
 
 const Auth = () => {
 
@@ -29,7 +30,7 @@ const Auth = () => {
                     </Route>
 
                     <Route path="/auth/signup">
-                        <h1>Card de signup</h1>
+                        <Signup />
                     </Route>
 
                     <Route path="/auth/recover">

@@ -6,8 +6,8 @@ import ProductPrice from "../../components/ProductPrice";
 import { Product } from '../../types/product';
 import { Link, useParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
-import axios from 'axios';
-import { BASE_URL } from '../../utils/requests';
+import { AxiosRequestHeaders } from 'axios';
+import { requestBackend } from '../../utils/requests';
 import ProductInfoLoader from './ProductInfoLoader';
 import ProductDetailsLoader from './ProductDetailsLoader';
 
@@ -27,17 +27,25 @@ const ProductDetails = () => {
 
     useEffect(() => {
 
+        const params = {
+
+            method: 'GET',
+            url: `/api/v1/books/${productId}`,
+            headers: {} as AxiosRequestHeaders,
+            withCredentials: true
+
+        }
+
         setIsLoading(true)
 
-        axios.get(`${BASE_URL}/products/${productId}`)
+        requestBackend(params)
             .then(response => {
                 setProduct(response.data);
             })
             .finally(() => {
                 setIsLoading(false)
             })
-
-    }, [productId]);
+    }, [productId])
 
     return (
 

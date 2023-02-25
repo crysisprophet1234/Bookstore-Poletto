@@ -3,16 +3,16 @@ import ProductCard from '../../components/ProductCard';
 import Pagination from '../../components/Pagination';
 import CardLoader from './cardLoader/index';
 import { Link } from 'react-router-dom';
-import { Books } from '../../types/books';
-//import { BookPage } from '../../types/vendor/bookPage';
 
 import { AxiosRequestHeaders } from 'axios';
 import { useEffect, useState } from 'react';
 import { requestBackend } from '../../utils/requests';
+import { SpringPage } from '../../types/vendor/spring';
+import { Book } from '../../types/book';
 
 const Catalog = () => {
 
-  const [page, setPage] = useState();
+  const [page, setPage] = useState<SpringPage<Book>>();
 
   const [isLoading, setIsLoading] = useState(false);
 
@@ -21,9 +21,15 @@ const Catalog = () => {
     const params = {
 
       method: 'GET',
-      url: "/api/v1/books",
+      url: "/api/v1/books/paged",
       headers: {} as AxiosRequestHeaders,
-      withCredentials: true
+      withCredentials: true,
+      params: {
+        page: 0,
+        size: 12,
+        orderBy: "name",
+        sort: "asc"
+      }
 
     }
 
@@ -50,8 +56,6 @@ const Catalog = () => {
 
       <div className="row">
 
-        {/*
-
         {isLoading || !page ? <CardLoader /> :
 
           (
@@ -71,8 +75,6 @@ const Catalog = () => {
             })
           )
         }
-
-      */}
 
       </div>
 

@@ -1,6 +1,6 @@
 import { Category } from "./category"
 
-export type Books = {
+export type Book = {
 
     id: number,
     name: string,
