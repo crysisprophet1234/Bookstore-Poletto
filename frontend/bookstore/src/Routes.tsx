@@ -3,9 +3,9 @@ import Navbar from './components/Navbar';
 import Home from './pages/Home';
 import Catalog from './pages/Catalog';
 import Admin from './pages/Admin';
-import ProductDetails from './pages/ProductDetails';
 import Auth from './pages/Auth';
 import history from './utils/history';
+import BookDetails from './pages/BookDetails';
 
 const Routes = () => (
 
@@ -19,7 +19,7 @@ const Routes = () => (
                 <Home />
             </Route>
 
-            <Route path="/products" exact>
+            <Route path="/books" exact>
                 <Catalog />
             </Route>
 
@@ -29,14 +29,14 @@ const Routes = () => (
                 <Auth />
             </Route>
 
-            <Redirect from="/admin" to="/admin/products" exact />
+            <Redirect from="/admin" to="/admin/books" exact />
 
             <Route path="/admin">
                 <Admin />
             </Route>
 
-            <Route path="/products/:productId">
-                <ProductDetails />
+            <Route path="/books/:bookId">
+                <BookDetails />
             </Route>
 
             <Route path="*"> {/*verificar rota default 404*/}

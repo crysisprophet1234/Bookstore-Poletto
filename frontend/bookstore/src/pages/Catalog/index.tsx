@@ -1,5 +1,3 @@
-import './styles.css';
-import ProductCard from '../../components/ProductCard';
 import Pagination from '../../components/Pagination';
 import CardLoader from './cardLoader/index';
 import { Link } from 'react-router-dom';
@@ -9,6 +7,9 @@ import { useEffect, useState } from 'react';
 import { requestBackend } from '../../utils/requests';
 import { SpringPage } from '../../types/vendor/spring';
 import { Book } from '../../types/book';
+import BookCard from '../../components/BookCard';
+
+import './styles.css';
 
 const Catalog = () => {
 
@@ -59,13 +60,13 @@ const Catalog = () => {
 
           (
 
-            page?.content.map(product => {
+            page?.content.map(book => {
 
               return (
 
-                <div className="col-sm-6 col-lg-4 col-xl-3" key={product.id}>
-                  <Link to={`products/${product.id}`}>
-                    <ProductCard product={product} />
+                <div className="col-sm-6 col-lg-4 col-xl-3" key={book.id}>
+                  <Link to={`books/${book.id}`}>
+                    <BookCard book={book} />
                   </Link>
                 </div>
 

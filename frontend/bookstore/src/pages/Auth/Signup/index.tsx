@@ -96,7 +96,7 @@ const Login = () => {
                 <div className="alert alert-success" style={{ textAlign: 'center' }}>
                     Usuário cadastrado com sucesso!
                     <br />
-                    <a href="/auth/login" className="link-primary">Fazer login</a>
+                    <Link to="/auth/login" className="link-primary">Fazer login</Link>
                 </div>
 
             }

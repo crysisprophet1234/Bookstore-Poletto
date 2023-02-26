@@ -18,7 +18,7 @@ const height = () => {
 
 }
 
-const ProductDetailsLoader = () => (
+const BookDetailsLoader = () => (
 
     <ContentLoader
     
@@ -31,4 +31,4 @@ const ProductDetailsLoader = () => (
     </ContentLoader>
 )
 
-export default ProductDetailsLoader;
+export default BookDetailsLoader;

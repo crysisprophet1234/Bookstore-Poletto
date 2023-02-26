@@ -18,7 +18,7 @@ const height = () => {
 
 }
 
-const ProductInfoLoader = () => (
+const BookInfoLoader = () => (
 
     <ContentLoader
 
@@ -34,4 +34,4 @@ const ProductInfoLoader = () => (
     </ContentLoader>
 )
 
-export default ProductInfoLoader;  
+export default BookInfoLoader;  

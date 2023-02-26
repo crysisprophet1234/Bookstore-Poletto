@@ -1,5 +1,6 @@
-.product-card {
+.book-card {
   margin-bottom: 30px;
+  min-height: 320px;
 }
 
 .card-top-container {
@@ -20,8 +21,9 @@
 .card-bottom-container h6 {
 
   display: -webkit-box;
+  min-height: 44px;
   -webkit-box-orient: vertical;
-  -webkit-line-clamp: 1;
+  -webkit-line-clamp: 2;
   overflow: hidden;
 
 }
