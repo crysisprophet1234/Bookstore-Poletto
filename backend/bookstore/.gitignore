@@ -135,7 +135,6 @@ buildNumber.properties
 .mvn/timing.properties
 .mvn/wrapper/maven-wrapper.jar
 *.yml
-*.sql
 
 ### Windows ###
 # Windows thumbnail cache files
