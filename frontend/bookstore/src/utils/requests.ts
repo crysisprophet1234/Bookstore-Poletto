@@ -1,6 +1,5 @@
 import axios, { AxiosRequestConfig } from 'axios';
 import jwtDecode from 'jwt-decode';
-import qs from 'qs';
 import history from './history';
 
 //import * as dotenv from 'dotenv'
@@ -41,16 +40,19 @@ export type TokenData = {
 
 export const BASE_URL = process.env.REACT_APP_BACKEND_URL ?? 'http://localhost:8080';
 
-const CLIENT_ID = process.env.REACT_APP_CLIENT_ID ?? 'dscatalog';
-
-const CLIENT_SECRET = process.env.REACT_APP_CLIENT_SECRET ?? 'dscatalog123';
-
-const jwt_secret = '6D5A7134743777217A25432A46294A404E635266556A586E3272357538782F41';
-
 type LoginData = {
 
     username: string
     password: string
+
+}
+
+type SignupData = {
+
+    username: string
+    password: string
+    firstname?: string
+    lastname?: string
 
 }
 
@@ -72,7 +74,6 @@ export const requestBackendLogin = (loginData: LoginData) => {
 
     const headers = {
         'Content-Type': 'application/json',
-        //'Authorization': 'Basic ' + window.btoa(CLIENT_ID + ':' + CLIENT_SECRET)
         'Authorization': 'No auth'
     }
 
@@ -80,11 +81,30 @@ export const requestBackendLogin = (loginData: LoginData) => {
 
         email: loginData.username,
         password: loginData.password,
-        //grant_type: 'password'
 
     });
 
     return axios({ method: 'POST', baseURL: BASE_URL, url: '/api/v1/auth/authenticate', data, headers });
+
+}
+
+export const requestBackendSignup = (signupData: SignupData) => {
+
+    const headers = {
+        'Content-Type': 'application/json',
+        'Authorization': 'No auth'
+    }
+
+    const data = JSON.stringify({
+
+        email: signupData.username,
+        password: signupData.password,
+        firstname: signupData.firstname,
+        lastname: signupData.lastname
+        
+    });
+
+    return axios({ method: 'POST', baseURL: BASE_URL, url: '/api/v1/auth/register', data, headers });
 
 }
 

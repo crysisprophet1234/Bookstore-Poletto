@@ -1,9 +1,10 @@
 import ButtonIcon from '../../../components/ButtonIcon';
-import { Link, useHistory, useLocation } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
-import { getTokenData, requestBackendLogin, saveAuthData } from '../../../utils/requests';
-import { useState, useContext } from 'react';
-import { AuthContext } from '../../../AuthContext';
+import { yupResolver } from '@hookform/resolvers/yup';
+import { requestBackendSignup } from '../../../utils/requests';
+import { useState } from 'react';
+import * as Yup from 'yup';
 
 import './styles.css';
 
@@ -11,42 +12,75 @@ type FormData = {
 
     username: string;
     password: string;
+    passwordConfirm: string;
     firstname: string;
     lastname: string;
 
 }
 
-type LocationState = {
-
-    from: string;
-
-}
-
 const Login = () => {
 
-    const location = useLocation<LocationState>();
+    const validationSchema = Yup.object().shape({
 
-    //const { from } = location.state || { from: { pathname: '/admin' } };
+        username: Yup.string()
+            .required('Email é obrigatório')
+            .email('Email deve ser válido'),
 
-    //const { setAuthContextData } = useContext(AuthContext);
+        firstname: Yup.string()
+            .required('Primeiro nome é obrigatório')
+            .min(2, 'Primeiro nome deve ser válido')
+            .matches(/^([A-Za-z]*)$/gi, 'Primeiro nome deve ser válido'),
+
+        lastname: Yup.string()
+            .required('Segundo nome é obrigatório')
+            .min(2, 'Segundo nome deve ser válido')
+            .matches(/^([A-Za-z]*)$/gi, 'Segundo nome deve ser válido'),
+
+        password: Yup.string()
+            .required('Password is required')
+            .min(4, 'Password must be at least 4 characters'),
+
+        passwordConfirm: Yup.string()
+            .required('Confirm Password is required')
+            .oneOf([Yup.ref('password')], 'Passwords must match')
+
+    });
 
     const [hasError, setHasError] = useState(false);
 
-    const { register, handleSubmit, formState: { errors } } = useForm<FormData>();
+    const [isSubmitSuccessful, setIsSubmitSuccessful] = useState(false);
 
-    //const history = useHistory();
+    const formOptions = { resolver: yupResolver(validationSchema) };
+
+    const { register, handleSubmit, reset, formState } = useForm<FormData>(formOptions);
+
+    const { errors } = formState;
 
     const onSubmit = (formData: FormData) => {
 
-        requestBackendLogin(formData)
+        requestBackendSignup(formData)
+
             .then(response => {
 
+
                 setHasError(false);
+                setIsSubmitSuccessful(true);
+
+                reset({
+                    username: '',
+                    password: '',
+                    passwordConfirm: '',
+                    firstname: '',
+                    lastname: ''
+                })
 
             })
+
             .catch(err => {
-                console.log(err)
+
                 setHasError(true);
+                setIsSubmitSuccessful(false);
+
             })
 
     }
@@ -57,12 +91,20 @@ const Login = () => {
 
             <h1>SIGN UP</h1>
 
+            {isSubmitSuccessful &&
+
+                <div className="alert alert-success" style={{ textAlign: 'center' }}>
+                    Usuário cadastrado com sucesso!
+                    <br />
+                    <a href="/auth/login" className="link-primary">Fazer login</a>
+                </div>
+
+            }
+
             {hasError &&
 
                 <div className="alert alert-danger" role="alert" style={{ textAlign: 'center' }}>
-                    Usuário ou senha incorretos.
-                    <br />
-                    <a href="/auth/recover" className="alert-link">Esqueceu sua senha?</a>
+                    Falha no cadastro, por favor tente novamente.
                 </div>
 
             }
@@ -72,20 +114,14 @@ const Login = () => {
                 <div className="mb-3">
 
                     <input
-                        {...register("username", {
-                            required: 'Campo obrigatório',
-                            pattern: {
-                                value: (/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i),
-                                message: 'Email inválido'
-                            }
-                        })}
+                        {...register("username")}
                         type="text"
                         className={`form-control base-input ${errors.username ? 'is-invalid' : ''}`}
                         placeholder="Email"
                         name="username"
                     />
                     <div className="invalid-feedback d-block">
-                        {errors.username?.message}
+                        {errors.username?.message as React.ReactNode}
                     </div>
 
                 </div>
@@ -93,20 +129,14 @@ const Login = () => {
                 <div className="mb-3">
 
                     <input
-                        {...register("firstname", {
-                            required: 'Campo obrigatório',
-                            pattern: {
-                                value: /[A-Za-z]/,
-                                message: 'Nome não deve conter números ou caracteres especiais'
-                            }
-                        })}
+                        {...register("firstname")}
                         type="text"
                         className={`form-control base-input ${errors.firstname ? 'is-invalid' : ''}`}
                         placeholder="Primeiro nome"
                         name="firstname"
                     />
                     <div className="invalid-feedback d-block">
-                        {errors.firstname?.message}
+                        {errors.firstname?.message as React.ReactNode}
                     </div>
 
                 </div>
@@ -114,20 +144,14 @@ const Login = () => {
                 <div className="mb-3">
 
                     <input
-                        {...register("lastname", {
-                            required: 'Campo obrigatório',
-                            pattern: {
-                                value: /[A-Za-z]/,
-                                message: 'Nome não deve conter números ou caracteres especiais'
-                            }
-                        })}
+                        {...register("lastname")}
                         type="text"
                         className={`form-control base-input ${errors.lastname ? 'is-invalid' : ''}`}
                         placeholder="Segundo nome"
                         name="lastname"
                     />
                     <div className="invalid-feedback d-block">
-                        {errors.lastname?.message}
+                        {errors.lastname?.message as React.ReactNode}
                     </div>
 
                 </div>
@@ -135,24 +159,14 @@ const Login = () => {
                 <div className="mb-3">
 
                     <input
-                        {...register("password", {
-                            required: 'Campo obrigatório',
-                            minLength: {
-                                value: 4,
-                                message: 'Senha deve conter pelo menos 4 caracteres'
-                            },
-                            maxLength: {
-                                value: 8,
-                                message: 'Senha deve conter pelo menos 4 caracteres'
-                            }
-                        })}
+                        {...register("password")}
                         type="password"
                         className={`form-control base-input ${errors.password ? 'is-invalid' : ''}`}
                         placeholder="Senha"
                         name="password"
                     />
                     <div className="invalid-feedback d-block">
-                        {errors.password?.message}
+                        {errors.password?.message as React.ReactNode}
                     </div>
 
                 </div>
@@ -160,17 +174,14 @@ const Login = () => {
                 <div className="mb-5">
 
                     <input
-                        {...register("password", {
-                            required: 'Campo obrigatório',
-                            //validate: value => value === register..current || "Psw doesnt match" testar
-                        })}
+                        {...register("passwordConfirm")}
                         type="password"
-                        className={`form-control base-input ${errors.password ? 'is-invalid' : ''}`}
+                        className={`form-control base-input ${errors.passwordConfirm ? 'is-invalid' : ''}`}
                         placeholder="Confirmar senha"
-                        name="password-repeat"
+                        name="passwordConfirm"
                     />
                     <div className="invalid-feedback d-block">
-                        {errors.password?.message}
+                        {errors.passwordConfirm?.message as React.ReactNode}
                     </div>
 
                 </div>
@@ -194,6 +205,5 @@ const Login = () => {
 
     );
 };
-
 
 export default Login;
