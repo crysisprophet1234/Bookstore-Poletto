@@ -10,7 +10,7 @@ const Navbar = () => {
             <ul>
 
                 <li>
-                    <NavLink to='/admin/products' className='admin-nav-item'>Produtos</NavLink>
+                    <NavLink to='/admin/books' className='admin-nav-item'>Produtos</NavLink>
                 </li>
 
                 <li>

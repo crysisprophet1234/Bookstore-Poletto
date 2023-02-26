@@ -2,14 +2,10 @@ import { AxiosRequestHeaders } from 'axios';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { Book } from '../../types/book';
+import { formatDate } from '../../utils/formatters';
+import history from '../../utils/history';
 import { getAuthData, requestBackend } from '../../utils/requests';
 import './styles.css';
-
-type Props = {
-
-    show: boolean;
-
-}
 
 type FormData = {
 
@@ -21,15 +17,13 @@ type FormData = {
 
 const ReservationModal = (props: { show: any; onClose: any | undefined; book: Book }) => {
 
-    const [weeks, setWeeks] = useState(0);
+    const [devolution, setDevolution] = useState();
 
     const [hasError, setHasError] = useState(false);
 
     const [isSubmitSuccessful, setIsSubmitSuccessful] = useState(false);
 
-    const { register, handleSubmit, formState } = useForm<FormData>();
-
-    const { errors } = formState;
+    const { register, handleSubmit } = useForm<FormData>();
 
     const onSubmit = (formData: FormData) => {
 
@@ -61,8 +55,10 @@ const ReservationModal = (props: { show: any; onClose: any | undefined; book: Bo
 
             .then(response => {
                 console.log('post com sucesso')
+                setDevolution(response.data.devolution)
                 setHasError(false);
                 setIsSubmitSuccessful(true)
+                props.book.status = 'BOOKED'
             })
             .catch(err => {
                 setHasError(true);
@@ -71,7 +67,33 @@ const ReservationModal = (props: { show: any; onClose: any | undefined; book: Bo
 
     }
 
-    if (!props.show) { return null }
+    const onChange = (event: any) => {
+
+        const element = document.getElementById('btn-submit') as HTMLButtonElement;
+
+        //js weirdness 🙄
+
+        if (event.target.value > 0) {
+            element.disabled = false;
+            element?.classList.add('active');
+        }
+
+        if (event.target.value < 1) {
+            element.disabled = true;
+            element?.classList.remove('active');
+        }
+
+    };
+
+    function onClick(event: any) {
+        event.stopPropagation()
+        history.replace(`/books/${props.book.id}`);
+    }
+
+    if (!props.show) {
+        history.replace(`/books/${props.book.id}`);
+        return null
+    }
 
     return (
 
@@ -80,46 +102,53 @@ const ReservationModal = (props: { show: any; onClose: any | undefined; book: Bo
 
                 <div className="modal-header">
                     <h3 className="modal-title">Reservar livro</h3>
-                    <button onClick={props.onClose}>X</button>
+                    <button onClick={onClick}>X</button>
                 </div>
 
                 {hasError &&
-                        <div className="alert alert-danger" role="alert">
-                            Erro na inserção da reserva, favor tentar novamente.
-                        </div>
-                    }
+                    <div className="alert alert-danger" role="alert">
+                        Erro na inserção da reserva, favor tentar novamente.
+                    </div>
+                }
 
-                    {isSubmitSuccessful &&
+                {isSubmitSuccessful &&
+                    <>
                         <div className="alert alert-success">
                             Livro reservado com sucesso!
                             <br />
-                            Devolução marcada para {weeks}
+                            Devolução marcada para {formatDate(devolution)}
                         </div>
-                    }
+                        <button type="button" className="btn btn-primary" onClick={onClick}>Voltar</button>
+                    </>
+                }
 
-                <div className="modal-body">
-                    <h2>{props.book.name}</h2>
-                    <h5>{props.book.author.name}</h5>
+                {!isSubmitSuccessful &&
 
-                    <form className="modal-form" onSubmit={handleSubmit(onSubmit)}>
+                    <div className="modal-body">
+                        <h2>{props.book.name}</h2>
+                        <h5>{props.book.author.name}</h5>
 
-                        <p className='mb-2'>Quanto semanas deseja reservar?</p>
+                        <form className="modal-form" onSubmit={handleSubmit(onSubmit)}>
 
-                        <select {...register("weeks")} name="weeks" id='selectWeeks' >
-                            <option value="0"  >Selecionar...</option>
-                            <option value="1" >1 semana</option>
-                            <option value="2" >2 semanas</option>
-                            <option value="3" >3 semanas</option>
-                            <option value="4" >4 semanas</option>
-                        </select>
+                            <p className='mb-2'>Quanto semanas deseja reservar?</p>
 
-                        <button type="submit">
-                            CONFIRMAR
-                        </button>
+                            <select {...register("weeks")} name="weeks" id='selectWeeks' onChange={onChange} >
+                                <option value={0} >Selecionar...</option>
+                                <option value={1} >1 semana</option>
+                                <option value={2} >2 semanas</option>
+                                <option value={3} >3 semanas</option>
+                                <option value={4} >4 semanas</option>
+                            </select>
 
-                    </form>
+                            <button type="submit" id="btn-submit" disabled>
+                                CONFIRMAR
+                            </button>
 
-                </div>
+                        </form>
+
+                    </div>
+                }
+
             </div>
         </div>
 

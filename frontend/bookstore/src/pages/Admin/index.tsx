@@ -16,7 +16,7 @@ const Admin = () => {
 
         <Switch>
 
-          <PrivateRoute path="/admin/products">
+          <PrivateRoute path="/admin/books">
             <h1>CRUD product</h1>
           </PrivateRoute>
 

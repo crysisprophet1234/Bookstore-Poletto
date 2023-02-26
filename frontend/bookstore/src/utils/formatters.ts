@@ -1,10 +1,11 @@
-export const formatPrice = (price: number) => {
+export const formatDate = (date: string | undefined) => {
 
-    const params = {
-        maximumFractionDigits: 2,
-        minimumFractionDigits: 2
-    }
+    let str = date?.replace('-', '');
 
-    return new Intl.NumberFormat('pt-BR', params).format(price);
+    let year = str?.substring(0, 4);
+    let month = str?.substring(4, 6);
+    let day = str?.substring(7);
+
+    return `${day}/${month}/${year}`;
 
 }

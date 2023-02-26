@@ -11,6 +11,8 @@ import BookDetailsLoader from './BookDetailsLoader';
 import { Book } from '../../types/book';
 import BookStatus from '../../components/BookStatus';
 import ReservationModal from '../../components/ReservationModal/ReservationModal';
+import { formatDate } from '../../utils/formatters';
+import PrivateRoute from '../../components/PrivateRoute';
 
 type UrlParam = {
 
@@ -87,7 +89,7 @@ const BookDetails = () => {
                                     <div className="book-desc-container">
                                         <span>
                                             <h2 className='mb-2'>{book?.author.name}</h2>
-                                            <p>Data de lançamento {book?.releaseDate}</p>
+                                            <p>Data de lançamento {formatDate(book?.releaseDate)}</p>
                                         </span>
                                         <hr></hr>
                                         <h2>Descrição</h2>
@@ -122,12 +124,13 @@ const BookDetails = () => {
                                         </div>
                                         <p>Código {book?.id}</p>
                                     </span>
-                                    <div onClick={() => setShowModal(true)}>
+                                    <Link to={`/books/${book?.id}/reservation`} onClick={() => setShowModal(true)}>
                                         <BookStatus status={book?.status} />
-                                    </div>
+                                    </Link>
 
-                                            //adicionar autenticao
-                                    <ReservationModal onClose={() => setShowModal(false)} show={showModal} book={book as Book} />
+                                    <PrivateRoute path={`/books/${book?.id}/reservation`}>
+                                        <ReservationModal onClose={() => setShowModal(false)} show={showModal} book={book as Book} />
+                                    </PrivateRoute>
 
                                 </div>
 
