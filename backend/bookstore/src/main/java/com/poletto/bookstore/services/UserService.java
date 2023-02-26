@@ -62,6 +62,8 @@ public class UserService {
 		User entity = new User();
 
 		copyDtoToEntity(dto, entity);
+		
+		entity.getRoles().add(roleRepository.getReferenceById(1L));
 
 		entity.setPassword(passwordEncoder.encode(dto.getPassword()));
 
