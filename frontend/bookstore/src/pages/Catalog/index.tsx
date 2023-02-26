@@ -18,6 +18,10 @@ const Catalog = () => {
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
+    getBooks(0);
+  }, [])
+
+  const getBooks = (pageNumber: number) => {
 
     const params = {
 
@@ -25,7 +29,7 @@ const Catalog = () => {
       url: "/api/v1/books/paged",
       headers: {} as AxiosRequestHeaders,
       params: {
-        page: 0,
+        page: pageNumber,
         size: 12,
         orderBy: "name",
         sort: "asc"
@@ -44,7 +48,8 @@ const Catalog = () => {
         console.log(page)
         setIsLoading(false)
       })
-  }, [])
+
+  }
 
   return (
 
@@ -79,7 +84,11 @@ const Catalog = () => {
       </div>
 
       <div className="row">
-        <Pagination />
+        <Pagination
+          pageCount={page ? page.totalPages : 0}
+          range={3}
+          onChange={getBooks}
+        />
       </div>
 
     </div>

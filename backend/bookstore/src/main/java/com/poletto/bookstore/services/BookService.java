@@ -65,8 +65,6 @@ public class BookService {
 		
 		var bookPage = bookRepository.findAll(pageable);
 		
-		System.out.println(pageable.getSort());
-		
 		var bookDtoPage = bookPage.map(p -> new BookDTO(p));
 		
 		return bookDtoPage;
