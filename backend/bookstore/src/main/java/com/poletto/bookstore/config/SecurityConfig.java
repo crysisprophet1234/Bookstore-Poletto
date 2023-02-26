@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -39,8 +40,9 @@ public class SecurityConfig {
 		http
 		.csrf().disable()
         .authorizeHttpRequests()
-        .requestMatchers("/api/v1/auth/**").permitAll()
-        .anyRequest().authenticated()
+        .requestMatchers(HttpMethod.POST ,"/api/v1/auth/**").permitAll()
+        .requestMatchers(HttpMethod.GET ,"/api/v1/books/**").permitAll()
+        .anyRequest().hasAuthority("ROLE_ADMIN")
         .and()
         .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
         .and()

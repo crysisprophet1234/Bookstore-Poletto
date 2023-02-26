@@ -23,7 +23,6 @@ const Catalog = () => {
       method: 'GET',
       url: "/api/v1/books/paged",
       headers: {} as AxiosRequestHeaders,
-      withCredentials: true,
       params: {
         page: 0,
         size: 12,

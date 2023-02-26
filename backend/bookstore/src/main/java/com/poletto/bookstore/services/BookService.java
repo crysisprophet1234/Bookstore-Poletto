@@ -40,8 +40,6 @@ public class BookService {
 	public List<BookDTO> findAll(Integer booked) {
 		
 		List<Book> list;
-		
-		System.out.println("booked = " + booked);
 
 		switch (booked) {
 
@@ -59,7 +57,6 @@ public class BookService {
 
 		}
 
-		System.out.println(list);
 		return list.stream().map(x -> new BookDTO(x)).toList(); // verificar sorted()
 	}
 	
