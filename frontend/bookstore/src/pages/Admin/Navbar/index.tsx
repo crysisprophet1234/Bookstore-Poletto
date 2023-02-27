@@ -16,7 +16,7 @@ const Navbar = () => {
                 </li>
 
                 <li>
-                    <NavLink to='/admin/categories' className='admin-nav-item'>Categorias</NavLink>
+                    <NavLink to='/admin/reserves' className='admin-nav-item'>Reservas</NavLink>
                 </li>
 
                 <li>

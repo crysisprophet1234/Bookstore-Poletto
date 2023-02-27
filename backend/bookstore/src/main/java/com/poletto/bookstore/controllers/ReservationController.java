@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
@@ -25,8 +26,8 @@ public class ReservationController {
 	private ReservationService reservationService;
 
 	@GetMapping
-	public ResponseEntity<List<ReservationDTO>> findAll() {
-		List<ReservationDTO> reservations = reservationService.findAll();
+	public ResponseEntity<List<ReservationDTO>> findAll(@RequestParam (value = "client", defaultValue = "0") Long userId) {
+		List<ReservationDTO> reservations = reservationService.findAll(userId);
 		return ResponseEntity.ok().body(reservations);
 	}
 

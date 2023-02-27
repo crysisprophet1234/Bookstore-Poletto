@@ -4,6 +4,7 @@ import { Switch } from "react-router-dom";
 import Users from "./Users";
 import PrivateRoute from "../../components/PrivateRoute";
 import Books from "./Books";
+import Reserves from "./Reserves";
 
 const Admin = () => {
 
@@ -21,8 +22,8 @@ const Admin = () => {
             <Books />
           </PrivateRoute>
 
-          <PrivateRoute path="/admin/categories">
-            <h1>CRUD categories</h1>
+          <PrivateRoute path="/admin/reserves">
+            <Reserves />
           </PrivateRoute>
 
           <PrivateRoute path="/admin/users">

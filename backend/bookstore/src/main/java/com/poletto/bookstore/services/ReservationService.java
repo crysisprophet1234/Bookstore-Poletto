@@ -43,8 +43,12 @@ public class ReservationService {
 	private BookRepository bookRepository;
 
 	@Transactional(readOnly = true)
-	public List<ReservationDTO> findAll() {
+	public List<ReservationDTO> findAll(Long userId) {
 		List<Reservation> list = reservationRepository.findAll();
+		System.out.println(userId);
+		if (userId > 0) {
+			list = reservationRepository.findByClient(userId);
+		}
 		return list.stream().map(x -> new ReservationDTO(x)).toList();
 	}
 
