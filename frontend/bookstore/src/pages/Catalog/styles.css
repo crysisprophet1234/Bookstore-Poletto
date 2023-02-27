@@ -11,6 +11,11 @@
     letter-spacing: -0.015em;
     color: #263238;
   }
+
+  .product-crud-bar-container div:first-child {
+    margin-left: 0px;
+    font-size: 18px;
+  }
   
   @media (min-width: 576px) {
     .catalog-container {

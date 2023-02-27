@@ -36,7 +36,7 @@ const ProductFilter = ({ onSubmitFilter }: Props) => {
 
     const obj: ProductFilterData = {
       name: getValues('name'),
-      category: getValues('category'),
+      category: getValues('category')
     };
 
     onSubmitFilter(obj);
@@ -84,6 +84,7 @@ const ProductFilter = ({ onSubmitFilter }: Props) => {
               )}
             />
           </div>
+
           <button
             onClick={handleFormClear}
             className="btn btn-outline-secondary btn-product-filter-clear"

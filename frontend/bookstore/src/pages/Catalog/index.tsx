@@ -2,14 +2,20 @@ import Pagination from '../../components/Pagination';
 import CardLoader from './cardLoader/index';
 import { Link } from 'react-router-dom';
 
-import { AxiosRequestHeaders } from 'axios';
-import { useEffect, useState } from 'react';
+import { AxiosRequestConfig } from 'axios';
+import { useCallback, useEffect, useState } from 'react';
 import { requestBackend } from '../../utils/requests';
 import { SpringPage } from '../../types/vendor/spring';
 import { Book } from '../../types/book';
 import BookCard from '../../components/BookCard';
 
 import './styles.css';
+import ProductFilter, { ProductFilterData } from '../../components/ProductFilter';
+
+type ControlComponentsData = {
+  activePage: number;
+  filterData: ProductFilterData;
+};
 
 const Catalog = () => {
 
@@ -17,39 +23,45 @@ const Catalog = () => {
 
   const [isLoading, setIsLoading] = useState(false);
 
-  useEffect(() => {
-    getBooks(0);
-  }, [])
+  const [controlComponentsData, setControlComponentsData] =
+    useState<ControlComponentsData>({
+      activePage: 0,
+      filterData: { name: '', category: null },
+    });
 
-  const getBooks = (pageNumber: number) => {
+  const handlePageChange = (pageNumber: number) => {
+    setControlComponentsData({ activePage: pageNumber, filterData: controlComponentsData.filterData });
+  };
 
-    const params = {
+  const handleSubmitFilter = (data: ProductFilterData) => {
+    setControlComponentsData({ activePage: 0, filterData: data });
+  };
 
+  const getBooks = useCallback(() => {
+    const config: AxiosRequestConfig = {
       method: 'GET',
-      url: "/api/v1/books/paged",
-      headers: {} as AxiosRequestHeaders,
+      url: '/api/v1/books/paged',
       params: {
-        page: pageNumber,
+        page: controlComponentsData.activePage,
         size: 12,
-        orderBy: "name",
-        sort: "asc"
-      }
+        name: controlComponentsData.filterData.name,
+        categoryId: controlComponentsData.filterData.category?.id
+      },
+    };
 
-    }
-
-    setIsLoading(true);
-
-    requestBackend(params)
-      .then(response => {
-        console.log(response.data)
+    requestBackend(config)
+      .then((response) => {
+        setIsLoading(false)
         setPage(response.data);
       })
-      .finally(() => {
-        console.log(page)
-        setIsLoading(false)
+      .catch((err) => {
+        setIsLoading(true)
       })
+  }, [controlComponentsData]);
 
-  }
+  useEffect(() => {
+    getBooks();
+  }, [getBooks]);
 
   return (
 
@@ -57,6 +69,12 @@ const Catalog = () => {
 
       <div className="row catalog-title-container">
         <h1>Catálogo de Produtos</h1>
+      </div>
+
+      <div className="product-crud-bar-container">
+
+        <ProductFilter onSubmitFilter={handleSubmitFilter}/>
+
       </div>
 
       <div className="row">
@@ -85,9 +103,10 @@ const Catalog = () => {
 
       <div className="row">
         <Pagination
+          forcePage={page?.number}
           pageCount={page ? page.totalPages : 0}
           range={3}
-          onChange={getBooks}
+          onChange={handlePageChange}
         />
       </div>
 
