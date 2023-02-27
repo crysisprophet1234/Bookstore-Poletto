@@ -10,7 +10,9 @@ const Navbar = () => {
             <ul>
 
                 <li>
-                    <NavLink to='/admin/books' className='admin-nav-item'>Produtos</NavLink>
+                    <NavLink to='/admin/books' className='admin-nav-item'>
+                        <p>Produtos</p>
+                    </NavLink>
                 </li>
 
                 <li>

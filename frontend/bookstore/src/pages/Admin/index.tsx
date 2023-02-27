@@ -3,6 +3,7 @@ import './styles.css';
 import { Switch } from "react-router-dom";
 import Users from "./Users";
 import PrivateRoute from "../../components/PrivateRoute";
+import Books from "./Books";
 
 const Admin = () => {
 
@@ -17,7 +18,7 @@ const Admin = () => {
         <Switch>
 
           <PrivateRoute path="/admin/books">
-            <h1>CRUD product</h1>
+            <Books />
           </PrivateRoute>
 
           <PrivateRoute path="/admin/categories">

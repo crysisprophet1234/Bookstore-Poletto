@@ -9,6 +9,7 @@ import java.util.stream.Collectors;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.poletto.bookstore.entities.Author;
 import com.poletto.bookstore.entities.Book;
+import com.poletto.bookstore.entities.Category;
 
 public class BookDTO implements Serializable {
 
@@ -46,6 +47,11 @@ public class BookDTO implements Serializable {
 		status = entity.getStatus().name();
 		author = entity.getAuthor();
 		categories = entity.getCategories().stream().map(x -> new CategoryDTO(x)).collect(Collectors.toSet());
+	}
+	
+	public BookDTO(Book entity, Set<Category> categories) {
+		this(entity);
+		categories.forEach(cat -> this.categories.add(new CategoryDTO(cat)));
 	}
 
 	public Long getId() {
@@ -98,6 +104,12 @@ public class BookDTO implements Serializable {
 
 	public Set<CategoryDTO> getCategories() {
 		return categories;
+	}
+
+	@Override
+	public String toString() {
+		return "BookDTO [id=" + id + ", name=" + name + ", releaseDate=" + releaseDate + ", imgUrl=" + imgUrl
+				+ ", status=" + status + ", author=" + author + ", categories=" + categories + "]";
 	}
 
 }

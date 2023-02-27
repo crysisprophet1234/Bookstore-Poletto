@@ -1,5 +1,6 @@
 package com.poletto.bookstore.services;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -61,10 +62,14 @@ public class BookService {
 	}
 	
 	@Transactional(readOnly = true)
-	public Page<BookDTO> findAllPaged(Pageable pageable) {
+	public Page<BookDTO> findAllPaged(Pageable pageable, Long categoryId, String name) {
 		
-		var bookPage = bookRepository.findAll(pageable);
+		List<Category> categories = (categoryId == 0) ? null : Arrays.asList(categoryRepository.getReferenceById(categoryId));
 		
+		var bookPage = bookRepository.findPaged(categories, name, pageable);
+		
+		bookRepository.findProductsWithCategories(bookPage.getContent());
+
 		var bookDtoPage = bookPage.map(p -> new BookDTO(p));
 		
 		return bookDtoPage;
@@ -139,8 +144,6 @@ public class BookService {
 		entity.setImgUrl(dto.getImgUrl());
 		entity.setAuthor(authorRepository.findById(dto.getAuthor().getId())
 				.orElseThrow(() -> new ResourceNotFoundException(dto.getAuthor().getId())));
-		
-		System.out.println(dto.getStatus());
 
 		entity.setStatus(BookStatus.valueOf(dto.getStatus()));
 

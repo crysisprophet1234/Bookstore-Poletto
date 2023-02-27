@@ -1,6 +1,7 @@
 .admin-nav-container {
     padding: 10px;
     background-color: #fff;
+    border: .5px solid black;
   }
   .admin-nav-container ul {
     display: flex;
@@ -24,8 +25,7 @@
     width: 110px;
   }
   .admin-nav-container ul .admin-nav-item.active {
-    background-color: rgba(64, 123, 255, 0.3);
-    color: #407BFF;
+    color: #263238;
   }
   
   @media (min-width: 1200px) {

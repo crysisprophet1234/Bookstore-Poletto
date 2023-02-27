@@ -156,6 +156,7 @@ INSERT INTO tb_category (id, name) VALUES (12, 'documentary');
 INSERT INTO tb_category (id, name) VALUES (13, 'drama');
 INSERT INTO tb_category (id, name) VALUES (14, 'war');
 INSERT INTO tb_category (id, name) VALUES (15, 'animation');
+INSERT INTO tb_category (id, name) VALUES (16, 'oriental');
 
 INSERT INTO tb_author (id, name, nacionality) VALUES (1, 'Stephen King', 'United States');
 INSERT INTO tb_author (id, name, nacionality) VALUES (2, 'Robert Cecil Martin', 'United States');
@@ -259,6 +260,7 @@ INSERT INTO tb_author (id, name, nacionality) VALUES (97, 'Hort Coytes', 'Micron
 INSERT INTO tb_author (id, name, nacionality) VALUES (98, 'Debbi Skewis', 'Portugal');
 INSERT INTO tb_author (id, name, nacionality) VALUES (99, 'Hyacinthie Poxson', 'Poland');
 INSERT INTO tb_author (id, name, nacionality) VALUES (100, 'Truda Wardhough', 'Cuba');
+INSERT INTO tb_author (id, name, nacionality) VALUES (101, 'Ken Mogi', 'Japan');
 
 
 INSERT INTO tb_book (id, name, release_date, status, img_url, author_id) VALUES (1, 'Outsider', '2018-05-22', 'AVAILABLE', 'https://m.media-amazon.com/images/I/61dOYnvCQ2L._SY344_BO1,204,203,200_QL70_ML2_.jpg', 1);
@@ -267,6 +269,9 @@ INSERT INTO tb_book (id, name, release_date, status, img_url, author_id) VALUES 
 INSERT INTO tb_book (id, name, release_date, status, img_url, author_id) VALUES (4, 'Harry Potter and the Philosophers Stone', '1997-06-26', 'AVAILABLE', 'https://m.media-amazon.com/images/I/5165He67NEL._SY346_.jpg', 4);
 INSERT INTO tb_book (id, name, release_date, status, img_url, author_id) VALUES (5, 'A Game of Thrones', '1996-08-01', 'AVAILABLE', 'https://m.media-amazon.com/images/I/51D+-f5UcDL.jpg', 5);
 INSERT INTO tb_book (id, name, release_date, status, img_url, author_id) VALUES (6, 'Ideias para Adiar o Fim do Mundo', '2020-07-24', 'AVAILABLE', 'https://m.media-amazon.com/images/P/B07RNQB854.01._SCLZZZZZZZ_SX500_.jpg', 6);
+
+--teste cat oriental
+INSERT INTO tb_book (id, name, release_date, status, img_url, author_id) VALUES (201, 'Ikigai', '2016-04-01', 'AVAILABLE', 'https://m.media-amazon.com/images/P/B07CT65VP9.01._SCLZZZZZZZ_SX500_.jpg', 101);
 
 --book mocks
 INSERT INTO tb_book (id, name, release_date, status, img_url, author_id) VALUES (7, 'the history of Chrisse Caveney', '1986-08-05', 'AVAILABLE', 'https://media.istockphoto.com/id/153952958/photo/blank-hardcover-book-with-copy-space.jpg?s=612x612&w=0&k=20&c=0GwreFm2LXIR0_irlkOvvz45hfRlova_pTZr-v32Pyg=', 4);
@@ -621,7 +626,6 @@ INSERT INTO tb_book_category (book_id, category_id) VALUES (46, 5);
 INSERT INTO tb_book_category (book_id, category_id) VALUES (180, 9);
 INSERT INTO tb_book_category (book_id, category_id) VALUES (13, 12);
 INSERT INTO tb_book_category (book_id, category_id) VALUES (49, 1);
-INSERT INTO tb_book_category (book_id, category_id) VALUES (4, 14);
 INSERT INTO tb_book_category (book_id, category_id) VALUES (152, 14);
 INSERT INTO tb_book_category (book_id, category_id) VALUES (30, 6);
 INSERT INTO tb_book_category (book_id, category_id) VALUES (89, 6);
@@ -671,7 +675,7 @@ INSERT INTO tb_book_category (book_id, category_id) VALUES (74, 15);
 INSERT INTO tb_book_category (book_id, category_id) VALUES (34, 8);
 INSERT INTO tb_book_category (book_id, category_id) VALUES (74, 7);
 INSERT INTO tb_book_category (book_id, category_id) VALUES (112, 14);
-
+INSERT INTO tb_book_category (book_id, category_id) VALUES (201, 16);
 
 
 --reservas
