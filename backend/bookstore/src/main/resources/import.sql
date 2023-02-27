@@ -678,5 +678,19 @@ INSERT INTO tb_book_category (book_id, category_id) VALUES (74, 7);
 INSERT INTO tb_book_category (book_id, category_id) VALUES (112, 14);
 INSERT INTO tb_book_category (book_id, category_id) VALUES (201, 16);
 
-
 --reservas
+
+INSERT INTO tb_reservation (moment, client_id, weeks, devolution, status) VALUES ('2023-02-18T17:38', 4, 2, '2023-03-04', default);
+INSERT INTO tb_reservation (moment, client_id, weeks, devolution, status) VALUES ('2023-02-02T09:22', 2, 1, '2023-02-09', default);
+INSERT INTO tb_reservation (moment, client_id, weeks, devolution, status) VALUES ('2023-01-25T13:59', 3, 3, '2023-02-15', default);
+INSERT INTO tb_reservation (moment, client_id, weeks, devolution, status) VALUES ('2022-12-27T10:05', 2, 2, '2023-01-10', default);
+INSERT INTO tb_reservation (moment, client_id, weeks, devolution, status) VALUES ('2023-02-07T15:13', 1, 4, '2023-03-15', default);
+
+INSERT INTO tb_book_reservation (reservation_id, book_id)  VALUES (1, 2);
+INSERT INTO tb_book_reservation (reservation_id, book_id)  VALUES (1, 59);
+INSERT INTO tb_book_reservation (reservation_id, book_id)  VALUES (2, 32);
+INSERT INTO tb_book_reservation (reservation_id, book_id)  VALUES (3, 157);
+INSERT INTO tb_book_reservation (reservation_id, book_id)  VALUES (5, 5);
+INSERT INTO tb_book_reservation (reservation_id, book_id)  VALUES (4, 199);
+
+UPDATE tb_book SET status = 'BOOKED' WHERE id IN (2, 5, 59, 32, 157, 15, 199)
