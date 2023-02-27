@@ -34,7 +34,7 @@ const List = () => {
     setControlComponentsData({ activePage: 0, filterData: data });   
   };
 
-  const getProducts = useCallback(() => {
+  const getBooks = useCallback(() => {
     const config: AxiosRequestConfig = {
       method: 'GET',
       url: '/api/v1/books/paged',
@@ -52,8 +52,8 @@ const List = () => {
   }, [controlComponentsData]);
 
   useEffect(() => {
-    getProducts();
-  }, [getProducts]);
+    getBooks();
+  }, [getBooks]);
 
   return (
     <div className="product-crud-container">
@@ -71,9 +71,9 @@ const List = () => {
       </div>
 
       <div className="row">
-        {page?.content.map((product) => (
-          <div key={product.id} className="col-sm-6 col-md-12">
-            <ProductCrudCard product={product} onDelete={getProducts} />
+        {page?.content.map((book) => (
+          <div key={book.id} className="col-sm-6 col-md-12">
+            <ProductCrudCard book={book} onDelete={getBooks} />
           </div>
         ))}
       </div>

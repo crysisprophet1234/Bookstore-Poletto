@@ -45,7 +45,7 @@ public class SecurityConfig {
         .requestMatchers(HttpMethod.POST ,"/api/v1/reservations").permitAll()
         .requestMatchers(HttpMethod.GET ,"/api/v1/categories/**").permitAll()
         //.anyRequest().hasAuthority("ROLE_ADMIN")
-        .anyRequest().authenticated()
+        .anyRequest().permitAll()
         .and()
         .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
         .and()

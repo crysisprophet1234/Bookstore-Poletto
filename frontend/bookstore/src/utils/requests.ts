@@ -57,7 +57,7 @@ type SignupData = {
 
 }
 
-export const requestBackend = (config: AxiosRequestConfig, data?: any) => {
+export const requestBackend = (config: AxiosRequestConfig) => {
 
     const headers: any = { ...config.headers };
 
@@ -67,7 +67,7 @@ export const requestBackend = (config: AxiosRequestConfig, data?: any) => {
 
     }
 
-    return axios({ ...config, baseURL: BASE_URL, headers, data });
+    return axios({ ...config, baseURL: BASE_URL, headers, data: config.data });
 
 }
 

@@ -1,4 +1,4 @@
-import { AxiosRequestHeaders } from 'axios';
+import { AxiosRequestConfig, AxiosRequestHeaders } from 'axios';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { Book } from '../../types/book';
@@ -27,17 +27,8 @@ const ReservationModal = (props: { show: any; onClose: any | undefined; book: Bo
 
     const onSubmit = (formData: FormData) => {
 
-        const params = {
-
-            method: 'POST',
-            url: "/api/v1/reservations",
-            headers: {} as AxiosRequestHeaders,
-
-        }
-
         const data = {
-
-            weeks: formData.weeks,
+            ...formData,
             client: {
                 id: getAuthData()?.id
             },
@@ -46,12 +37,18 @@ const ReservationModal = (props: { show: any; onClose: any | undefined; book: Bo
                     id: props.book.id
                 }
             ]
-
         }
+
+        const config: AxiosRequestConfig = {
+            method: 'POST',
+            url: "/api/v1/reservations",
+            data,
+            withCredentials: true,
+          };
 
         console.log(data)
 
-        requestBackend(params, data)
+        requestBackend(config)
 
             .then(response => {
                 console.log('post com sucesso')

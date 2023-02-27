@@ -1,7 +1,6 @@
 import { AxiosRequestConfig } from 'axios';
 import { useState } from 'react';
 import { useEffect } from 'react';
-import CurrencyInput from 'react-currency-input-field';
 import { useForm, Controller } from 'react-hook-form';
 import { useHistory, useParams } from 'react-router-dom';
 import Select from 'react-select';
@@ -11,6 +10,8 @@ import { requestBackend } from '../../../../utils/requests';
 import { toast } from 'react-toastify';
 
 import './styles.css';
+import { Author } from '../../../../types/author';
+import { Reservation } from '../../../../types/reservation';
 
 type UrlParams = {
   bookId: string;
@@ -20,11 +21,17 @@ const Form = () => {
 
   const { bookId } = useParams<UrlParams>();
 
+  const [initialData, setInitialData] = useState<Book>();
+
+  const [reservations, setReservations] = useState<[]>();
+
   const isEditing = bookId !== 'create';
 
   const history = useHistory();
 
   const [selectCategories, setSelectCategories] = useState<Category[]>([]);
+
+  const [selectAuthors, setSelectAuthors] = useState<Author[]>([]);
 
   const {
     register,
@@ -41,15 +48,22 @@ const Form = () => {
   }, []);
 
   useEffect(() => {
+    requestBackend({ url: '/api/v1/authors' }).then((response) => {
+      setSelectAuthors(response.data);
+    });
+  }, []);
+
+  useEffect(() => {
     if (isEditing) {
       requestBackend({ url: `/api/v1/books/${bookId}` }).then((response) => {
-        const product = response.data as Book;
+        const book = response.data as Book;
 
-        setValue('name', product.name);
-        setValue('releaseDate', product.releaseDate);
-        setValue('author', product.author);
-        setValue('imgUrl', product.imgUrl);
-        setValue('categories', product.categories);
+        setValue('name', book.name);
+        setValue('releaseDate', book.releaseDate);
+        setValue('author', book.author);
+        setValue('imgUrl', book.imgUrl);
+        setValue('categories', book.categories);
+        setInitialData(book);
       });
     }
   }, [isEditing, bookId, setValue]);
@@ -57,12 +71,12 @@ const Form = () => {
   const onSubmit = (formData: Book) => {
     const data = {
       ...formData,
-      price: String(formData.releaseDate).replace(',', '.'),
+      status: initialData?.status
     };
 
     const config: AxiosRequestConfig = {
       method: isEditing ? 'PUT' : 'POST',
-      url: isEditing ? `/products/${bookId}` : '/products',
+      url: isEditing ? `/api/v1/books/${bookId}` : '/api/v1/books',
       data,
       withCredentials: true,
     };
@@ -70,7 +84,7 @@ const Form = () => {
     requestBackend(config)
       .then(() => {
         toast.info('Produto cadastrado com sucess');
-        history.push('/admin/products');
+        history.push('/admin/books');
       })
       .catch(() => {
         toast.error('Erro ao cadastrar produto');
@@ -78,13 +92,54 @@ const Form = () => {
   };
 
   const handleCancel = () => {
-    history.push('/admin/products');
+    history.push('/admin/books');
   };
+
+  const handleReturn = () => {
+
+    const configGet: AxiosRequestConfig = {
+      method: 'GET',
+      url: "/api/v1/reservations",
+      withCredentials: true,
+    };
+
+    requestBackend(configGet)
+      .then((response) => {
+        console.log(response.data)
+        setReservations(response.data);
+        console.log('reservations -> ' + reservations);
+      })
+      .catch((err) => {
+        toast.error('Erro ao devolver produto');
+        console.log(err);
+      });
+
+    
+
+    const configPut: AxiosRequestConfig = {
+      method: 'PUT',
+      url: `/api/v1/reservations/return/${bookId}`,
+      //data: initialData,
+      withCredentials: true,
+    };
+
+    requestBackend(configPut)
+      .then(() => {
+        toast.info('Produto devolvido com sucesso');
+        history.push('/admin/books');
+      })
+      .catch(() => {
+        toast.error('Erro ao devolver produto');
+      });
+
+  }
 
   return (
     <div className="product-crud-container">
       <div className="base-card product-crud-form-card">
-        <h1 className="product-crud-form-title">DADOS DO PRODUTO</h1>
+        <h1 className="product-crud-form-title">DADOS DO LIVRO - código {bookId}</h1>
+
+        <h2 className="product-crud-form-status">{initialData?.status === 'AVAILABLE' ? 'Disponível' : 'Reservado'}</h2>
 
         <form onSubmit={handleSubmit(onSubmit)}>
           <div className="row product-crud-inputs-container">
@@ -131,29 +186,31 @@ const Form = () => {
                 )}
               </div>
 
-              { /*
-              <div className="margin-bottom-30">
+
+              <div className="margin-bottom-30 ">
                 <Controller
-                  name="price"
-                  rules={{ required: 'Campo obrigatório' }}
+                  name="author"
+                  rules={{ required: true }}
                   control={control}
                   render={({ field }) => (
-                    <CurrencyInput
-                      placeholder="Preço"
-                      className={`form-control base-input ${
-                        errors.name ? 'is-invalid' : ''
-                      }`}
-                      disableGroupSeparators={true}
-                      value={field.value}
-                      onValueChange={field.onChange}
+                    <Select
+                      {...field}
+                      options={selectAuthors}
+                      classNamePrefix="product-crud-select"
+                      getOptionLabel={(author: Author) => author.name}
+                      getOptionValue={(author: Author) =>
+                        String(author.id)
+                      }
                     />
                   )}
                 />
-                <div className="invalid-feedback d-block">
-                  {errors.price?.message}
-                </div>
+                {errors.author && (
+                  <div className="invalid-feedback d-block">
+                    Campo obrigatório
+                  </div>
+                )}
               </div>
-              */ }
+
 
               <div className="margin-bottom-30">
                 <input
@@ -165,13 +222,29 @@ const Form = () => {
                     },
                   })}
                   type="text"
-                  className={`form-control base-input ${errors.name ? 'is-invalid' : ''
+                  className={`form-control base-input ${errors.imgUrl ? 'is-invalid' : ''
                     }`}
                   placeholder="URL da imagem do produto"
                   name="imgUrl"
                 />
                 <div className="invalid-feedback d-block">
                   {errors.imgUrl?.message}
+                </div>
+              </div>
+
+              <div className="margin-bottom-30">
+                <input
+                  {...register('releaseDate', {
+                    required: 'Campo obrigatório'
+                  })}
+                  type="date"
+                  className={`form-control base-input ${errors.releaseDate ? 'is-invalid' : ''
+                    }`}
+                  placeholder="URL da imagem do produto"
+                  name="releaseDate"
+                />
+                <div className="invalid-feedback d-block">
+                  {errors.releaseDate?.message}
                 </div>
               </div>
 
@@ -194,7 +267,7 @@ const Form = () => {
                 </div>
               </div>
             </div>
-            
+
           </div>
           <div className="product-crud-buttons-container">
             <button
@@ -206,6 +279,14 @@ const Form = () => {
             <button className="btn btn-primary product-crud-button text-white">
               SALVAR
             </button>
+            {initialData?.status === 'BOOKED' &&
+              <button type="button"
+                className="btn btn-info product-crud-button text-white"
+                onClick={handleReturn}
+              >
+                DEVOLVER
+              </button>
+            }
           </div>
         </form>
       </div>

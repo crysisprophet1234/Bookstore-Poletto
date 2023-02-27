@@ -3,25 +3,27 @@ package com.poletto.bookstore.dto;
 import java.io.Serializable;
 import java.util.Objects;
 
-import com.poletto.bookstore.entities.Category;
+import com.poletto.bookstore.entities.Author;
 
-public class CategoryDTO implements Serializable {
+public class AuthorDTO implements Serializable {
 
 	private static final long serialVersionUID = 1L;
-
+	
 	private Long id;
 	private String name;
-
-	public CategoryDTO() {
-
+	
+	public AuthorDTO() {
+		
 	}
-
-	public CategoryDTO(Long id, String name) {
+	
+	public AuthorDTO(Long id, String name) {
+		super();
 		this.id = id;
 		this.name = name;
 	}
-
-	public CategoryDTO(Category entity) {
+	
+	public AuthorDTO(Author entity) {
+		super();
 		id = entity.getId();
 		name = entity.getName();
 	}
@@ -55,13 +57,13 @@ public class CategoryDTO implements Serializable {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		CategoryDTO other = (CategoryDTO) obj;
+		AuthorDTO other = (AuthorDTO) obj;
 		return Objects.equals(id, other.id);
 	}
 
 	@Override
 	public String toString() {
-		return "CategoryDTO [id=" + id + ", name=" + name + "]";
-	}	
-
+		return "AuthorDTO [id=" + id + ", name=" + name + "]";
+	}
+	
 }

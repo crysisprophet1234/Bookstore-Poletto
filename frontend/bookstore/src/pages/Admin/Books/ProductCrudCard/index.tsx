@@ -1,6 +1,5 @@
 import './styles.css';
 
-import ProductPrice from '../../../../components/BookStatus';
 import { Book } from '../../../../types/book';
 import CategoryBadge from '../CategoryBadge';
 import { Link } from 'react-router-dom';
@@ -8,13 +7,13 @@ import { AxiosRequestConfig } from 'axios';
 import { requestBackend } from '../../../../utils/requests';
 
 type Props = {
-  product: Book;
+  book: Book;
   onDelete: Function;
 };
 
-const ProductCrudCard = ({ product, onDelete }: Props) => {
+const ProductCrudCard = ({ book, onDelete }: Props) => {
 
-  const handleDelete = (productId: number) => {
+  const handleDelete = (bookId: number) => {
 
     if (!window.confirm("Tem certeza que deseja deletar?")) {
       return;
@@ -22,7 +21,7 @@ const ProductCrudCard = ({ product, onDelete }: Props) => {
 
     const config: AxiosRequestConfig = {
       method: 'DELETE',
-      url: `/api/v1/books/${productId}`,
+      url: `/api/v1/books/${bookId}`,
       withCredentials: true,
     };
 
@@ -34,28 +33,28 @@ const ProductCrudCard = ({ product, onDelete }: Props) => {
   return (
     <div className="base-card product-crud-card">
       <div className="product-crud-card-top-container">
-        <img src={product.imgUrl} alt={product.name} />
+        <img src={book.imgUrl} alt={book.name} />
       </div>
       <div className="product-crud-card-description">
         <div className="product-crud-card-bottom-container">
-          <h6>{product.name}</h6>
-          <span>{product.status === 'BOOKED' ? 'RESERVADO' : 'DISPONÍVEL'}</span>
+          <h6>{book.name}</h6>
+          <span>{book.status === 'BOOKED' ? 'RESERVADO' : 'DISPONÍVEL'}</span>
         </div>
         <div className="product-crud-categories-container">
-          {product.categories.map((category) => (
+          {book.categories.map((category) => (
             <CategoryBadge name={category.name} key={category.id} />
           ))}
         </div>
       </div>
       <div className="product-crud-card-buttons-container">
         <button
-          onClick={() => handleDelete(product.id)}
-          disabled={product.status === 'BOOKED'}
+          onClick={() => handleDelete(book.id)}
+          disabled={book.status === 'BOOKED'}
           className="btn btn-danger product-crud-card-button product-crud-card-button-first"
         >
-          {product.status === 'BOOKED' ? 'RESERVADO' : 'EXCLUIR'}
+          {book.status === 'BOOKED' ? 'RESERVADO' : 'EXCLUIR'}
         </button>
-        <Link to={`/admin/books/${product.id}`}>
+        <Link to={`/admin/books/${book.id}`}>
           <button className="btn btn-outline-primary product-crud-card-button">
             EDITAR
           </button>

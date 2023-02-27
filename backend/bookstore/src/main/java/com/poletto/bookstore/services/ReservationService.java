@@ -75,7 +75,35 @@ public class ReservationService {
 		return new ReservationDTO(entity);
 
 	}
+	
+	@Transactional
+	public void returnBooks(Long bookId) {
+		
+		System.out.println("bookid " + bookId);
 
+		try {
+
+			Reservation entity = reservationRepository.findByBook(bookId);
+			
+			if (entity.getStatus().equals(ReservationStatus.FINISHED)) {
+				throw new InvalidStatus(entity);
+			}
+
+			changeStatusBook(entity, BookStatus.AVAILABLE);
+
+			entity.setStatus(ReservationStatus.FINISHED);
+
+			reservationRepository.save(entity);
+
+		} catch (EntityNotFoundException e) {
+
+			throw new ResourceNotFoundException(bookId);
+
+		}
+
+	}
+
+	/*
 	@Transactional
 	public void returnBooks(Long id) {
 
@@ -100,6 +128,7 @@ public class ReservationService {
 		}
 
 	}
+	*/
 
 	private void changeStatusBook(Reservation entity, BookStatus status) {
 

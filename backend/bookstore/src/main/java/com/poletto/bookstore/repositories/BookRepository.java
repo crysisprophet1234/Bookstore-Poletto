@@ -19,7 +19,7 @@ public interface BookRepository extends JpaRepository<Book, Long> {
 			+ "(LOWER(obj.name) LIKE LOWER(CONCAT('%',:name,'%'))) ")
 	Page<Book> findPaged(List<Category> categories, String name, Pageable pageable);
 	
-	@Query("SELECT obj FROM Book obj JOIN FETCH obj.categories WHERE obj IN :products")
+	@Query(value = "SELECT obj FROM Book obj JOIN FETCH obj.categories WHERE obj IN :products")
 	List<Book> findProductsWithCategories(List<Book> products);
 	
 }
