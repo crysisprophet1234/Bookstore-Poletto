@@ -469,6 +469,7 @@ INSERT INTO tb_book (id, name, release_date, status, img_url, author_id) VALUES 
 INSERT INTO tb_book (id, name, release_date, status, img_url, author_id) VALUES (199, 'the history of Bobinette Scanterbury', '2004-10-08', 'AVAILABLE', 'https://media.istockphoto.com/id/153952958/photo/blank-hardcover-book-with-copy-space.jpg?s=612x612&w=0&k=20&c=0GwreFm2LXIR0_irlkOvvz45hfRlova_pTZr-v32Pyg=', 75);
 INSERT INTO tb_book (id, name, release_date, status, img_url, author_id) VALUES (200, 'the history of Marybeth Janous', '2012-04-06', 'AVAILABLE', 'https://media.istockphoto.com/id/153952958/photo/blank-hardcover-book-with-copy-space.jpg?s=612x612&w=0&k=20&c=0GwreFm2LXIR0_irlkOvvz45hfRlova_pTZr-v32Pyg=', 32);
 
+ALTER SEQUENCE tb_book_id_seq RESTART WITH 202;
 
 INSERT INTO tb_book_category VALUES (1, 1);
 INSERT INTO tb_book_category VALUES (1, 6);

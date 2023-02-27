@@ -13,9 +13,7 @@ const Auth = () => {
 
             <div className="auth-banner-container">
 
-                <h1>Divulgue seus produtos no DSCatalog</h1>
-
-                <p>Faça parte do nosso catálogo de divulgação e aumente a venda dos seus produtos.</p>
+                <h1>Descubrar os mais variados livros</h1>
 
                 <AuthImg />
 

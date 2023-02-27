@@ -2,51 +2,80 @@ import { AxiosRequestConfig, AxiosRequestHeaders } from 'axios';
 import { useEffect, useState } from 'react';
 import { User } from '../../../types/user';
 import { SpringPage } from '../../../types/vendor/spring';
+import history from '../../../utils/history';
 import { requestBackend } from '../../../utils/requests';
 
 const Users = () => {
 
     const [page, setPage] = useState<SpringPage<User>>();
 
-    const [isAdmin, setIsAdmin] = useState(false);
-
     useEffect(() => {
 
         const params: AxiosRequestConfig = {
 
-            url: '/users',
+            url: '/api/v1/users/paged',
             withCredentials: true,
             headers: {} as AxiosRequestHeaders,
             params: {
                 page: 0,
-                size: 12,
+                size: 200,
             },
 
         };
 
         requestBackend(params)
             .then((response) => {
-                setIsAdmin(true);
                 setPage(response.data);
             })
             .catch((err) => {
-                setIsAdmin(err.status === 403);
             })
 
     }, []);
+
+    const handleDelete = (bookId: number) => {
+
+        if (!window.confirm(`Tem certeza que deseja deletar usuário ${bookId}?`)) {
+            return;
+        }
+
+        const config: AxiosRequestConfig = {
+            method: 'DELETE',
+            url: `/api/v1/users/${bookId}`,
+            withCredentials: true,
+        };
+
+        requestBackend(config).then(() => {
+            history.replace('/admin/users')
+        });
+    };
 
     return (
 
         <div>
 
-            {isAdmin ?
+            {true ?
 
-                page?.content.map((item) => (
-                    <p key={item.id}>{item.email}</p>
-                )) 
+                <table style={{border: '1px solid black', textAlign:'center', overflow:'hidden'}}>
+                    <tr>
+                        <th style={{width: '100px'}}>ID</th>
+                        <th>EMAIL</th>
+                        <th>EXCLUIR</th>
+                    </tr>
+
+                    {page?.content.map((item) => (
+                        <>
+                            <tr style={{border: '1px solid black'}}>
+                                <td>{item.id}</td>
+                                <td>{item.email}</td>
+                                <td><button type='button' onClick={() => handleDelete(item.id)}>X</button></td>
+                            </tr>
+                        </>
+                    ))}
+
+                </table>
 
                 : <h1>Usuário deve ser administrador para acessar</h1>}
-                
+
         </div>
 
     );

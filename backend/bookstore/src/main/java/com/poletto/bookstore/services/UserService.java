@@ -6,6 +6,8 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -47,6 +49,12 @@ public class UserService {
 	public List<UserDTO> findAll() {
 		List<User> list = userRepository.findAll();
 		return list.stream().map(x -> new UserDTO(x)).toList(); // verificar sorted()
+	}
+	
+	@Transactional(readOnly = true)
+	public Page<UserDTO> findAllPaged(Pageable pageable) {
+		Page<User> list = userRepository.findAll(pageable);
+		return list.map(x -> new UserDTO(x));
 	}
 
 	@Transactional(readOnly = true)

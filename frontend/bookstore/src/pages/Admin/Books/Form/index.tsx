@@ -71,7 +71,7 @@ const Form = () => {
   const onSubmit = (formData: Book) => {
     const data = {
       ...formData,
-      status: initialData?.status
+      status: 'AVAILABLE'
     };
 
     const config: AxiosRequestConfig = {
@@ -114,7 +114,7 @@ const Form = () => {
         console.log(err);
       });
 
-    
+
 
     const configPut: AxiosRequestConfig = {
       method: 'PUT',
@@ -137,9 +137,11 @@ const Form = () => {
   return (
     <div className="product-crud-container">
       <div className="base-card product-crud-form-card">
-        <h1 className="product-crud-form-title">DADOS DO LIVRO - código {bookId}</h1>
+        <h1 className="product-crud-form-title">DADOS DO LIVRO {isEditing && ` - código ${bookId}`}</h1>
 
-        <h2 className="product-crud-form-status">{initialData?.status === 'AVAILABLE' ? 'Disponível' : 'Reservado'}</h2>
+        {isEditing &&
+          <h2 className="product-crud-form-status">{(initialData?.status === 'AVAILABLE' ? 'Disponível' : 'Reservado')}</h2>
+        }
 
         <form onSubmit={handleSubmit(onSubmit)}>
           <div className="row product-crud-inputs-container">
@@ -250,23 +252,6 @@ const Form = () => {
 
             </div>
 
-            <div className="col-lg-6">
-              <div>
-                <textarea
-                  rows={10}
-                  {...register('author', {
-                    required: 'Campo obrigatório',
-                  })}
-                  className={`form-control base-input h-auto ${errors.name ? 'is-invalid' : ''
-                    }`}
-                  placeholder="Descrição"
-                  name="description"
-                />
-                <div className="invalid-feedback d-block">
-                  {errors.author?.message}
-                </div>
-              </div>
-            </div>
 
           </div>
           <div className="product-crud-buttons-container">
