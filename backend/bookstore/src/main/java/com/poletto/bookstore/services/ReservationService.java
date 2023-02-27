@@ -8,6 +8,8 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -43,13 +45,13 @@ public class ReservationService {
 	private BookRepository bookRepository;
 
 	@Transactional(readOnly = true)
-	public List<ReservationDTO> findAll(Long userId) {
-		List<Reservation> list = reservationRepository.findAll();
+	public Page<ReservationDTO> findAll(Pageable pageable, Long userId) {
+		Page<Reservation> list = reservationRepository.findAll(pageable);
 		System.out.println(userId);
 		if (userId > 0) {
-			list = reservationRepository.findByClient(userId);
+			list = reservationRepository.findByClient(userId, pageable);
 		}
-		return list.stream().map(x -> new ReservationDTO(x)).toList();
+		return list.map(x -> new ReservationDTO(x));
 	}
 
 	@Transactional(readOnly = true)

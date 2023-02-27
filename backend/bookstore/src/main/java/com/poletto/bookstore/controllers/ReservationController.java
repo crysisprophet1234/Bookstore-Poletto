@@ -1,9 +1,10 @@
 package com.poletto.bookstore.controllers;
 
 import java.net.URI;
-import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -26,8 +27,8 @@ public class ReservationController {
 	private ReservationService reservationService;
 
 	@GetMapping
-	public ResponseEntity<List<ReservationDTO>> findAll(@RequestParam (value = "client", defaultValue = "0") Long userId) {
-		List<ReservationDTO> reservations = reservationService.findAll(userId);
+	public ResponseEntity<Page<ReservationDTO>> findAll(@RequestParam (value = "client", defaultValue = "0") Long userId, Pageable pageable) {
+		Page<ReservationDTO> reservations = reservationService.findAll(pageable, userId);
 		return ResponseEntity.ok().body(reservations);
 	}
 

@@ -1,7 +1,7 @@
 package com.poletto.bookstore.repositories;
 
-import java.util.List;
-
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
@@ -17,6 +17,6 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
 	
 	@Query(value = "SELECT * from tb_reservation "
 				 + "WHERE client_id = :id ", nativeQuery = true)
-	List<Reservation> findByClient(Long id);
+	Page<Reservation> findByClient(Long id, Pageable pageable);
 
 }

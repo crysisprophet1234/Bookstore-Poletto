@@ -5,6 +5,8 @@ import { SpringPage } from '../../../types/vendor/spring';
 import history from '../../../utils/history';
 import { requestBackend } from '../../../utils/requests';
 
+import './styles.css'
+
 const Users = () => {
 
     const [page, setPage] = useState<SpringPage<User>>();
@@ -55,26 +57,31 @@ const Users = () => {
 
             {true ?
 
-                <table style={{border: '1px solid black', textAlign:'center', overflow:'hidden'}}>
+                <table>
                     <tr>
-                        <th style={{width: '100px'}}>ID</th>
+                        <th>ID</th>
                         <th>EMAIL</th>
                         <th>EXCLUIR</th>
                     </tr>
 
-                    {page?.content.map((item) => (
-                        <>
-                            <tr style={{border: '1px solid black'}}>
-                                <td>{item.id}</td>
-                                <td>{item.email}</td>
-                                <td><button type='button' onClick={() => handleDelete(item.id)}>X</button></td>
-                            </tr>
-                        </>
-                    ))}
+                    <tbody>
 
+                        {page?.content.map((item) => (
+                            <>
+                                <tr>
+                                    <td>{item.id}</td>
+                                    <td>{item.email}</td>
+                                    <td><button type='button' onClick={() => handleDelete(item.id)}>X</button></td>
+                                </tr>
+                            </>
+                        ))}
+
+                    </tbody>
                 </table>
 
-                : <h1>Usuário deve ser administrador para acessar</h1>}
+                : <h1>Usuário deve ser administrador para acessar</h1>
+
+            }
 
         </div>
 
