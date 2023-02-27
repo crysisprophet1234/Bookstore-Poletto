@@ -55,7 +55,7 @@ const ProductCrudCard = ({ product, onDelete }: Props) => {
         >
           {product.status === 'BOOKED' ? 'RESERVADO' : 'EXCLUIR'}
         </button>
-        <Link to={`/admin/products/${product.id}`}>
+        <Link to={`/admin/books/${product.id}`}>
           <button className="btn btn-outline-primary product-crud-card-button">
             EDITAR
           </button>

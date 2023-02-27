@@ -14,6 +14,7 @@ type LoginResponse = {
     firstName: string;
     id: number;
     email: string;
+    roles: [{ id: number, authority: Role }];
 
 }
 
@@ -26,7 +27,7 @@ enum Role {
 }
 */
 
-type Role = 'ROLE_OPERATOR' | 'ROLE_ADMIN';
+type Role = 'ROLE_CUSTOMER' | 'ROLE_OPERATOR' | 'ROLE_ADMIN';
 
 export type TokenData = {
 
@@ -56,9 +57,9 @@ type SignupData = {
 
 }
 
-export const requestBackend = (config: AxiosRequestConfig, data? : any) => {
+export const requestBackend = (config: AxiosRequestConfig, data?: any) => {
 
-    const headers : any = { ...config.headers };
+    const headers: any = { ...config.headers };
 
     if (config.withCredentials) {
 
@@ -101,7 +102,7 @@ export const requestBackendSignup = (signupData: SignupData) => {
         password: signupData.password,
         firstname: signupData.firstname,
         lastname: signupData.lastname
-        
+
     });
 
     return axios({ method: 'POST', baseURL: BASE_URL, url: '/api/v1/auth/register', data, headers });
@@ -178,35 +179,21 @@ export const isAuthenticated = (): boolean | undefined => {
 
 }
 
-export const hasAnyRoles = (roles: Role[]): boolean => {
+export const hasAnyRoles = (): any => {
 
-    if (roles.length === 0) {
-        return true;
-    }
+    if (isAuthenticated()) {
 
-    const tokenData = getTokenData();
+        const roles = getAuthData()?.roles;
 
-    if (tokenData) {
+        roles?.forEach((role) => {
 
-        roles.forEach((role) => {
-
-
-            return tokenData.authorities.includes(role);
-
-            /*
-            if (tokenData.authorities.includes(role)) {
-                //console.log('tokendata auth -> ' + tokenData.authorities)
-                //console.log('role -> ' + role)
-                //console.log('teste -> ' + tokenData.authorities + ' includes('+ role +') -> ' + tokenData.authorities.includes(role))
-                console.log('returning -> ' + tokenData.authorities.includes(role))
+            console.log(role.authority)
+            if (role.authority === 'ROLE_ADMIN' || role.authority === 'ROLE_OPERATOR') {
                 return true;
             }
-            */
 
         })
 
+        return false;
     }
-
-    return false;
-
-}
+};

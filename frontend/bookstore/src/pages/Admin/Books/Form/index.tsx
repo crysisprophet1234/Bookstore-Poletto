@@ -13,13 +13,14 @@ import { toast } from 'react-toastify';
 import './styles.css';
 
 type UrlParams = {
-  productId: string;
+  bookId: string;
 };
 
 const Form = () => {
-  const { productId } = useParams<UrlParams>();
 
-  const isEditing = productId !== 'create';
+  const { bookId } = useParams<UrlParams>();
+
+  const isEditing = bookId !== 'create';
 
   const history = useHistory();
 
@@ -34,14 +35,14 @@ const Form = () => {
   } = useForm<Book>();
 
   useEffect(() => {
-    requestBackend({ url: '/categories' }).then((response) => {
+    requestBackend({ url: '/api/v1/categories' }).then((response) => {
       setSelectCategories(response.data.content);
     });
   }, []);
 
   useEffect(() => {
     if (isEditing) {
-      requestBackend({ url: `/products/${productId}` }).then((response) => {
+      requestBackend({ url: `/api/v1/books/${bookId}` }).then((response) => {
         const product = response.data as Book;
 
         setValue('name', product.name);
@@ -51,7 +52,7 @@ const Form = () => {
         setValue('categories', product.categories);
       });
     }
-  }, [isEditing, productId, setValue]);
+  }, [isEditing, bookId, setValue]);
 
   const onSubmit = (formData: Book) => {
     const data = {
@@ -61,7 +62,7 @@ const Form = () => {
 
     const config: AxiosRequestConfig = {
       method: isEditing ? 'PUT' : 'POST',
-      url: isEditing ? `/products/${productId}` : '/products',
+      url: isEditing ? `/products/${bookId}` : '/products',
       data,
       withCredentials: true,
     };
