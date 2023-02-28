@@ -38,21 +38,21 @@ public class SecurityConfig {
 		}
 		
 		http
-		.csrf().disable()
-        .authorizeHttpRequests()
-        .requestMatchers(HttpMethod.POST ,"/api/v1/auth/**").permitAll()
-        .requestMatchers(HttpMethod.GET ,"/api/v1/books/**").permitAll()
-        .requestMatchers(HttpMethod.POST ,"/api/v1/reservations").permitAll()
-        .requestMatchers(HttpMethod.GET ,"/api/v1/categories/**").permitAll()
-        //.anyRequest().hasAuthority("ROLE_ADMIN")
-        .anyRequest().permitAll()
-        .and()
-        .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-        .and()
-        .authenticationProvider(authenticationProvider)
-        .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
-
-		http.cors().configurationSource(corsConfigurationSource());
+			.csrf().disable()
+	        .authorizeHttpRequests()
+	        .requestMatchers(HttpMethod.POST ,"/api/v1/auth/**").permitAll()
+	        .requestMatchers(HttpMethod.GET ,"/api/v1/books/**").permitAll()
+	        .requestMatchers(HttpMethod.POST ,"/api/v1/reservations").hasAuthority("ROLE_CUSTOMER")
+	        .requestMatchers(HttpMethod.GET ,"/api/v1/categories/**").permitAll()
+	        //.anyRequest().hasAuthority("ROLE_ADMIN")
+	        .anyRequest().permitAll()
+	        .and()
+	        .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+	        .and()
+	        .authenticationProvider(authenticationProvider)
+	        .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
+	
+			http.cors().configurationSource(corsConfigurationSource());
 
 		return http.build();
 	}
@@ -61,7 +61,7 @@ public class SecurityConfig {
 	CorsConfigurationSource corsConfigurationSource() {
 		
 		CorsConfiguration corsConfig = new CorsConfiguration();
-		corsConfig.setAllowedOriginPatterns(Arrays.asList("*"));
+		corsConfig.setAllowedOriginPatterns(Arrays.asList("http://localhost:[3000]"));
 		corsConfig.setAllowedMethods(Arrays.asList("POST", "GET", "PUT", "DELETE", "PATCH"));
 		corsConfig.setAllowCredentials(true);
 		corsConfig.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type"));

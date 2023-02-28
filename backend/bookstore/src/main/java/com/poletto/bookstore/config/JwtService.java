@@ -6,10 +6,14 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
+
+import com.poletto.bookstore.services.UserService;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -20,6 +24,8 @@ import io.jsonwebtoken.security.Keys;
 @Service
 @PropertySource("classpath:application.properties")
 public class JwtService {
+	
+	private static Logger logger = LoggerFactory.getLogger(UserService.class);
 
 	@Value("${jwt.secret}")
 	private String SECRET_KEY;
@@ -38,10 +44,19 @@ public class JwtService {
 	}
 
 	public String generateToken(Map<String, Object> extraClaims, UserDetails userDetails) {
-		return Jwts.builder().setClaims(extraClaims).setSubject(userDetails.getUsername())
-				.setIssuedAt(new Date(System.currentTimeMillis()))
-				.setExpiration(new Date(System.currentTimeMillis() + 86400000))
-				.signWith(getSignInKey(), SignatureAlgorithm.HS256).compact();
+		
+		Claims claims = Jwts.claims();
+		claims.setSubject(userDetails.getUsername());
+		claims.setExpiration(new Date(System.currentTimeMillis() + 86400000));
+		claims.setIssuedAt(new Date(System.currentTimeMillis()));
+		claims.put("authorities", userDetails.getAuthorities());
+		
+		logger.info(claims.get("authorities").toString());
+		
+		return Jwts.builder()
+				.setClaims(claims)
+				.signWith(getSignInKey(), SignatureAlgorithm.HS256)
+				.compact();	
 
 	}
 
