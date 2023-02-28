@@ -1,10 +1,10 @@
 import { AxiosRequestConfig, AxiosRequestHeaders } from 'axios';
-import { ReactNode, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Reservation } from '../../../types/reservation';
 import { SpringPage } from '../../../types/vendor/spring';
 import { formatDate, formatDateTime } from '../../../utils/formatters';
-import history from '../../../utils/history';
-import { getAuthData, requestBackend } from '../../../utils/requests';
+import { requestBackend } from '../../../utils/requests';
+import { getAuthData } from '../../../utils/storage';
 
 import '../Users/styles.css'
 
@@ -40,8 +40,6 @@ const Reserves = () => {
 
         <div>
 
-
-
             {reservations ?
 
                 <table>
@@ -75,10 +73,6 @@ const Reserves = () => {
                 : <h1>Usuário deve ser administrador para acessar</h1>
 
             }
-
-
-
-
 
         </div>
 

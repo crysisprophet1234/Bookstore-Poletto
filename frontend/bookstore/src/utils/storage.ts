@@ -1,4 +1,4 @@
-import { Role } from "./auth";
+import { Authority } from "./auth";
 
 const tokenKey = 'authData';
 
@@ -11,7 +11,7 @@ type LoginResponse = {
     firstName: string;
     id: number;
     email: string;
-    roles: [{ id: number, authority: Role }];
+    authorities: [{ id: number, authority: Authority }];
 
 }
 

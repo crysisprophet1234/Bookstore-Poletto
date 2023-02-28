@@ -1,43 +1,9 @@
 import axios, { AxiosRequestConfig } from 'axios';
-import jwtDecode from 'jwt-decode';
 import history from './history';
+import { getAuthData } from './storage';
 
 //import * as dotenv from 'dotenv'
 //dotenv.config();
-
-type LoginResponse = {
-
-    token: string;
-    token_type: string;
-    expires_in: number;
-    scope: string;
-    firstName: string;
-    id: number;
-    email: string;
-    roles: [{ id: number, authority: Role }];
-
-}
-
-/*
-enum Role {
-
-    ROLE_OPERATOR = 'ROLE_OPERATOR',
-    ROLE_ADMIN = 'ROLE_ADMIN'
-
-}
-*/
-
-type Role = 'ROLE_CUSTOMER' | 'ROLE_OPERATOR' | 'ROLE_ADMIN';
-
-export type TokenData = {
-
-    exp: number;
-    sub: string;
-    authorities: Role[];
-
-}
-
-//export const BASE_URL = process.env.BASE_URL;
 
 export const BASE_URL = process.env.REACT_APP_BACKEND_URL ?? 'http://localhost:8080';
 
@@ -109,42 +75,14 @@ export const requestBackendSignup = (signupData: SignupData) => {
 
 }
 
-export const saveAuthData = (loginResponse: LoginResponse) => {
-
-    localStorage.setItem('authData', JSON.stringify(loginResponse));
-
-}
-
-export const getAuthData = () => {
-
-    try {
-
-        const str = localStorage.getItem('authData') ?? "";
-        return JSON.parse(str) as LoginResponse;
-
-    } catch (err) {
-
-    };
-
-}
-
-export const clearAuthData = () => {
-
-    localStorage.clear();
-
-}
-
 axios.interceptors.request.use(function (config) {
-    console.log('INTERCEPTOR BEFORE REQUEST')
     return config;
 }, function (error) {
-    console.log('INTERCEPTOR REQUEST ERROR')
     return Promise.reject(error);
 
 });
 
 axios.interceptors.response.use(function (response) {
-    console.log('INTERCEPTOR SUCESSFUL RESPONSE')
     return response;
 }, function (error) {
 
@@ -156,44 +94,3 @@ axios.interceptors.response.use(function (response) {
 
     return Promise.reject(error);
 });
-
-export const getTokenData = (): TokenData | undefined => {
-
-    try {
-
-        return jwtDecode(getAuthData()!.token) as TokenData;
-
-    } catch (error) {
-
-        return undefined;
-
-    }
-
-}
-
-export const isAuthenticated = (): boolean | undefined => {
-
-    const tokenData = getTokenData();
-
-    return (tokenData && tokenData.exp * 1000 > Date.now()) ? true : false;
-
-}
-
-export const hasAnyRoles = (): any => {
-
-    if (isAuthenticated()) {
-
-        const roles = getAuthData()?.roles;
-
-        roles?.forEach((role) => {
-
-            console.log(role.authority)
-            if (role.authority === 'ROLE_ADMIN' || role.authority === 'ROLE_OPERATOR') {
-                return true;
-            }
-
-        })
-
-        return false;
-    }
-};

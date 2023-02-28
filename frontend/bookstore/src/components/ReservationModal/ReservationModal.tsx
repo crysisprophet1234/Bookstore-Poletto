@@ -1,10 +1,11 @@
-import { AxiosRequestConfig, AxiosRequestHeaders } from 'axios';
+import { AxiosRequestConfig } from 'axios';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { Book } from '../../types/book';
 import { formatDate } from '../../utils/formatters';
 import history from '../../utils/history';
-import { getAuthData, requestBackend } from '../../utils/requests';
+import { requestBackend } from '../../utils/requests';
+import { getAuthData } from '../../utils/storage';
 import './styles.css';
 
 type FormData = {

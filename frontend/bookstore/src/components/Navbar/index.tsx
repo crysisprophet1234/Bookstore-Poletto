@@ -2,10 +2,11 @@ import './styles.css';
 import 'bootstrap/js/src/collapse.js';
 
 import { Link, NavLink } from 'react-router-dom';
-import { clearAuthData, getTokenData, isAuthenticated } from '../../utils/requests';
+import { getTokenData, isAuthenticated } from '../../utils/auth';
 import { useContext, useEffect } from 'react';
 import history from '../../utils/history';
 import { AuthContext } from '../../AuthContext';
+import { removeAuthData } from '../../utils/storage';
 
 const Navbar = () => {
 
@@ -32,7 +33,7 @@ const Navbar = () => {
 
     event.preventDefault();
 
-    clearAuthData();
+    removeAuthData();
 
     setAuthContextData({ authenticated: false });
 
