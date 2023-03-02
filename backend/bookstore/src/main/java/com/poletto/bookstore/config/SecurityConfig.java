@@ -40,7 +40,7 @@ public class SecurityConfig {
 		http
 			.csrf().disable()
 	        .authorizeHttpRequests()
-	        .requestMatchers(HttpMethod.POST ,"/api/v1/auth/**").permitAll()
+	        .requestMatchers("/api/v1/auth/**").permitAll()
 	        .requestMatchers(HttpMethod.GET ,"/api/v1/books/**").permitAll()
 	        .requestMatchers(HttpMethod.POST ,"/api/v1/reservations").hasAuthority("ROLE_CUSTOMER")
 	        .requestMatchers(HttpMethod.GET ,"/api/v1/categories/**").permitAll()

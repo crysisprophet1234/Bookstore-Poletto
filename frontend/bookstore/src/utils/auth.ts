@@ -24,22 +24,27 @@ export const isAuthenticated = (): boolean => {
 };
 
 export const hasAnyAuthorities = (authorities: Authority[]): boolean => {
-  if (typeof(authorities) === 'undefined') {
+  if (typeof (authorities) === 'undefined') {
     return true;
   }
 
-  const tokenData = getTokenData();
+  const tokenAuthorities = getTokenData()?.authorities;
 
-  console.log(tokenData?.authorities)
+  console.log(tokenAuthorities)
 
-  if (tokenData !== undefined) {
+  console.log(authorities)
+
+  if (tokenAuthorities !== undefined) {
+    
     for (var i = 0; i < authorities.length; i++) {
-      if (tokenData.authorities.includes(authorities[i])) {
+      if (tokenAuthorities.includes(authorities[i])) {
+        
         return true;
       }
     }
-
+    
   }
 
   return false;
+
 };

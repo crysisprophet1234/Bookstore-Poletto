@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import ButtonIcon from '../../components/ButtonIcon';
 
 import './styles.css';
-import { Authority, hasAnyAuthorities } from '../../utils/auth';
+import { hasAnyAuthorities } from '../../utils/auth';
 
 const Home = () => {
 
@@ -22,7 +22,7 @@ const Home = () => {
 						</p>
 					</div>
 					<div>
-						<Link to="/products">
+						<Link to="/books">
 							<ButtonIcon text={"Inicie agora sua busca"} />
 						</Link>
 					</div>

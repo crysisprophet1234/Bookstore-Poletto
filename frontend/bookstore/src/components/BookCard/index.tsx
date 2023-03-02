@@ -6,11 +6,11 @@ import BookStatus from '../BookStatus';
 
 type Props = {
 
-    book : Book;
+    book: Book;
 
 }
 
-const BookCard = ( { book } : Props) => {
+const BookCard = ({ book }: Props) => {
 
     return (
         <div className="base-card book-card">
@@ -18,7 +18,9 @@ const BookCard = ( { book } : Props) => {
                 <img src={book.imgUrl} alt={book.name} />
             </div>
             <div className="card-bottom-container">
-                <h6>{book.name}</h6>
+                <h6 data-bs-toggle="tooltip" data-bs-placement="top" title={book.name}>
+                    {book.name}
+                </h6>
                 <BookStatus status={book.status} />
             </div>
         </div>
