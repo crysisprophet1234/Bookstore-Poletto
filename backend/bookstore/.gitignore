@@ -135,6 +135,7 @@ buildNumber.properties
 .mvn/timing.properties
 .mvn/wrapper/maven-wrapper.jar
 *.yml
+*.yaml
 
 ### Windows ###
 # Windows thumbnail cache files
@@ -157,6 +158,7 @@ $RECYCLE.BIN/
 *.msix
 *.msm
 *.msp
+*.todo
 
 # Windows shortcuts
 *.lnk

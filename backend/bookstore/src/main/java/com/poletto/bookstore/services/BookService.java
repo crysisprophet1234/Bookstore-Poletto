@@ -1,6 +1,7 @@
 package com.poletto.bookstore.services;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
@@ -12,6 +13,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.poletto.bookstore.converter.ModelMapperConverter;
 import com.poletto.bookstore.dto.BookDTO;
 import com.poletto.bookstore.dto.CategoryDTO;
 import com.poletto.bookstore.entities.Book;
@@ -58,7 +60,7 @@ public class BookService {
 
 		}
 
-		return list.stream().map(x -> new BookDTO(x)).toList(); // verificar sorted()
+		return list.stream().map(x -> ModelMapperConverter.parseObject(x, BookDTO.class)).toList();
 	}
 	
 	@Transactional(readOnly = true)
@@ -70,7 +72,9 @@ public class BookService {
 		
 		bookRepository.findProductsWithCategories(bookPage.getContent());
 
-		var bookDtoPage = bookPage.map(p -> new BookDTO(p));
+		var bookDtoPage = bookPage.map(p -> ModelMapperConverter.parseObject(p, BookDTO.class));
+		
+		
 		
 		return bookDtoPage;
 		

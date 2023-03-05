@@ -24,6 +24,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import com.poletto.bookstore.dto.BookDTO;
 import com.poletto.bookstore.services.BookService;
+import com.poletto.bookstore.util.MediaType;
 
 @RestController
 @RequestMapping(value = "/api/v1/books")
@@ -32,13 +33,18 @@ public class BookController {
 	@Autowired
 	private BookService bookService;
 
-	@GetMapping
+	@GetMapping(
+			produces = { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.APPLICATION_YML },
+			consumes = { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.APPLICATION_YML })
 	public ResponseEntity<List<BookDTO>> findAll(@RequestParam(value = "booked") Optional<Integer> booked) {
 		List<BookDTO> books = bookService.findAll(booked.orElse(-1));
 		return ResponseEntity.ok().body(books);
 	}
 
-	@GetMapping(value = "/paged")
+	@GetMapping(
+			value = "/paged",
+			produces = { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.APPLICATION_YML },
+			consumes = { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.APPLICATION_YML })
 	public ResponseEntity<Page<BookDTO>> findAllPaged(
 			@RequestParam(value = "page", defaultValue = "0") Integer page,
 			@RequestParam(value = "size", defaultValue = "12") Integer size,
@@ -46,11 +52,11 @@ public class BookController {
 			@RequestParam(value = "orderBy", defaultValue = "name") String orderBy,
 			@RequestParam(value = "categoryId", defaultValue = "0") Long categoryId,
 			@RequestParam(value = "name", defaultValue = "") String name) {
-		
+
 		Direction sortDirection = "desc".equalsIgnoreCase(sort) ? Direction.DESC : Direction.ASC;
-				
+
 		Pageable pageable = PageRequest.of(page, size, Sort.by(sortDirection, orderBy));
-		
+
 		return ResponseEntity.ok(bookService.findAllPaged(pageable, categoryId, name.trim()));
 
 	}

@@ -49,6 +49,7 @@ public class JwtService {
 		claims.setSubject(userDetails.getUsername());
 		claims.setExpiration(new Date(System.currentTimeMillis() + 86400000));
 		claims.setIssuedAt(new Date(System.currentTimeMillis()));
+		
 		claims.put("authorities", userDetails.getAuthorities());
 		
 		logger.info(claims.get("authorities").toString());
