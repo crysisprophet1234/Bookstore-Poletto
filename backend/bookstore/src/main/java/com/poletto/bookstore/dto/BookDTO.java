@@ -10,6 +10,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.poletto.bookstore.entities.Author;
 import com.poletto.bookstore.entities.Book;
 import com.poletto.bookstore.entities.Category;
+import com.poletto.bookstore.entities.enums.BookStatus;
 
 public class BookDTO implements Serializable {
 
@@ -30,12 +31,12 @@ public class BookDTO implements Serializable {
 		
 	}
 
-	public BookDTO(Long id, String name, LocalDate releaseDate, String imgUrl, String status, Author author) {
+	public BookDTO(Long id, String name, LocalDate releaseDate, String imgUrl, BookStatus status, Author author) {
 		this.id = id;
 		this.name = name;
 		this.releaseDate = releaseDate;
 		this.imgUrl = imgUrl;
-		this.status = status;
+		this.status = status.name();
 		this.author = author;
 	}
 	
@@ -90,8 +91,8 @@ public class BookDTO implements Serializable {
 		return status;
 	}
 
-	public void setStatus(String status) {
-		this.status = status;
+	public void setStatus(BookStatus status) {
+		this.status = status.name();
 	}
 
 	public Author getAuthor() {
