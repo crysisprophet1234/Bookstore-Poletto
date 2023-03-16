@@ -1,9 +1,9 @@
 package com.poletto.bookstore.services;
 
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -13,7 +13,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.poletto.bookstore.converter.ModelMapperConverter;
 import com.poletto.bookstore.dto.BookDTO;
 import com.poletto.bookstore.dto.CategoryDTO;
 import com.poletto.bookstore.entities.Book;
@@ -40,44 +39,43 @@ public class BookService {
 	private AuthorRepository authorRepository;
 
 	@Transactional(readOnly = true)
-	public List<BookDTO> findAll(Integer booked) {
-		
-		List<Book> list;
+	public List<BookDTO> findAll() {
+
+		List<Book> list = bookRepository.findAll();
+
+		return list.stream().map(x -> new BookDTO(x)).collect(Collectors.toList());
+	}
+
+	@Transactional(readOnly = true)
+	public Page<BookDTO> findAllPaged(Pageable pageable, Long categoryId, String name, String booked) {
+
+		List<Category> categories = (categoryId == 0) ? null
+				: Arrays.asList(categoryRepository.getReferenceById(categoryId));
 
 		switch (booked) {
 
-		case 0:
-			list = bookRepository.findByStatus(BookStatus.AVAILABLE.toString());
+		case "available":
+			booked = "BOOKED";
 			break;
 
-		case 1:
-			list = bookRepository.findByStatus(BookStatus.BOOKED.toString());
+		case "booked":
+			booked = "AVAILABLE";
 			break;
 
-		default:
-			list = bookRepository.findAll();
+		case "":
+			booked = "";
 			break;
 
 		}
 
-		return list.stream().map(x -> ModelMapperConverter.parseObject(x, BookDTO.class)).toList();
-	}
-	
-	@Transactional(readOnly = true)
-	public Page<BookDTO> findAllPaged(Pageable pageable, Long categoryId, String name) {
-		
-		List<Category> categories = (categoryId == 0) ? null : Arrays.asList(categoryRepository.getReferenceById(categoryId));
-		
-		var bookPage = bookRepository.findPaged(categories, name, pageable);
-		
+		var bookPage = bookRepository.findPaged(categories, name, booked, pageable);
+
 		bookRepository.findProductsWithCategories(bookPage.getContent());
 
-		var bookDtoPage = bookPage.map(p -> ModelMapperConverter.parseObject(p, BookDTO.class));
-		
-		
-		
+		var bookDtoPage = bookPage.map(p -> new BookDTO(p));
+
 		return bookDtoPage;
-		
+
 	}
 
 	@Transactional(readOnly = true)
@@ -91,8 +89,8 @@ public class BookService {
 	public BookDTO insert(BookDTO dto) {
 
 		Book entity = new Book();
-		
-		dto.setStatus("AVAILABLE");
+
+		dto.setStatus(BookStatus.AVAILABLE);
 
 		copyDtoToEntity(dto, entity);
 
