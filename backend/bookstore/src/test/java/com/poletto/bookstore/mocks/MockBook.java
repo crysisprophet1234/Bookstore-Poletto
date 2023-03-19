@@ -37,7 +37,7 @@ public class MockBook {
 	        return booksDto;
 	 }
 	
-	private Book mockEntity(Integer number) {
+	public Book mockEntity(Integer number) {
 		Book book = new Book();
 		book.setId(number.longValue());
 		book.setName("Book Test " + number);
