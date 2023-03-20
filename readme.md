@@ -1,5 +1,5 @@
 <h1 align="center">
-📚<br>Bookstore Interact
+📚<br>Bookstore Poletto
 </h1>
 
 ## 📦 Projeto
