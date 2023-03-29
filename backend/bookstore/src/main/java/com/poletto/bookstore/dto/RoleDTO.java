@@ -1,6 +1,7 @@
 package com.poletto.bookstore.dto;
 
 import java.io.Serializable;
+import java.util.Objects;
 
 import com.poletto.bookstore.entities.Role;
 
@@ -41,4 +42,27 @@ public class RoleDTO implements Serializable {
 	public void setAuthority(String authority) {
 		this.authority = authority;
 	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(id);
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		RoleDTO other = (RoleDTO) obj;
+		return Objects.equals(id, other.id);
+	}
+
+	@Override
+	public String toString() {
+		return "RoleDTO [id=" + id + ", authority=" + authority + "]";
+	}
+	
 }

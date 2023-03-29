@@ -26,6 +26,7 @@ public class UserController {
 	private UserService userService;
 
 	@GetMapping
+	@Deprecated
 	public ResponseEntity<List<UserDTO>> findAll() {
 		List<UserDTO> list = userService.findAll();
 		return ResponseEntity.ok().body(list);
