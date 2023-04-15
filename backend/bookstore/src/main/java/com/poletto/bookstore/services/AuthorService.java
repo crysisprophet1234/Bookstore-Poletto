@@ -36,7 +36,7 @@ public class AuthorService {
 	@Transactional(readOnly = true)
 	public AuthorDTO findById(Long id) {
 		Optional<Author> obj = authorRepository.findById(id);
-		Author entity = obj.orElseThrow(() -> new ResourceNotFoundException(id));
+		Author entity = obj.orElseThrow(() -> new ResourceNotFoundException(id, "Author"));
 		return new AuthorDTO(entity);
 	}
 

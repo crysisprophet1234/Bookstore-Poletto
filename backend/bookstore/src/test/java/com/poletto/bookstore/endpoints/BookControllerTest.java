@@ -62,6 +62,7 @@ public class BookControllerTest {
 		inputObject = new MockBook();
 	}
 
+	@SuppressWarnings("deprecation")
 	@Test
 	@WithMockUser(username = "leo@gmail.com", roles = { "ADMIN", "OPERATOR" })
 	public void testFindAll() throws Exception {

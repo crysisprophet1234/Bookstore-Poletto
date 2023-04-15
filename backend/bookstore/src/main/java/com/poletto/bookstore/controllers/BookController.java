@@ -1,7 +1,6 @@
 package com.poletto.bookstore.controllers;
 
 import java.net.URI;
-import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -33,15 +32,6 @@ public class BookController {
 	private BookService bookService;
 
 	@GetMapping(
-			produces = { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.APPLICATION_YML },
-			consumes = { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.APPLICATION_YML })
-	public ResponseEntity<List<BookDTO>> findAll() {
-		List<BookDTO> books = bookService.findAll();
-		return ResponseEntity.ok().body(books);
-	}
-
-	@GetMapping(
-			value = "/paged",
 			produces = { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.APPLICATION_YML },
 			consumes = { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.APPLICATION_YML })
 	public ResponseEntity<Page<BookDTO>> findAllPaged(

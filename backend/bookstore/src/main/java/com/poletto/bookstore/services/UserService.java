@@ -2,7 +2,6 @@ package com.poletto.bookstore.services;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,12 +17,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.poletto.bookstore.config.JwtService;
-import com.poletto.bookstore.converter.DozerMapperConverter;
 import com.poletto.bookstore.converter.custom.UserMapper;
 import com.poletto.bookstore.dto.RoleDTO;
 import com.poletto.bookstore.dto.UserAuthDTO;
 import com.poletto.bookstore.dto.UserDTO;
-import com.poletto.bookstore.entities.Role;
 import com.poletto.bookstore.entities.User;
 import com.poletto.bookstore.repositories.RoleRepository;
 import com.poletto.bookstore.repositories.UserRepository;
@@ -67,8 +64,12 @@ public class UserService {
 
 	@Transactional(readOnly = true)
 	public UserDTO findById(Long id) {
+		
 		Optional<User> user = userRepository.findById(id);
-		User entity = user.orElseThrow(() -> new ResourceNotFoundException(id));
+		
+		User entity = user.orElseThrow(() -> new ResourceNotFoundException(id, "User"));
+		
+		logger.info("Resource USER found: " + entity.toString());
 		
 		return UserMapper.convertEntityToDto(entity);
 
@@ -85,7 +86,7 @@ public class UserService {
 
 		entity = userRepository.save(entity);
 		
-		logger.info("CREATED " + entity.toString());
+		logger.info("Resource USER saved: " + entity.toString());
 
 		return UserMapper.convertEntityToDto(entity);
 
@@ -104,7 +105,7 @@ public class UserService {
 
 		userAuthDTO.setToken(jwtToken);
 		
-		logger.info("AUTHENTICATED " + userAuthDTO.toString());
+		logger.info("Resource USER authenticated " + entity.toString());
 		
 		return userAuthDTO;
 
@@ -129,13 +130,13 @@ public class UserService {
 
 			entity = userRepository.save(entity);
 			
-			logger.info("UPDATED " + entity.toString());
+			logger.info("Resource USER updated: " + entity.toString());
 
 			return UserMapper.convertEntityToDto(entity);
 
 		} catch (EntityNotFoundException e) {
 
-			throw new ResourceNotFoundException(id);
+			throw new ResourceNotFoundException(id, "User");
 
 		}
 
@@ -149,7 +150,7 @@ public class UserService {
 			
 		} catch (EmptyResultDataAccessException e) {
 			
-			throw new ResourceNotFoundException(id);
+			throw new ResourceNotFoundException(id, "User");
 			
 		} catch (DataIntegrityViolationException e) {
 			

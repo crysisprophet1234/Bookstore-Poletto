@@ -56,7 +56,7 @@ public class ReservationService {
 	@Transactional(readOnly = true)
 	public ReservationDTO findById(Long id) {
 		Optional<Reservation> user = reservationRepository.findById(id);
-		Reservation entity = user.orElseThrow(() -> new ResourceNotFoundException(id));
+		Reservation entity = user.orElseThrow(() -> new ResourceNotFoundException(id, "Reservation"));
 		return new ReservationDTO(entity);
 	}
 
@@ -102,7 +102,7 @@ public class ReservationService {
 
 		} catch (EntityNotFoundException e) {
 
-			throw new ResourceNotFoundException(bookId);
+			throw new ResourceNotFoundException(bookId, "Reservation");
 
 		}
 
