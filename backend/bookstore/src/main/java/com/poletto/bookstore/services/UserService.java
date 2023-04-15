@@ -58,8 +58,13 @@ public class UserService {
 	
 	@Transactional(readOnly = true)
 	public Page<UserDTO> findAllPaged(Pageable pageable) {
-		Page<User> list = userRepository.findAll(pageable);
-		return list.map(x -> UserMapper.convertEntityToDto(x));
+		
+		Page<User> userPage = userRepository.findAll(pageable);
+		
+		logger.info("Resource USER page found: " + "PAGE NUMBER [" + userPage.getNumber() + "] - CONTENT: " + userPage.getContent());
+		
+		return userPage.map(x -> UserMapper.convertEntityToDto(x));
+		
 	}
 
 	@Transactional(readOnly = true)

@@ -21,6 +21,7 @@ public class AuthorController {
 	@Autowired
 	private AuthorService authorService;
 	
+	@Deprecated
 	@GetMapping
 	public ResponseEntity<List<AuthorDTO>> findAll() {
 		List<AuthorDTO> list = authorService.findAll();		
