@@ -15,7 +15,7 @@ import com.poletto.bookstore.dto.UserDTO;
 import com.poletto.bookstore.services.UserService;
 
 @RestController
-@RequestMapping (value = "api/v1/auth")
+@RequestMapping (value = "/auth/v1")
 public class AuthController {
 
 	@Autowired

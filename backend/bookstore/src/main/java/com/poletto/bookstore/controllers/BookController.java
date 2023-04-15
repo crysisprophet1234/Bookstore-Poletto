@@ -26,7 +26,7 @@ import com.poletto.bookstore.services.BookService;
 import com.poletto.bookstore.util.MediaType;
 
 @RestController
-@RequestMapping(value = "/api/v1/books")
+@RequestMapping(value = "/books/v1")
 public class BookController {
 
 	@Autowired

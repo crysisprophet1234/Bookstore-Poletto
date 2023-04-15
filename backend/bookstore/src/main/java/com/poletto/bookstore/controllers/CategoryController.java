@@ -13,7 +13,7 @@ import com.poletto.bookstore.dto.CategoryDTO;
 import com.poletto.bookstore.services.CategoryService;
 
 @Controller
-@RequestMapping (value = "/api/v1/categories")
+@RequestMapping (value = "/categories/v1")
 public class CategoryController {
 	
 	@Autowired

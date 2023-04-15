@@ -19,7 +19,7 @@ import com.poletto.bookstore.dto.UserDTO;
 import com.poletto.bookstore.services.UserService;
 
 @RestController
-@RequestMapping(value = "/api/v1/users")
+@RequestMapping(value = "/users/v1")
 public class UserController {
 
 	@Autowired

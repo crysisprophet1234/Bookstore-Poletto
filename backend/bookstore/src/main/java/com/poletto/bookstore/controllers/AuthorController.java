@@ -15,7 +15,7 @@ import com.poletto.bookstore.dto.AuthorDTO;
 import com.poletto.bookstore.services.AuthorService;
 
 @Controller
-@RequestMapping("api/v1/authors")
+@RequestMapping("/authors/v1")
 public class AuthorController {
 	
 	@Autowired

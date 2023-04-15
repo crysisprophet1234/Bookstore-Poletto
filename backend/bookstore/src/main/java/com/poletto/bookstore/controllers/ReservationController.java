@@ -20,7 +20,7 @@ import com.poletto.bookstore.dto.ReservationDTO;
 import com.poletto.bookstore.services.ReservationService;
 
 @RestController
-@RequestMapping(value = "/api/v1/reservations")
+@RequestMapping(value = "/reservations/v1")
 public class ReservationController {
 
 	@Autowired
