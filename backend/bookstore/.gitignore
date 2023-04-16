@@ -117,6 +117,7 @@ local.properties
 *.nar
 *.ear
 *.zip
+*.gz
 *.tar.gz
 *.rar
 
