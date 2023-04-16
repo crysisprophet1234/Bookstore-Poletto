@@ -107,6 +107,7 @@ public class ReservationDTO implements Serializable {
 		return books;
 	}
 	
+	//TODO wtf is this???
 	public UserDTO createUser(User user) {
 		UserDTO userDTO = new UserDTO();
 		userDTO.setId(user.getId());
@@ -114,6 +115,12 @@ public class ReservationDTO implements Serializable {
 		userDTO.setLastname(user.getLastname());
 		userDTO.setEmail(user.getEmail());
 		return userDTO;
+	}
+
+	@Override
+	public String toString() {
+		return "ReservationDTO [id=" + id + ", moment=" + moment + ", devolution=" + devolution + ", weeks=" + weeks
+				+ ", status=" + status + ", client=" + client + ", books=" + books + "]";
 	}
 
 }

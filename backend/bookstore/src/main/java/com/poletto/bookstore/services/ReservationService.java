@@ -1,17 +1,17 @@
 package com.poletto.bookstore.services;
 
 import java.time.Instant;
-import java.util.HashSet;
 import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Collectors;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.poletto.bookstore.converter.custom.ReservationMapper;
 import com.poletto.bookstore.dto.BookDTO;
 import com.poletto.bookstore.dto.ReservationDTO;
 import com.poletto.bookstore.entities.Book;
@@ -31,6 +31,8 @@ import jakarta.persistence.EntityNotFoundException;
 @Service
 public class ReservationService {
 
+	private static final Logger logger = LoggerFactory.getLogger(ReservationService.class);
+
 	@Autowired
 	private ReservationRepository reservationRepository;
 
@@ -45,31 +47,60 @@ public class ReservationService {
 
 	@Transactional(readOnly = true)
 	public Page<ReservationDTO> findAll(Pageable pageable, Long userId) {
-		Page<Reservation> list = reservationRepository.findAll(pageable);
-		System.out.println(userId);
+
+		Page<Reservation> reservationPage = reservationRepository.findAll(pageable);
+
 		if (userId > 0) {
-			list = reservationRepository.findByClient(userId, pageable);
+			reservationPage = reservationRepository.findByClient(userId, pageable);
 		}
-		return list.map(x -> new ReservationDTO(x));
+
+		logger.info("Resource RESERVATION page found: " + "PAGE NUMBER [" + reservationPage.getNumber()
+				+ "] - CONTENT: " + reservationPage.getContent());
+
+		return reservationPage.map(x -> ReservationMapper.convertEntityToDto(x));
+
 	}
 
 	@Transactional(readOnly = true)
 	public ReservationDTO findById(Long id) {
+
 		Optional<Reservation> user = reservationRepository.findById(id);
-		Reservation entity = user.orElseThrow(() -> new ResourceNotFoundException(id, "Reservation"));
-		return new ReservationDTO(entity);
+
+		var entity = user.orElseThrow(() -> new ResourceNotFoundException(id, "Reservation"));
+
+		logger.info("Resource RESERVATION found: " + entity.toString());
+
+		return ReservationMapper.convertEntityToDto(entity);
+
 	}
+
+	// TODO implementar mapper
 
 	@Transactional
 	public ReservationDTO reserveBooks(ReservationDTO dto) {
 
 		Reservation entity = new Reservation();
 
-		copyDtoToEntity(dto, entity);
-
-		changeStatusBook(entity, BookStatus.BOOKED);
-
 		entity.setStatus(ReservationStatus.IN_PROGRESS);
+
+		entity.setClient(userRepository.getReferenceById(dto.getClient().getId()));
+
+		entity.setWeeks(dto.getWeeks());
+
+		entity.setMoment(Instant.now());
+
+		entity.setDevolution(entity.devolutionCalc(dto.getWeeks()));
+
+		entity.getBooks().clear();
+
+		for (BookDTO bookDTO : dto.getBooks()) {
+			Book bookEntity = bookRepository.getReferenceById(bookDTO.getId());
+			if (bookEntity.getStatus().equals(BookStatus.BOOKED)) {
+				throw new InvalidStatus(bookEntity);
+			}
+			bookEntity.setStatus(BookStatus.BOOKED);
+			entity.getBooks().add(new BookReservation(entity, bookEntity));
+		}
 
 		entity = reservationRepository.save(entity);
 
@@ -77,28 +108,48 @@ public class ReservationService {
 			bookReservationRepository.save(book);
 		}
 
-		return new ReservationDTO(entity);
+		logger.info("Resource RESERVATION saved: " + entity.toString());
+
+		logger.info("Resource BOOK status changed: " + entity.getBooks());
+
+		return ReservationMapper.convertEntityToDto(entity);
 
 	}
-	
+
+	// TODO change this logic when frontend is capable to reserve more than one book
+
 	@Transactional
 	public void returnBooks(Long bookId) {
-		
-		System.out.println("bookid " + bookId);
 
 		try {
 
+			Book book = bookRepository.getReferenceById(bookId);
+
+			if (book.getStatus().equals(BookStatus.AVAILABLE)) {
+				throw new InvalidStatus(book);
+			}
+
 			Reservation entity = reservationRepository.findByBook(bookId);
-			
+
 			if (entity.getStatus().equals(ReservationStatus.FINISHED)) {
 				throw new InvalidStatus(entity);
 			}
 
-			changeStatusBook(entity, BookStatus.AVAILABLE);
+			for (BookReservation bookReservation : entity.getBooks()) {
+				Book bookEntity = bookRepository.getReferenceById(bookReservation.getBook().getId());
+				if (bookEntity.getStatus().equals(BookStatus.AVAILABLE)) {
+					throw new InvalidStatus(bookEntity);
+				}
+				bookEntity.setStatus(BookStatus.AVAILABLE);
+				bookRepository.save(bookEntity);
+			}
 
 			entity.setStatus(ReservationStatus.FINISHED);
 
 			reservationRepository.save(entity);
+
+			logger.info("Resource RESERVATION status changed to FINISHED: " + entity);
+			logger.info("Resource BOOK status changed to AVAILABLE: " + entity.getBooks());
 
 		} catch (EntityNotFoundException e) {
 
@@ -106,68 +157,6 @@ public class ReservationService {
 
 		}
 
-	}
-
-	/*
-	@Transactional
-	public void returnBooks(Long id) {
-
-		try {
-
-			Reservation entity = reservationRepository.getReferenceById(id);
-			
-			if (entity.getStatus().equals(ReservationStatus.FINISHED)) {
-				throw new InvalidStatus(entity);
-			}
-
-			changeStatusBook(entity, BookStatus.AVAILABLE);
-
-			entity.setStatus(ReservationStatus.FINISHED);
-
-			reservationRepository.save(entity);
-
-		} catch (EntityNotFoundException e) {
-
-			throw new ResourceNotFoundException(id);
-
-		}
-
-	}
-	*/
-
-	private void changeStatusBook(Reservation entity, BookStatus status) {
-
-		Set<Book> booksOld = entity.getBooks().stream().map(x -> x.getBook()).collect(Collectors.toSet());
-
-		Set<Book> booksNew = new HashSet<>();
-
-		for (Book book : booksOld) {
-			if (book.getStatus().equals(status)) {
-				throw new InvalidStatus(book);
-			}
-			book.setStatus(status);
-			booksNew.add(book);
-		}
-
-		booksNew.forEach(x -> bookRepository.save(x));
-
-	}
-
-	private void copyDtoToEntity(ReservationDTO dto, Reservation entity) {
-
-		entity.setClient(userRepository.getReferenceById(dto.getClient().getId()));
-		entity.setWeeks(dto.getWeeks());
-		entity.setDevolution(entity.devolutionCalc(dto.getWeeks()));
-		entity.setMoment(Instant.now());
-		entity.setStatus(ReservationStatus.IN_PROGRESS);
-
-		entity.getBooks().clear();
-
-		for (BookDTO bookDTO : dto.getBooks()) {
-			Book book = bookRepository.getReferenceById(bookDTO.getId());
-			entity.getBooks().add(new BookReservation(entity, book));
-
-		}
 	}
 
 }

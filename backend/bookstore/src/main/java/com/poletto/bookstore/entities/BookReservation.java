@@ -58,5 +58,10 @@ public class BookReservation implements Serializable {
 		BookReservation other = (BookReservation) obj;
 		return Objects.equals(id, other.id);
 	}
+
+	@Override
+	public String toString() {
+		return "BookReservation [id=" + id + "]";
+	}
 	
 }

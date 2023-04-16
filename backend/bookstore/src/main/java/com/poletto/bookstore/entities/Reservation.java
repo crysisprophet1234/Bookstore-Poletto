@@ -136,7 +136,8 @@ public class Reservation implements Serializable {
 
 	@Override
 	public String toString() {
-		return "Reservation [id=" + id + ", moment=" + moment + ", client=" + client + "]";
+		return "Reservation [id=" + id + ", moment=" + moment + ", status=" + status + ", devolution=" + devolution
+				+ ", weeks=" + weeks + ", client=" + client + ", books=" + books + "]";
 	}
 
 }
