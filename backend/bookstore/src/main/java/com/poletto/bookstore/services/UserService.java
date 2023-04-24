@@ -22,10 +22,10 @@ import com.poletto.bookstore.dto.RoleDTO;
 import com.poletto.bookstore.dto.UserAuthDTO;
 import com.poletto.bookstore.dto.UserDTO;
 import com.poletto.bookstore.entities.User;
+import com.poletto.bookstore.exceptions.ResourceNotFoundException;
 import com.poletto.bookstore.repositories.RoleRepository;
 import com.poletto.bookstore.repositories.UserRepository;
 import com.poletto.bookstore.services.exceptions.DatabaseException;
-import com.poletto.bookstore.services.exceptions.ResourceNotFoundException;
 
 import jakarta.persistence.EntityNotFoundException;
 
@@ -72,7 +72,7 @@ public class UserService {
 		
 		Optional<User> user = userRepository.findById(id);
 		
-		User entity = user.orElseThrow(() -> new ResourceNotFoundException(id, "User"));
+		User entity = user.orElseThrow(() -> new ResourceNotFoundException("Resource USER not found. ID " + id));
 		
 		logger.info("Resource USER found: " + entity.toString());
 		
@@ -141,7 +141,7 @@ public class UserService {
 
 		} catch (EntityNotFoundException e) {
 
-			throw new ResourceNotFoundException(id, "User");
+			throw new ResourceNotFoundException("Resource USER not found. ID " + id);
 
 		}
 
@@ -155,7 +155,7 @@ public class UserService {
 			
 		} catch (EmptyResultDataAccessException e) {
 			
-			throw new ResourceNotFoundException(id, "User");
+			throw new ResourceNotFoundException("Resource USER not found. ID " + id);
 			
 		} catch (DataIntegrityViolationException e) {
 			

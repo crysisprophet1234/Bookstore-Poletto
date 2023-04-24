@@ -16,7 +16,7 @@ import com.poletto.bookstore.converter.DozerMapperConverter;
 import com.poletto.bookstore.dto.AuthorDTO;
 import com.poletto.bookstore.entities.Author;
 import com.poletto.bookstore.repositories.AuthorRepository;
-import com.poletto.bookstore.services.exceptions.ResourceNotFoundException;
+import com.poletto.bookstore.exceptions.ResourceNotFoundException;
 
 @Service
 public class AuthorService {
@@ -53,7 +53,7 @@ public class AuthorService {
 		
 		Optional<Author> obj = authorRepository.findById(id);
 		
-		Author entity = obj.orElseThrow(() -> new ResourceNotFoundException(id, "Author"));
+		Author entity = obj.orElseThrow(() -> new ResourceNotFoundException("Resource AUTHOR not found. ID " + id));
 		
 		logger.info("Resource AUTHOR found: " + entity.toString());
 		

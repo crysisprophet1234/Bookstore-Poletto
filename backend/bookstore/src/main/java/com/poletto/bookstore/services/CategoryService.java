@@ -16,8 +16,8 @@ import org.springframework.transaction.annotation.Transactional;
 import com.poletto.bookstore.converter.DozerMapperConverter;
 import com.poletto.bookstore.dto.CategoryDTO;
 import com.poletto.bookstore.entities.Category;
+import com.poletto.bookstore.exceptions.ResourceNotFoundException;
 import com.poletto.bookstore.repositories.CategoryRepository;
-import com.poletto.bookstore.services.exceptions.ResourceNotFoundException;
 
 @Service
 public class CategoryService {
@@ -54,7 +54,7 @@ public class CategoryService {
 		
 		Optional<Category> obj = categoryRepository.findById(id);
 		
-		Category entity = obj.orElseThrow(() -> new ResourceNotFoundException(id, "Category"));
+		Category entity = obj.orElseThrow(() -> new ResourceNotFoundException("Resource CATEGORY not found. ID " + id));
 		
 		CategoryDTO dto = DozerMapperConverter.parseObject(entity, CategoryDTO.class);
 		

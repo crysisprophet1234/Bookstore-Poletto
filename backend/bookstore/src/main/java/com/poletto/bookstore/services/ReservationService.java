@@ -19,12 +19,12 @@ import com.poletto.bookstore.entities.BookReservation;
 import com.poletto.bookstore.entities.Reservation;
 import com.poletto.bookstore.entities.enums.BookStatus;
 import com.poletto.bookstore.entities.enums.ReservationStatus;
+import com.poletto.bookstore.exceptions.ResourceNotFoundException;
 import com.poletto.bookstore.repositories.BookRepository;
 import com.poletto.bookstore.repositories.BookReservationRepository;
 import com.poletto.bookstore.repositories.ReservationRepository;
 import com.poletto.bookstore.repositories.UserRepository;
 import com.poletto.bookstore.services.exceptions.InvalidStatus;
-import com.poletto.bookstore.services.exceptions.ResourceNotFoundException;
 
 import jakarta.persistence.EntityNotFoundException;
 
@@ -66,7 +66,7 @@ public class ReservationService {
 
 		Optional<Reservation> user = reservationRepository.findById(id);
 
-		var entity = user.orElseThrow(() -> new ResourceNotFoundException(id, "Reservation"));
+		var entity = user.orElseThrow(() -> new ResourceNotFoundException("Resource RESERVATION not found. ID " + id));
 
 		logger.info("Resource RESERVATION found: " + entity.toString());
 
@@ -153,7 +153,7 @@ public class ReservationService {
 
 		} catch (EntityNotFoundException e) {
 
-			throw new ResourceNotFoundException(bookId, "Reservation");
+			throw new ResourceNotFoundException("Resource RESERVATION not found for book ID " + bookId);
 
 		}
 

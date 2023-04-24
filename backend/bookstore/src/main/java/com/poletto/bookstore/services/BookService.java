@@ -21,11 +21,11 @@ import com.poletto.bookstore.dto.CategoryDTO;
 import com.poletto.bookstore.entities.Book;
 import com.poletto.bookstore.entities.Category;
 import com.poletto.bookstore.entities.enums.BookStatus;
+import com.poletto.bookstore.exceptions.ResourceNotFoundException;
 import com.poletto.bookstore.repositories.AuthorRepository;
 import com.poletto.bookstore.repositories.BookRepository;
 import com.poletto.bookstore.repositories.CategoryRepository;
 import com.poletto.bookstore.services.exceptions.DatabaseException;
-import com.poletto.bookstore.services.exceptions.ResourceNotFoundException;
 
 import jakarta.persistence.EntityNotFoundException;
 
@@ -89,7 +89,7 @@ public class BookService {
 		
 		Optional<Book> obj = bookRepository.findById(id);
 		
-		Book book = obj.orElseThrow(() -> new ResourceNotFoundException(id, "Book"));
+		Book book = obj.orElseThrow(() -> new ResourceNotFoundException("Resource BOOK not found. ID " + id));
 		
 		logger.info("Resource BOOK found: " + book.toString());
 		
@@ -102,7 +102,7 @@ public class BookService {
 		
 		dto.setStatus(BookStatus.AVAILABLE);
 		
-		dto.setAuthor(authorRepository.findById(dto.getAuthor().getId()).orElseThrow(() -> new ResourceNotFoundException(dto.getAuthor().getId(), "Book")));
+		dto.setAuthor(authorRepository.findById(dto.getAuthor().getId()).orElseThrow(() -> new ResourceNotFoundException("Resource AUTHOR not found. ID " + dto.getAuthor().getId())));
 
 		Book entity = BookMapper.convertDtoToEntity(dto);
 		
@@ -113,7 +113,7 @@ public class BookService {
 			Category category = categoryRepository.getReferenceById(categoryDTO.getId());
 			entity.getCategories().add(category);
 			} catch (EntityNotFoundException ex) {
-				throw new ResourceNotFoundException(categoryDTO.getId(), "Book");
+				throw new ResourceNotFoundException("Resource CATEGORY not found. ID " + categoryDTO.getId());
 			}
 		}
 
@@ -146,7 +146,7 @@ public class BookService {
 
 		} catch (EntityNotFoundException e) {
 
-			throw new ResourceNotFoundException(id, "Book");
+			throw new ResourceNotFoundException("Resource BOOK not found. ID " + id);
 
 		}
 
@@ -162,7 +162,7 @@ public class BookService {
 
 		} catch (EmptyResultDataAccessException e) {
 
-			throw new ResourceNotFoundException(id, "Book");
+			throw new ResourceNotFoundException("Resource BOOK not found. ID " + id);
 
 		} catch (DataIntegrityViolationException e) {
 

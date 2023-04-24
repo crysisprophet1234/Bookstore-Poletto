@@ -31,10 +31,10 @@ import com.poletto.bookstore.dto.BookDTO;
 import com.poletto.bookstore.entities.Author;
 import com.poletto.bookstore.entities.Book;
 import com.poletto.bookstore.entities.enums.BookStatus;
+import com.poletto.bookstore.exceptions.ResourceNotFoundException;
 import com.poletto.bookstore.mocks.MockBook;
 import com.poletto.bookstore.repositories.BookRepository;
 import com.poletto.bookstore.services.BookService;
-import com.poletto.bookstore.services.exceptions.ResourceNotFoundException;
 
 @RunWith(SpringRunner.class)
 @WebMvcTest(BookController.class)
