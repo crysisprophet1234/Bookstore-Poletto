@@ -19,12 +19,12 @@ import com.poletto.bookstore.entities.BookReservation;
 import com.poletto.bookstore.entities.Reservation;
 import com.poletto.bookstore.entities.enums.BookStatus;
 import com.poletto.bookstore.entities.enums.ReservationStatus;
+import com.poletto.bookstore.exceptions.InvalidStatusException;
 import com.poletto.bookstore.exceptions.ResourceNotFoundException;
 import com.poletto.bookstore.repositories.BookRepository;
 import com.poletto.bookstore.repositories.BookReservationRepository;
 import com.poletto.bookstore.repositories.ReservationRepository;
 import com.poletto.bookstore.repositories.UserRepository;
-import com.poletto.bookstore.services.exceptions.InvalidStatus;
 
 import jakarta.persistence.EntityNotFoundException;
 
@@ -96,7 +96,7 @@ public class ReservationService {
 		for (BookDTO bookDTO : dto.getBooks()) {
 			Book bookEntity = bookRepository.getReferenceById(bookDTO.getId());
 			if (bookEntity.getStatus().equals(BookStatus.BOOKED)) {
-				throw new InvalidStatus(bookEntity);
+				throw new InvalidStatusException(bookEntity);
 			}
 			bookEntity.setStatus(BookStatus.BOOKED);
 			entity.getBooks().add(new BookReservation(entity, bookEntity));
@@ -126,19 +126,19 @@ public class ReservationService {
 			Book book = bookRepository.getReferenceById(bookId);
 
 			if (book.getStatus().equals(BookStatus.AVAILABLE)) {
-				throw new InvalidStatus(book);
+				throw new InvalidStatusException(book);
 			}
 
 			Reservation entity = reservationRepository.findByBook(bookId);
 
 			if (entity.getStatus().equals(ReservationStatus.FINISHED)) {
-				throw new InvalidStatus(entity);
+				throw new InvalidStatusException(entity);
 			}
 
 			for (BookReservation bookReservation : entity.getBooks()) {
 				Book bookEntity = bookRepository.getReferenceById(bookReservation.getBook().getId());
 				if (bookEntity.getStatus().equals(BookStatus.AVAILABLE)) {
-					throw new InvalidStatus(bookEntity);
+					throw new InvalidStatusException(bookEntity);
 				}
 				bookEntity.setStatus(BookStatus.AVAILABLE);
 				bookRepository.save(bookEntity);

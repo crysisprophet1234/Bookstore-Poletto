@@ -21,11 +21,11 @@ import com.poletto.bookstore.dto.CategoryDTO;
 import com.poletto.bookstore.entities.Book;
 import com.poletto.bookstore.entities.Category;
 import com.poletto.bookstore.entities.enums.BookStatus;
+import com.poletto.bookstore.exceptions.DatabaseException;
 import com.poletto.bookstore.exceptions.ResourceNotFoundException;
 import com.poletto.bookstore.repositories.AuthorRepository;
 import com.poletto.bookstore.repositories.BookRepository;
 import com.poletto.bookstore.repositories.CategoryRepository;
-import com.poletto.bookstore.services.exceptions.DatabaseException;
 
 import jakarta.persistence.EntityNotFoundException;
 

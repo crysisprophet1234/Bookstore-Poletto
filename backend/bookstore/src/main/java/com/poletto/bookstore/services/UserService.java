@@ -23,11 +23,11 @@ import com.poletto.bookstore.dto.RoleDTO;
 import com.poletto.bookstore.dto.UserAuthDTO;
 import com.poletto.bookstore.dto.UserDTO;
 import com.poletto.bookstore.entities.User;
+import com.poletto.bookstore.exceptions.DatabaseException;
 import com.poletto.bookstore.exceptions.ResourceNotFoundException;
 import com.poletto.bookstore.exceptions.UnauthorizedException;
 import com.poletto.bookstore.repositories.RoleRepository;
 import com.poletto.bookstore.repositories.UserRepository;
-import com.poletto.bookstore.services.exceptions.DatabaseException;
 
 import jakarta.persistence.EntityNotFoundException;
 

@@ -8,13 +8,15 @@ public class ExceptionResponse implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	private Date timestamp;
-	private String message;
+	private String title;
 	private String details;
+	private String path;
 
-	public ExceptionResponse(Date timestamp, String message, String details) {
+	public ExceptionResponse(Date timestamp, String title, String details, String path) {
 		this.timestamp = timestamp;
-		this.message = message;
+		this.title = title;
 		this.details = details;
+		this.path = path;
 	}
 
 	public Date getTimestamp() {
@@ -25,12 +27,12 @@ public class ExceptionResponse implements Serializable {
 		this.timestamp = timestamp;
 	}
 
-	public String getMessage() {
-		return message;
+	public String getTitle() {
+		return title;
 	}
 
-	public void setMessage(String message) {
-		this.message = message;
+	public void setTitle(String title) {
+		this.title = title;
 	}
 
 	public String getDetails() {
@@ -41,9 +43,18 @@ public class ExceptionResponse implements Serializable {
 		this.details = details;
 	}
 
+	public String getPath() {
+		return path;
+	}
+
+	public void setPath(String path) {
+		this.path = path;
+	}
+
 	@Override
 	public String toString() {
-		return "ExceptionResponse [timestamp=" + timestamp + ", message=" + message + ", details=" + details + "]";
+		return "ExceptionResponse [timestamp=" + timestamp + ", title=" + title + ", details="
+				+ details + ", path=" + path + "]";
 	}
 	
 }

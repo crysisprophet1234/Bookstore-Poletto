@@ -20,7 +20,9 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
+import com.poletto.bookstore.exceptions.DatabaseException;
 import com.poletto.bookstore.exceptions.ExceptionResponse;
+import com.poletto.bookstore.exceptions.InvalidStatusException;
 import com.poletto.bookstore.exceptions.ResourceNotFoundException;
 import com.poletto.bookstore.exceptions.UnauthorizedException;
 
@@ -33,16 +35,26 @@ public class CustomizedResponseEntityExceptionHandler extends ResponseEntityExce
 	@ExceptionHandler(Exception.class)
 	public final ResponseEntity<ExceptionResponse> handleAllExceptions(Exception ex, WebRequest request) {
 
-		ExceptionResponse exceptionResponse = new ExceptionResponse(new Date(), ex.getMessage(), request.getDescription(false));
+		ExceptionResponse exceptionResponse = new ExceptionResponse(new Date(), HttpStatus.INTERNAL_SERVER_ERROR.toString(),  ex.getMessage(), request.getDescription(false));
 
 		logger.warn(exceptionResponse.toString() + clientInfo(request));
 		return new ResponseEntity<>(exceptionResponse, HttpStatus.INTERNAL_SERVER_ERROR);
 	}
 	
+	@ExceptionHandler(DatabaseException.class)
+	public final ResponseEntity<ExceptionResponse> handleDatabaseException(Exception ex, WebRequest request) {
+		
+		ExceptionResponse exceptionResponse = new ExceptionResponse(new Date(), HttpStatus.INTERNAL_SERVER_ERROR.toString(),  ex.getMessage(), request.getDescription(false));
+
+		logger.warn(exceptionResponse.toString() + clientInfo(request));
+		return new ResponseEntity<>(exceptionResponse, HttpStatus.INTERNAL_SERVER_ERROR);
+		
+	}
+	
 	@ExceptionHandler(UnauthorizedException.class)
 	public final ResponseEntity<ExceptionResponse> handleUnauthorizedException(Exception ex, WebRequest request) {
 		
-		ExceptionResponse exceptionResponse = new ExceptionResponse(new Date(), ex.getMessage(), request.getDescription(false));
+		ExceptionResponse exceptionResponse = new ExceptionResponse(new Date(), HttpStatus.UNAUTHORIZED.toString(), ex.getMessage(), request.getDescription(false));
 
 		logger.warn(exceptionResponse.toString() + clientInfo(request));
 		return new ResponseEntity<>(exceptionResponse, HttpStatus.UNAUTHORIZED);
@@ -51,10 +63,19 @@ public class CustomizedResponseEntityExceptionHandler extends ResponseEntityExce
 	@ExceptionHandler(ResourceNotFoundException.class)
 	public final ResponseEntity<ExceptionResponse> handleNotFoundException(Exception ex, WebRequest request) {
 		
-		ExceptionResponse exceptionResponse = new ExceptionResponse(new Date(), ex.getMessage(), request.getDescription(false));
+		ExceptionResponse exceptionResponse = new ExceptionResponse(new Date(), HttpStatus.NOT_FOUND.toString(), ex.getMessage(), request.getDescription(false));
 
 		logger.warn(exceptionResponse.toString() + clientInfo(request));
 		return new ResponseEntity<>(exceptionResponse, HttpStatus.NOT_FOUND);
+	}
+	
+	@ExceptionHandler(InvalidStatusException.class)
+	public final ResponseEntity<ExceptionResponse> handleInvalidStatusException(Exception ex, WebRequest request) {
+		
+		ExceptionResponse exceptionResponse = new ExceptionResponse(new Date(), HttpStatus.BAD_REQUEST.toString(),  ex.getMessage(), request.getDescription(false));
+
+		logger.warn(exceptionResponse.toString() + clientInfo(request));
+		return new ResponseEntity<>(exceptionResponse, HttpStatus.BAD_REQUEST);
 	}
 	
 	/*

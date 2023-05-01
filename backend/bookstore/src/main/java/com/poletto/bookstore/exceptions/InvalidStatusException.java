@@ -1,4 +1,4 @@
-package com.poletto.bookstore.services.exceptions;
+package com.poletto.bookstore.exceptions;
 
 import java.io.Serializable;
 
@@ -8,16 +8,16 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import com.poletto.bookstore.entities.Book;
 import com.poletto.bookstore.entities.Reservation;
 
-@ResponseStatus(value=HttpStatus.NOT_ACCEPTABLE, reason="Invalid status change")
-public class InvalidStatus extends RuntimeException implements Serializable {
+@ResponseStatus(value=HttpStatus.BAD_REQUEST)
+public class InvalidStatusException extends RuntimeException implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 	
-	public InvalidStatus(Book book) {
+	public InvalidStatusException(Book book) {
 		super("Invalid status for book ID " + book.getId());
 	}
 	
-	public InvalidStatus(Reservation reservation) {
+	public InvalidStatusException(Reservation reservation) {
 		super("Invalid status for reservation ID " + reservation.getId());
 	}
 
