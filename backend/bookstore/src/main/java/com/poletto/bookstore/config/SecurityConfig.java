@@ -40,17 +40,17 @@ public class SecurityConfig {
 		http
 			.csrf().disable()
 	        .authorizeHttpRequests()
-	        .requestMatchers("/api/v1/auth/**").permitAll()
-	        .requestMatchers(HttpMethod.GET ,"/api/v1/books/**").permitAll()
-	        .requestMatchers(HttpMethod.POST ,"/api/v1/reservations").hasAuthority("ROLE_CUSTOMER")
-	        .requestMatchers(HttpMethod.GET ,"/api/v1/categories/**").permitAll()
-	        //.anyRequest().hasAuthority("ROLE_ADMIN")
-	        .anyRequest().permitAll()
+		        .requestMatchers("/api/v1/auth/**").permitAll()
+		        .requestMatchers(HttpMethod.GET ,"/api/v1/books/**").permitAll()
+		        .requestMatchers(HttpMethod.POST ,"/api/v1/reservations").hasAuthority("ROLE_CUSTOMER")
+		        .requestMatchers(HttpMethod.GET ,"/api/v1/categories/**").permitAll()
+		        //.anyRequest().hasAuthority("ROLE_ADMIN")
+		        .anyRequest().permitAll()
 	        .and()
-	        .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+	        	.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
 	        .and()
-	        .authenticationProvider(authenticationProvider)
-	        .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
+	        	.authenticationProvider(authenticationProvider)
+	        	.addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
 	
 			http.cors().configurationSource(corsConfigurationSource());
 

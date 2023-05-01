@@ -10,13 +10,11 @@ public class ExceptionResponse implements Serializable {
 	private Date timestamp;
 	private String message;
 	private String details;
-	//private String userAgent;
 
 	public ExceptionResponse(Date timestamp, String message, String details) {
 		this.timestamp = timestamp;
 		this.message = message;
 		this.details = details;
-		//this.userAgent = userAgent;
 	}
 
 	public Date getTimestamp() {
@@ -43,20 +41,9 @@ public class ExceptionResponse implements Serializable {
 		this.details = details;
 	}
 
-	/*
-	public String getUserAgent() {
-		return userAgent;
-	}
-
-	public void setUserAgent(String userAgent) {
-		this.userAgent = userAgent;
-	}
-	*/
-
 	@Override
 	public String toString() {
-		return "ExceptionResponse [timestamp=" + timestamp + ", message=" + message + ", details=" + details
-				+ ", userAgent=";
+		return "ExceptionResponse [timestamp=" + timestamp + ", message=" + message + ", details=" + details + "]";
 	}
 	
 }

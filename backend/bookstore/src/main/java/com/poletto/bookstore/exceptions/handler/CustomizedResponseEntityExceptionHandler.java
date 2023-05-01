@@ -22,14 +22,13 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 
 import com.poletto.bookstore.exceptions.ExceptionResponse;
 import com.poletto.bookstore.exceptions.ResourceNotFoundException;
+import com.poletto.bookstore.exceptions.UnauthorizedException;
 
 @ControllerAdvice
 @RestController
 public class CustomizedResponseEntityExceptionHandler extends ResponseEntityExceptionHandler {
 	
 	private static final Logger logger = LoggerFactory.getLogger(ResponseEntityExceptionHandler.class);
-	
-	
 
 	@ExceptionHandler(Exception.class)
 	public final ResponseEntity<ExceptionResponse> handleAllExceptions(Exception ex, WebRequest request) {
@@ -38,6 +37,15 @@ public class CustomizedResponseEntityExceptionHandler extends ResponseEntityExce
 
 		logger.warn(exceptionResponse.toString() + clientInfo(request));
 		return new ResponseEntity<>(exceptionResponse, HttpStatus.INTERNAL_SERVER_ERROR);
+	}
+	
+	@ExceptionHandler(UnauthorizedException.class)
+	public final ResponseEntity<ExceptionResponse> handleUnauthorizedException(Exception ex, WebRequest request) {
+		
+		ExceptionResponse exceptionResponse = new ExceptionResponse(new Date(), ex.getMessage(), request.getDescription(false));
+
+		logger.warn(exceptionResponse.toString() + clientInfo(request));
+		return new ResponseEntity<>(exceptionResponse, HttpStatus.UNAUTHORIZED);
 	}
 
 	@ExceptionHandler(ResourceNotFoundException.class)
@@ -64,17 +72,23 @@ public class CustomizedResponseEntityExceptionHandler extends ResponseEntityExce
 	    StringBuilder sb = new StringBuilder();
 
 	    String userAgent = request.getHeader("User-Agent");
-	    sb.append("User-Agent: ").append(userAgent).append(", ");
-	    
-	    String user = request.getUserPrincipal().getName();
-	    sb.append("User logged: ").append(user).append(", ");
-	    
-	    List<String> roles = getUserRoles(request);
-	    sb.append("User roles: " + roles).append(", ");
-	    
-	    String sessionId = request.getSessionId();
-	    sb.append("Session ID: ").append(sessionId).append(", ");
+	    sb.append(" [User-Agent: ").append(userAgent).append(", ");
 
+	    try {
+	    	
+			String user = request.getUserPrincipal().getName();
+			sb.append("User logged: ").append(user).append(", ");
+			
+			List<String> roles = getUserRoles(request);
+		    sb.append("User roles: " + roles).append(", ");
+		    
+		    String sessionId = request.getSessionId();
+		    sb.append("Session ID: ").append(sessionId).append(", ");
+		    
+		} catch (NullPointerException e) {
+			sb.append("User logged: -/-, ");
+		}
+	    
 	    Map<String, String[]> requestParams = request.getParameterMap();
 	    sb.append("Request Parameters: ").append(requestParams).append("]");
 	    

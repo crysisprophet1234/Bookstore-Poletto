@@ -11,6 +11,7 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -23,6 +24,7 @@ import com.poletto.bookstore.dto.UserAuthDTO;
 import com.poletto.bookstore.dto.UserDTO;
 import com.poletto.bookstore.entities.User;
 import com.poletto.bookstore.exceptions.ResourceNotFoundException;
+import com.poletto.bookstore.exceptions.UnauthorizedException;
 import com.poletto.bookstore.repositories.RoleRepository;
 import com.poletto.bookstore.repositories.UserRepository;
 import com.poletto.bookstore.services.exceptions.DatabaseException;
@@ -99,8 +101,14 @@ public class UserService {
 	
 	@Transactional (readOnly = true)
 	public UserAuthDTO authenticate(UserAuthDTO dto) { // TODO verificar dados presentes na response
-
+		
+		try {
+			
 		authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(dto.getEmail(), dto.getPassword()));
+		
+		} catch (BadCredentialsException e) {
+			throw new UnauthorizedException("Bad credentials for login");
+		}
 
 		User entity = userRepository.findByEmail(dto.getEmail()).orElseThrow();
 		
