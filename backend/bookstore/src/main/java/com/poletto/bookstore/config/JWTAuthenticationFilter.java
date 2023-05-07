@@ -1,8 +1,10 @@
 package com.poletto.bookstore.config;
 
 import java.io.IOException;
+import java.util.Date;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -11,6 +13,10 @@ import org.springframework.security.web.authentication.WebAuthenticationDetailsS
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.poletto.bookstore.exceptions.ExceptionResponse;
+
+import io.jsonwebtoken.JwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -31,7 +37,7 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter {
 
 		final String authHeader = request.getHeader("Authorization");
 		final String jwt;
-		final String userEmail;
+		String userEmail;
 
 		if (authHeader == null || !authHeader.startsWith("Bearer ")) {
 			filterChain.doFilter(request, response);
@@ -39,8 +45,30 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter {
 		}
 
 		jwt = authHeader.substring(7);
+		
+		userEmail = null;
+		
+		/*
+		 possivelmente o catch de jwt vencido ou inválido
+		 deveria ser em outra localização mas por enquanto
+		 está funcionando aqui. 
+		*/
 
-		userEmail = jwtService.extractUsername(jwt);
+		try {
+
+			userEmail = jwtService.extractUsername(jwt);
+
+		} catch (JwtException e) {
+
+			ExceptionResponse errorResponse = new ExceptionResponse(new Date(), HttpStatus.UNAUTHORIZED.toString(),
+					e.getMessage(), request.getRequestURI());
+
+			response.setStatus(HttpStatus.UNAUTHORIZED.value());
+			response.setContentType("json");
+			response.getOutputStream().print(new ObjectMapper().writeValueAsString(errorResponse));
+			return;
+			
+		}
 
 		if (userEmail != null && SecurityContextHolder.getContext().getAuthentication() == null) {
 
