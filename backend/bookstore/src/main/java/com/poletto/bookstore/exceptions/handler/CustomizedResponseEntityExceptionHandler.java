@@ -23,6 +23,7 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 import com.poletto.bookstore.exceptions.DatabaseException;
 import com.poletto.bookstore.exceptions.ExceptionResponse;
 import com.poletto.bookstore.exceptions.InvalidStatusException;
+import com.poletto.bookstore.exceptions.ObjectNotValidException;
 import com.poletto.bookstore.exceptions.ResourceNotFoundException;
 import com.poletto.bookstore.exceptions.UnauthorizedException;
 
@@ -69,6 +70,17 @@ public class CustomizedResponseEntityExceptionHandler extends ResponseEntityExce
 		return new ResponseEntity<>(exceptionResponse, HttpStatus.NOT_FOUND);
 	}
 	
+	//verificar catch das validações
+	@ExceptionHandler(ObjectNotValidException.class)
+	public final ResponseEntity<ExceptionResponse> handleObjectNotValidException(Exception ex, WebRequest request) {
+		
+		ExceptionResponse exceptionResponse = new ExceptionResponse(new Date(), HttpStatus.UNPROCESSABLE_ENTITY.toString(), ex.getMessage(), request.getDescription(false));
+		
+		logger.warn(exceptionResponse.toString() + clientInfo(request));
+		return new ResponseEntity<>(exceptionResponse, HttpStatus.UNPROCESSABLE_ENTITY);
+		
+	}
+	
 	@ExceptionHandler(InvalidStatusException.class)
 	public final ResponseEntity<ExceptionResponse> handleInvalidStatusException(Exception ex, WebRequest request) {
 		
@@ -76,6 +88,7 @@ public class CustomizedResponseEntityExceptionHandler extends ResponseEntityExce
 
 		logger.warn(exceptionResponse.toString() + clientInfo(request));
 		return new ResponseEntity<>(exceptionResponse, HttpStatus.BAD_REQUEST);
+		
 	}
 	
 	/*
