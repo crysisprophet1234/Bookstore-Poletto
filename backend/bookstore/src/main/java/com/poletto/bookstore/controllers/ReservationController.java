@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-import com.poletto.bookstore.dto.ReservationDTO;
+import com.poletto.bookstore.dto.v1.ReservationDTO;
 import com.poletto.bookstore.services.ReservationService;
 
 @RestController

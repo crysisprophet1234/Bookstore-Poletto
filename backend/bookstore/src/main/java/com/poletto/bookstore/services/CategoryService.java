@@ -14,7 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.poletto.bookstore.converter.DozerMapperConverter;
-import com.poletto.bookstore.dto.CategoryDTO;
+import com.poletto.bookstore.dto.v1.CategoryDTO;
 import com.poletto.bookstore.entities.Category;
 import com.poletto.bookstore.exceptions.ResourceNotFoundException;
 import com.poletto.bookstore.repositories.CategoryRepository;

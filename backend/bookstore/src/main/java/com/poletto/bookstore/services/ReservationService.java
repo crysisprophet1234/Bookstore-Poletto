@@ -12,8 +12,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.poletto.bookstore.converter.custom.ReservationMapper;
-import com.poletto.bookstore.dto.BookDTO;
-import com.poletto.bookstore.dto.ReservationDTO;
+import com.poletto.bookstore.dto.v1.ReservationDTO;
+import com.poletto.bookstore.dto.v1.BookDTO;
 import com.poletto.bookstore.entities.Book;
 import com.poletto.bookstore.entities.BookReservation;
 import com.poletto.bookstore.entities.Reservation;

@@ -16,8 +16,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.poletto.bookstore.converter.custom.BookMapper;
-import com.poletto.bookstore.dto.BookDTO;
-import com.poletto.bookstore.dto.CategoryDTO;
+import com.poletto.bookstore.dto.v1.CategoryDTO;
+import com.poletto.bookstore.dto.v1.BookDTO;
 import com.poletto.bookstore.entities.Book;
 import com.poletto.bookstore.entities.Category;
 import com.poletto.bookstore.entities.enums.BookStatus;
@@ -50,6 +50,7 @@ public class BookService {
 		List<Book> list = bookRepository.findAll();
 
 		return list.stream().map(x -> new BookDTO(x)).collect(Collectors.toList());
+		
 	}
 
 	@Transactional(readOnly = true)

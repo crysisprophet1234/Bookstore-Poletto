@@ -27,7 +27,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import com.poletto.bookstore.config.JwtService;
 import com.poletto.bookstore.controllers.BookController;
-import com.poletto.bookstore.dto.BookDTO;
+import com.poletto.bookstore.dto.v1.BookDTO;
 import com.poletto.bookstore.entities.Author;
 import com.poletto.bookstore.entities.Book;
 import com.poletto.bookstore.entities.enums.BookStatus;

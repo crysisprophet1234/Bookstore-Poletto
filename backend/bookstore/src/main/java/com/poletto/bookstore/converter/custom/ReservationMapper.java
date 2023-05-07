@@ -3,9 +3,9 @@ package com.poletto.bookstore.converter.custom;
 import org.springframework.stereotype.Service;
 
 import com.poletto.bookstore.converter.DozerMapperConverter;
-import com.poletto.bookstore.dto.BookDTO;
-import com.poletto.bookstore.dto.ReservationDTO;
-import com.poletto.bookstore.dto.UserDTO;
+import com.poletto.bookstore.dto.v1.ReservationDTO;
+import com.poletto.bookstore.dto.v1.UserDTO;
+import com.poletto.bookstore.dto.v1.BookDTO;
 import com.poletto.bookstore.entities.BookReservation;
 import com.poletto.bookstore.entities.Reservation;
 import com.poletto.bookstore.entities.User;

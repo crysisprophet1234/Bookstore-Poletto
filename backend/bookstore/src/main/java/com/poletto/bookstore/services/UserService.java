@@ -19,9 +19,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.poletto.bookstore.config.JwtService;
 import com.poletto.bookstore.converter.custom.UserMapper;
-import com.poletto.bookstore.dto.RoleDTO;
-import com.poletto.bookstore.dto.UserAuthDTO;
-import com.poletto.bookstore.dto.UserDTO;
+import com.poletto.bookstore.dto.v1.RoleDTO;
+import com.poletto.bookstore.dto.v1.UserAuthDTO;
+import com.poletto.bookstore.dto.v1.UserDTO;
 import com.poletto.bookstore.entities.User;
 import com.poletto.bookstore.exceptions.DatabaseException;
 import com.poletto.bookstore.exceptions.ResourceNotFoundException;

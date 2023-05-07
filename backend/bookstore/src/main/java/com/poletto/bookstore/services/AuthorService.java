@@ -13,7 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.poletto.bookstore.converter.DozerMapperConverter;
-import com.poletto.bookstore.dto.AuthorDTO;
+import com.poletto.bookstore.dto.v1.AuthorDTO;
 import com.poletto.bookstore.entities.Author;
 import com.poletto.bookstore.repositories.AuthorRepository;
 import com.poletto.bookstore.exceptions.ResourceNotFoundException;

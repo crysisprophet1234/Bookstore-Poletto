@@ -20,9 +20,11 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-import com.poletto.bookstore.dto.BookDTO;
+import com.poletto.bookstore.dto.v1.BookDTO;
 import com.poletto.bookstore.services.BookService;
 import com.poletto.bookstore.util.MediaType;
+
+import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping(value = "/books/v1")
@@ -56,9 +58,9 @@ public class BookController {
 		BookDTO entity = bookService.findById(id);
 		return ResponseEntity.ok().body(entity);
 	}
-
+	
 	@PostMapping
-	public ResponseEntity<BookDTO> insert(@RequestBody BookDTO dto) {
+	public ResponseEntity<BookDTO> insert(@RequestBody @Valid BookDTO dto) {
 		dto = bookService.insert(dto);
 		URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(dto.getId()).toUri();
 		return ResponseEntity.created(uri).body(dto);

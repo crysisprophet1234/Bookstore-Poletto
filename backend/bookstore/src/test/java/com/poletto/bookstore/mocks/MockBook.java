@@ -4,8 +4,8 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.poletto.bookstore.dto.BookDTO;
-import com.poletto.bookstore.dto.CategoryDTO;
+import com.poletto.bookstore.dto.v1.CategoryDTO;
+import com.poletto.bookstore.dto.v1.BookDTO;
 import com.poletto.bookstore.entities.Author;
 import com.poletto.bookstore.entities.Book;
 import com.poletto.bookstore.entities.Category;

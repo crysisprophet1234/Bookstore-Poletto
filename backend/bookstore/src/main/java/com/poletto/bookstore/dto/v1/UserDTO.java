@@ -1,4 +1,4 @@
-package com.poletto.bookstore.dto;
+package com.poletto.bookstore.dto.v1;
 
 import java.io.Serializable;
 import java.util.HashSet;

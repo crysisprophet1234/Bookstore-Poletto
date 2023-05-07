@@ -10,8 +10,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-import com.poletto.bookstore.dto.UserAuthDTO;
-import com.poletto.bookstore.dto.UserDTO;
+import com.poletto.bookstore.dto.v1.UserAuthDTO;
+import com.poletto.bookstore.dto.v1.UserDTO;
 import com.poletto.bookstore.services.UserService;
 
 @RestController

@@ -3,8 +3,8 @@ package com.poletto.bookstore.converter.custom;
 import org.springframework.stereotype.Service;
 
 import com.poletto.bookstore.converter.DozerMapperConverter;
-import com.poletto.bookstore.dto.BookDTO;
-import com.poletto.bookstore.dto.CategoryDTO;
+import com.poletto.bookstore.dto.v1.CategoryDTO;
+import com.poletto.bookstore.dto.v1.BookDTO;
 import com.poletto.bookstore.entities.Book;
 import com.poletto.bookstore.entities.Category;
 import com.poletto.bookstore.entities.enums.BookStatus;
