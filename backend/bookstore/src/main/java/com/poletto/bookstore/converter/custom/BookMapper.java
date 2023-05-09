@@ -52,5 +52,26 @@ public class BookMapper {
 		return book;
 
 	}
+	
+	public static com.poletto.bookstore.dto.v2.BookDTO convertEntityToDtoV2(Book book) {
+		
+		com.poletto.bookstore.dto.v2.BookDTO bookDto = new com.poletto.bookstore.dto.v2.BookDTO();
+		bookDto.setId(book.getId());
+		bookDto.setName(book.getName());
+		bookDto.setImgUrl(book.getImgUrl());
+		bookDto.setReleaseDate(book.getReleaseDate());
+		bookDto.setStatus((book.getStatus()));
+		bookDto.setAuthor(book.getAuthor());
+		
+		bookDto.getCategories().clear();
+		
+		for (Category category : book.getCategories()) {
+			bookDto.getCategories().add(DozerMapperConverter.parseObject(category, CategoryDTO.class));
+		}
+		
+
+		return bookDto;
+
+	}
 
 }

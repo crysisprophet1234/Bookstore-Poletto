@@ -1,30 +1,32 @@
-package com.poletto.bookstore.dto;
+package com.poletto.bookstore.dto.v2;
 
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.stream.Collectors;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import org.springframework.hateoas.RepresentationModel;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.github.dozermapper.core.Mapping;
+import com.poletto.bookstore.dto.v1.CategoryDTO;
 import com.poletto.bookstore.entities.Author;
-import com.poletto.bookstore.entities.Book;
-import com.poletto.bookstore.entities.Category;
 import com.poletto.bookstore.entities.enums.BookStatus;
 
-public class BookDTO implements Serializable {
+public class BookDTO extends RepresentationModel<BookDTO> implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 	
-	private Long id;
+	@Mapping("id")
+	@JsonProperty("id")
+	private Long key;
+
 	private String name;
 	private LocalDate releaseDate;
 	private String imgUrl;
 	private String status;
-	
-	@JsonIgnoreProperties("nacionality")
 	private Author author;
-	
+
 	private Set<CategoryDTO> categories = new HashSet<>();
 	
 	public BookDTO() {
@@ -32,35 +34,20 @@ public class BookDTO implements Serializable {
 	}
 
 	public BookDTO(Long id, String name, LocalDate releaseDate, String imgUrl, BookStatus status, Author author) {
-		this.id = id;
+		this.key = id;
 		this.name = name;
 		this.releaseDate = releaseDate;
 		this.imgUrl = imgUrl;
 		this.status = status.name();
 		this.author = author;
 	}
-	
-	public BookDTO(Book entity) {
-		id = entity.getId();
-		name = entity.getName();
-		releaseDate = entity.getReleaseDate();
-		imgUrl = entity.getImgUrl();
-		status = entity.getStatus().name();
-		author = entity.getAuthor();
-		categories = entity.getCategories().stream().map(x -> new CategoryDTO(x)).collect(Collectors.toSet());
-	}
-	
-	public BookDTO(Book entity, Set<Category> categories) {
-		this(entity);
-		categories.forEach(cat -> this.categories.add(new CategoryDTO(cat)));
-	}
 
 	public Long getId() {
-		return id;
+		return key;
 	}
 
 	public void setId(Long id) {
-		this.id = id;
+		this.key = id;
 	}
 
 	public String getName() {
@@ -109,8 +96,9 @@ public class BookDTO implements Serializable {
 
 	@Override
 	public String toString() {
-		return "BookDTO [id=" + id + ", name=" + name + ", releaseDate=" + releaseDate + ", imgUrl=" + imgUrl
-				+ ", status=" + status + ", author=" + author + ", categories=" + categories + "]";
+		return "BookDTO [key=" + key + ", name=" + name + ", releaseDate=" + releaseDate + ", imgUrl=" + imgUrl
+				+ ", status=" + status + ", author=" + author + ", categories=" + categories + ", getLinks()="
+				+ getLinks() + "]";
 	}
 
 }

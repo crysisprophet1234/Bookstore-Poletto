@@ -52,6 +52,27 @@ public class BookController {
 		return ResponseEntity.ok(bookService.findAllPaged(pageable, categoryId, name.trim(), booked));
 
 	}
+	
+	@GetMapping(
+			value = "/v2",
+			produces = { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.APPLICATION_YML },
+			consumes = { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.APPLICATION_YML })
+	public ResponseEntity<Page<com.poletto.bookstore.dto.v2.BookDTO>> findAllPagedV2(
+			@RequestParam(value = "page", defaultValue = "0") Integer page,
+			@RequestParam(value = "size", defaultValue = "12") Integer size,
+			@RequestParam(value = "sort", defaultValue = "asc") String sort,
+			@RequestParam(value = "orderBy", defaultValue = "name") String orderBy,
+			@RequestParam(value = "categoryId", defaultValue = "0") Long categoryId,
+			@RequestParam(value = "name", defaultValue = "") String name,
+			@RequestParam(value = "booked", defaultValue = "") String booked) {
+
+		Direction sortDirection = "desc".equalsIgnoreCase(sort) ? Direction.DESC : Direction.ASC;
+
+		Pageable pageable = PageRequest.of(page, size, Sort.by(sortDirection, orderBy));
+
+		return ResponseEntity.ok(bookService.findAllPagedV2(pageable, categoryId, name.trim(), booked));
+
+	}
 
 	@GetMapping(value = "/{id}")
 	public ResponseEntity<BookDTO> findById(@PathVariable Long id) {

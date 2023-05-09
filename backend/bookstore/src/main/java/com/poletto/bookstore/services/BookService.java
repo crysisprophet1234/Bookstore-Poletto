@@ -1,5 +1,8 @@
 package com.poletto.bookstore.services;
 
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
+
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -15,6 +18,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.poletto.bookstore.controllers.BookController;
 import com.poletto.bookstore.converter.custom.BookMapper;
 import com.poletto.bookstore.dto.v1.CategoryDTO;
 import com.poletto.bookstore.dto.v1.BookDTO;
@@ -82,6 +86,42 @@ public class BookService {
 		logger.info("Resource BOOK page found: " + "PAGE NUMBER [" + bookPage.getNumber() + "] - CONTENT: " + bookPage.getContent());
 
 		return bookPage.map(x -> BookMapper.convertEntityToDto(x));
+
+	}
+	
+	@Transactional(readOnly = true)
+	public Page<com.poletto.bookstore.dto.v2.BookDTO> findAllPagedV2(Pageable pageable, Long categoryId, String name, String booked) {
+
+		List<Category> categories = (categoryId == 0) ? null
+				: Arrays.asList(categoryRepository.getReferenceById(categoryId));
+
+		switch (booked) {
+
+		case "available":
+			booked = "BOOKED";
+			break;
+
+		case "booked":
+			booked = "AVAILABLE";
+			break;
+
+		case "":
+			booked = "";
+			break;
+
+		}
+
+		var bookPage = bookRepository.findPaged(categories, name, booked, pageable);
+
+		bookRepository.findProductsWithCategories(bookPage.getContent());
+		
+		logger.info("Resource BOOK page found: " + "PAGE NUMBER [" + bookPage.getNumber() + "] - CONTENT: " + bookPage.getContent());
+		
+		Page<com.poletto.bookstore.dto.v2.BookDTO> dtos = bookPage.map(x -> BookMapper.convertEntityToDtoV2(x));
+		
+		dtos.stream().forEach(x -> x.add(linkTo(methodOn(BookController.class).findById(x.getId())).withSelfRel()));
+
+		return dtos;
 
 	}
 
