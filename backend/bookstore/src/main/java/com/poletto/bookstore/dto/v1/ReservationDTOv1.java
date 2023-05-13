@@ -12,7 +12,7 @@ import com.poletto.bookstore.entities.BookReservation;
 import com.poletto.bookstore.entities.Reservation;
 import com.poletto.bookstore.entities.User;
 
-public class ReservationDTO implements Serializable {
+public class ReservationDTOv1 implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
@@ -23,26 +23,26 @@ public class ReservationDTO implements Serializable {
 	private String status;
 	
 	@JsonIgnoreProperties("roles")
-	private UserDTO client;
+	private UserDTOv1 client;
 
 	
 	@JsonIgnoreProperties({"imgUrl", "categories", "releaseDate"})
-	private Set<BookDTO> books = new HashSet<>();
+	private Set<BookDTOv1> books = new HashSet<>();
 
-	public ReservationDTO() {
+	public ReservationDTOv1() {
 
 	}
 
-	public ReservationDTO(Long id, Instant moment, String status, LocalDate devolution, Integer weeks, User client) {
+	public ReservationDTOv1(Long id, Instant moment, String status, LocalDate devolution, Integer weeks, User client) {
 		this.id = id;
 		this.moment = moment;
 		this.weeks = weeks;
 		this.status = status;
-		this.client = new UserDTO(client);
+		this.client = new UserDTOv1(client);
 		this.devolution = LocalDate.ofInstant(moment, ZoneId.of("America/Sao_Paulo")).plusWeeks(weeks);
 	}
 
-	public ReservationDTO(Reservation entity) {
+	public ReservationDTOv1(Reservation entity) {
 		id = entity.getId();
 		moment = entity.getMoment();
 		devolution = entity.getDevolution();
@@ -50,7 +50,7 @@ public class ReservationDTO implements Serializable {
 		status = entity.getStatus().name();
 		client = createUser(entity.getClient());
 		for (BookReservation bookReservation : entity.getBooks()) {
-			books.add(new BookDTO(bookReservation.getBook()));
+			books.add(new BookDTOv1(bookReservation.getBook()));
 		}
 		
 	}
@@ -95,21 +95,21 @@ public class ReservationDTO implements Serializable {
 		this.status = status;
 	}
 
-	public UserDTO getClient() {
+	public UserDTOv1 getClient() {
 		return client;
 	}
 
-	public void setClient(UserDTO client) {
+	public void setClient(UserDTOv1 client) {
 		this.client = client;
 	}
 
-	public Set<BookDTO> getBooks() {
+	public Set<BookDTOv1> getBooks() {
 		return books;
 	}
 	
 	//TODO wtf is this???
-	public UserDTO createUser(User user) {
-		UserDTO userDTO = new UserDTO();
+	public UserDTOv1 createUser(User user) {
+		UserDTOv1 userDTO = new UserDTOv1();
 		userDTO.setId(user.getId());
 		userDTO.setFirstname(user.getFirstname());
 		userDTO.setLastname(user.getLastname());

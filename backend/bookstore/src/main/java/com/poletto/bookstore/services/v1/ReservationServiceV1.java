@@ -1,4 +1,4 @@
-package com.poletto.bookstore.services;
+package com.poletto.bookstore.services.v1;
 
 import java.time.Instant;
 import java.util.Optional;
@@ -12,8 +12,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.poletto.bookstore.converter.custom.ReservationMapper;
-import com.poletto.bookstore.dto.v1.ReservationDTO;
-import com.poletto.bookstore.dto.v1.BookDTO;
+import com.poletto.bookstore.dto.v1.ReservationDTOv1;
+import com.poletto.bookstore.dto.v1.BookDTOv1;
 import com.poletto.bookstore.entities.Book;
 import com.poletto.bookstore.entities.BookReservation;
 import com.poletto.bookstore.entities.Reservation;
@@ -29,9 +29,9 @@ import com.poletto.bookstore.repositories.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
 
 @Service
-public class ReservationService {
+public class ReservationServiceV1 {
 
-	private static final Logger logger = LoggerFactory.getLogger(ReservationService.class);
+	private static final Logger logger = LoggerFactory.getLogger(ReservationServiceV1.class);
 
 	@Autowired
 	private ReservationRepository reservationRepository;
@@ -46,7 +46,7 @@ public class ReservationService {
 	private BookRepository bookRepository;
 
 	@Transactional(readOnly = true)
-	public Page<ReservationDTO> findAll(Pageable pageable, Long userId) {
+	public Page<ReservationDTOv1> findAll(Pageable pageable, Long userId) {
 
 		Page<Reservation> reservationPage = reservationRepository.findAll(pageable);
 
@@ -62,7 +62,7 @@ public class ReservationService {
 	}
 
 	@Transactional(readOnly = true)
-	public ReservationDTO findById(Long id) {
+	public ReservationDTOv1 findById(Long id) {
 
 		Optional<Reservation> user = reservationRepository.findById(id);
 
@@ -77,7 +77,7 @@ public class ReservationService {
 	// TODO implementar mapper
 
 	@Transactional
-	public ReservationDTO reserveBooks(ReservationDTO dto) {
+	public ReservationDTOv1 reserveBooks(ReservationDTOv1 dto) {
 
 		Reservation entity = new Reservation();
 
@@ -93,7 +93,7 @@ public class ReservationService {
 
 		entity.getBooks().clear();
 
-		for (BookDTO bookDTO : dto.getBooks()) {
+		for (BookDTOv1 bookDTO : dto.getBooks()) {
 			Book bookEntity = bookRepository.getReferenceById(bookDTO.getId());
 			if (bookEntity.getStatus().equals(BookStatus.BOOKED)) {
 				throw new InvalidStatusException(bookEntity);

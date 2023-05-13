@@ -3,28 +3,29 @@ package com.poletto.bookstore.dto.v1;
 import java.io.Serializable;
 import java.util.Objects;
 
-import com.poletto.bookstore.entities.Role;
+import com.poletto.bookstore.entities.Author;
 
-public class RoleDTO implements Serializable {
+public class AuthorDTOv1 implements Serializable {
 
 	private static final long serialVersionUID = 1L;
-
+	
 	private Long id;
-	private String authority;
-
-	public RoleDTO() {
+	private String name;
+	
+	public AuthorDTOv1() {
+		
 	}
-
-	public RoleDTO(Long id, String authority) {
+	
+	public AuthorDTOv1(Long id, String name) {
 		super();
 		this.id = id;
-		this.authority = authority;
+		this.name = name;
 	}
-
-	public RoleDTO(Role entity) {
+	
+	public AuthorDTOv1(Author entity) {
 		super();
 		id = entity.getId();
-		authority = entity.getAuthority();
+		name = entity.getName();
 	}
 
 	public Long getId() {
@@ -35,12 +36,12 @@ public class RoleDTO implements Serializable {
 		this.id = id;
 	}
 
-	public String getAuthority() {
-		return authority;
+	public String getName() {
+		return name;
 	}
 
-	public void setAuthority(String authority) {
-		this.authority = authority;
+	public void setName(String name) {
+		this.name = name;
 	}
 
 	@Override
@@ -56,13 +57,13 @@ public class RoleDTO implements Serializable {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		RoleDTO other = (RoleDTO) obj;
+		AuthorDTOv1 other = (AuthorDTOv1) obj;
 		return Objects.equals(id, other.id);
 	}
 
 	@Override
 	public String toString() {
-		return "RoleDTO [id=" + id + ", authority=" + authority + "]";
+		return "AuthorDTO [id=" + id + ", name=" + name + "]";
 	}
 	
 }

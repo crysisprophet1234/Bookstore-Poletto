@@ -1,4 +1,4 @@
-package com.poletto.bookstore.controllers;
+package com.poletto.bookstore.controllers.v2;
 
 import java.net.URI;
 
@@ -10,27 +10,27 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-import com.poletto.bookstore.dto.v1.UserAuthDTO;
-import com.poletto.bookstore.dto.v1.UserDTO;
-import com.poletto.bookstore.services.UserService;
+import com.poletto.bookstore.dto.v1.UserAuthDTOv1;
+import com.poletto.bookstore.dto.v1.UserDTOv1;
+import com.poletto.bookstore.services.v1.UserServiceV1;
 
 @RestController
-@RequestMapping (value = "/auth/v1")
-public class AuthController {
+@RequestMapping (value = "/auth/v2")
+public class AuthControllerV2 {
 
 	@Autowired
-	private UserService userService;
+	private UserServiceV1 userService;
 
 	@PostMapping("/register")
-	public ResponseEntity<UserDTO> insert(@RequestBody UserAuthDTO userDTO) {
-		UserDTO dto = userService.insert(userDTO);
+	public ResponseEntity<UserDTOv1> insert(@RequestBody UserAuthDTOv1 userDTO) {
+		UserDTOv1 dto = userService.insert(userDTO);
 		URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(dto.getId()).toUri();
 		return ResponseEntity.created(uri).body(dto);
 	}
 
 	@PostMapping("/authenticate")
-	public ResponseEntity<UserAuthDTO> authenticate(@RequestBody UserAuthDTO userDTO) {
-		UserAuthDTO dto = userService.authenticate(userDTO);
+	public ResponseEntity<UserAuthDTOv1> authenticate(@RequestBody UserAuthDTOv1 userDTO) {
+		UserAuthDTOv1 dto = userService.authenticate(userDTO);
 		return ResponseEntity.ok().body(dto);
 	}
 

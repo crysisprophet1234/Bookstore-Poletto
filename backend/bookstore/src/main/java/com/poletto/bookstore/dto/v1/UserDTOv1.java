@@ -7,7 +7,7 @@ import java.util.Set;
 import com.poletto.bookstore.entities.Role;
 import com.poletto.bookstore.entities.User;
 
-public class UserDTO implements Serializable {
+public class UserDTOv1 implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
@@ -16,25 +16,25 @@ public class UserDTO implements Serializable {
 	private String lastname;
 	private String email;
 
-	Set<RoleDTO> roles = new HashSet<>();
+	Set<RoleDTOv1> roles = new HashSet<>();
 
-	public UserDTO() {
+	public UserDTOv1() {
 	}
 
-	public UserDTO(Long id, String firstname, String lastname, String email) {
+	public UserDTOv1(Long id, String firstname, String lastname, String email) {
 		this.id = id;
 		this.firstname = firstname;
 		this.lastname = lastname;
 		this.email = email;
 	}
 
-	public UserDTO(User entity) {
+	public UserDTOv1(User entity) {
 		id = entity.getId();
 		firstname = entity.getFirstname();
 		lastname = entity.getLastname();
 		email = entity.getEmail();
 		for (Role role : entity.getRoles()) {
-			this.roles.add(new RoleDTO(role));
+			this.roles.add(new RoleDTOv1(role));
 		}
 	}
 
@@ -70,7 +70,7 @@ public class UserDTO implements Serializable {
 		this.email = email;
 	}
 
-	public Set<RoleDTO> getRoles() {
+	public Set<RoleDTOv1> getRoles() {
 		return roles;
 	}
 

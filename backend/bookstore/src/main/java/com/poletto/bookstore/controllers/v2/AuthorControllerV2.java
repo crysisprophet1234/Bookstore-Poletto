@@ -1,4 +1,4 @@
-package com.poletto.bookstore.controllers;
+package com.poletto.bookstore.controllers.v2;
 
 import java.util.List;
 
@@ -11,32 +11,32 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import com.poletto.bookstore.dto.v1.AuthorDTO;
-import com.poletto.bookstore.services.AuthorService;
+import com.poletto.bookstore.dto.v1.AuthorDTOv1;
+import com.poletto.bookstore.services.v1.AuthorServiceV1;
 
 @Controller
-@RequestMapping("/authors/v1")
-public class AuthorController {
+@RequestMapping("/authors/v2")
+public class AuthorControllerV2 {
 	
 	@Autowired
-	private AuthorService authorService;
+	private AuthorServiceV1 authorService;
 	
 	@Deprecated
 	@GetMapping
-	public ResponseEntity<List<AuthorDTO>> findAll() {
-		List<AuthorDTO> list = authorService.findAll();		
+	public ResponseEntity<List<AuthorDTOv1>> findAll() {
+		List<AuthorDTOv1> list = authorService.findAll();		
 		return ResponseEntity.ok().body(list);
 	}
 	
 	@GetMapping(value = "/paged")
-	public ResponseEntity<Page<AuthorDTO>> findAllPaged(Pageable pageable) {
-		Page<AuthorDTO> list = authorService.findAllPaged(pageable);		
+	public ResponseEntity<Page<AuthorDTOv1>> findAllPaged(Pageable pageable) {
+		Page<AuthorDTOv1> list = authorService.findAllPaged(pageable);		
 		return ResponseEntity.ok().body(list);
 	}
 	
 	@GetMapping(value = "/{id}")
-	public ResponseEntity<AuthorDTO> findById(@PathVariable Long id) {
-		AuthorDTO dto = authorService.findById(id);
+	public ResponseEntity<AuthorDTOv1> findById(@PathVariable Long id) {
+		AuthorDTOv1 dto = authorService.findById(id);
 		return ResponseEntity.ok().body(dto);
 	}
 

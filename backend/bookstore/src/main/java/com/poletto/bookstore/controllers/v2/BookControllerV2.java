@@ -1,4 +1,4 @@
-package com.poletto.bookstore.controllers;
+package com.poletto.bookstore.controllers.v2;
 
 import java.net.URI;
 
@@ -20,23 +20,24 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-import com.poletto.bookstore.dto.v1.BookDTO;
-import com.poletto.bookstore.services.BookService;
+import com.poletto.bookstore.dto.v1.BookDTOv1;
+import com.poletto.bookstore.dto.v2.BookDTOv2;
+import com.poletto.bookstore.services.v2.BookServiceV2;
 import com.poletto.bookstore.util.MediaType;
 
 import jakarta.validation.Valid;
 
 @RestController
-@RequestMapping(value = "/books/v1")
-public class BookController {
+@RequestMapping(value = "/books/v2")
+public class BookControllerV2 {
 
 	@Autowired
-	private BookService bookService;
-
+	private BookServiceV2 bookService;
+	
 	@GetMapping(
 			produces = { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.APPLICATION_YML },
 			consumes = { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.APPLICATION_YML })
-	public ResponseEntity<Page<BookDTO>> findAllPaged(
+	public ResponseEntity<Page<BookDTOv2>> findAllPaged(
 			@RequestParam(value = "page", defaultValue = "0") Integer page,
 			@RequestParam(value = "size", defaultValue = "12") Integer size,
 			@RequestParam(value = "sort", defaultValue = "asc") String sort,
@@ -52,44 +53,23 @@ public class BookController {
 		return ResponseEntity.ok(bookService.findAllPaged(pageable, categoryId, name.trim(), booked));
 
 	}
-	
-	@GetMapping(
-			value = "/v2",
-			produces = { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.APPLICATION_YML },
-			consumes = { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.APPLICATION_YML })
-	public ResponseEntity<Page<com.poletto.bookstore.dto.v2.BookDTO>> findAllPagedV2(
-			@RequestParam(value = "page", defaultValue = "0") Integer page,
-			@RequestParam(value = "size", defaultValue = "12") Integer size,
-			@RequestParam(value = "sort", defaultValue = "asc") String sort,
-			@RequestParam(value = "orderBy", defaultValue = "name") String orderBy,
-			@RequestParam(value = "categoryId", defaultValue = "0") Long categoryId,
-			@RequestParam(value = "name", defaultValue = "") String name,
-			@RequestParam(value = "booked", defaultValue = "") String booked) {
-
-		Direction sortDirection = "desc".equalsIgnoreCase(sort) ? Direction.DESC : Direction.ASC;
-
-		Pageable pageable = PageRequest.of(page, size, Sort.by(sortDirection, orderBy));
-
-		return ResponseEntity.ok(bookService.findAllPagedV2(pageable, categoryId, name.trim(), booked));
-
-	}
 
 	@GetMapping(value = "/{id}")
-	public ResponseEntity<BookDTO> findById(@PathVariable Long id) {
-		BookDTO entity = bookService.findById(id);
+	public ResponseEntity<BookDTOv1> findById(@PathVariable Long id) {
+		BookDTOv1 entity = bookService.findById(id);
 		return ResponseEntity.ok().body(entity);
 	}
 	
 	@PostMapping
-	public ResponseEntity<BookDTO> insert(@RequestBody @Valid BookDTO dto) {
+	public ResponseEntity<BookDTOv1> insert(@RequestBody @Valid BookDTOv1 dto) {
 		dto = bookService.insert(dto);
 		URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(dto.getId()).toUri();
 		return ResponseEntity.created(uri).body(dto);
 	}
 
 	@PutMapping(value = "/{id}")
-	public ResponseEntity<BookDTO> update(@PathVariable Long id, @RequestBody BookDTO dto) {
-		BookDTO bookDTO = bookService.update(id, dto);
+	public ResponseEntity<BookDTOv1> update(@PathVariable Long id, @RequestBody BookDTOv1 dto) {
+		BookDTOv1 bookDTO = bookService.update(id, dto);
 		return ResponseEntity.ok().body(bookDTO);
 	}
 

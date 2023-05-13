@@ -12,7 +12,7 @@ import com.poletto.bookstore.entities.Book;
 import com.poletto.bookstore.entities.Category;
 import com.poletto.bookstore.entities.enums.BookStatus;
 
-public class BookDTO implements Serializable {
+public class BookDTOv1 implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 	
@@ -25,13 +25,13 @@ public class BookDTO implements Serializable {
 	@JsonIgnoreProperties("nacionality")
 	private Author author;
 	
-	private Set<CategoryDTO> categories = new HashSet<>();
+	private Set<CategoryDTOv1> categories = new HashSet<>();
 	
-	public BookDTO() {
+	public BookDTOv1() {
 		
 	}
 
-	public BookDTO(Long id, String name, LocalDate releaseDate, String imgUrl, BookStatus status, Author author) {
+	public BookDTOv1(Long id, String name, LocalDate releaseDate, String imgUrl, BookStatus status, Author author) {
 		this.id = id;
 		this.name = name;
 		this.releaseDate = releaseDate;
@@ -40,19 +40,19 @@ public class BookDTO implements Serializable {
 		this.author = author;
 	}
 	
-	public BookDTO(Book entity) {
+	public BookDTOv1(Book entity) {
 		id = entity.getId();
 		name = entity.getName();
 		releaseDate = entity.getReleaseDate();
 		imgUrl = entity.getImgUrl();
 		status = entity.getStatus().name();
 		author = entity.getAuthor();
-		categories = entity.getCategories().stream().map(x -> new CategoryDTO(x)).collect(Collectors.toSet());
+		categories = entity.getCategories().stream().map(x -> new CategoryDTOv1(x)).collect(Collectors.toSet());
 	}
 	
-	public BookDTO(Book entity, Set<Category> categories) {
+	public BookDTOv1(Book entity, Set<Category> categories) {
 		this(entity);
-		categories.forEach(cat -> this.categories.add(new CategoryDTO(cat)));
+		categories.forEach(cat -> this.categories.add(new CategoryDTOv1(cat)));
 	}
 
 	public Long getId() {
@@ -103,7 +103,7 @@ public class BookDTO implements Serializable {
 		this.author = author;
 	}
 
-	public Set<CategoryDTO> getCategories() {
+	public Set<CategoryDTOv1> getCategories() {
 		return categories;
 	}
 

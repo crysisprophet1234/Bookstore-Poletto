@@ -1,4 +1,4 @@
-package com.poletto.bookstore.services;
+package com.poletto.bookstore.services.v1;
 
 import java.util.List;
 import java.util.Optional;
@@ -19,9 +19,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.poletto.bookstore.config.JwtService;
 import com.poletto.bookstore.converter.custom.UserMapper;
-import com.poletto.bookstore.dto.v1.RoleDTO;
-import com.poletto.bookstore.dto.v1.UserAuthDTO;
-import com.poletto.bookstore.dto.v1.UserDTO;
+import com.poletto.bookstore.dto.v1.RoleDTOv1;
+import com.poletto.bookstore.dto.v1.UserAuthDTOv1;
+import com.poletto.bookstore.dto.v1.UserDTOv1;
 import com.poletto.bookstore.entities.User;
 import com.poletto.bookstore.exceptions.DatabaseException;
 import com.poletto.bookstore.exceptions.ResourceNotFoundException;
@@ -32,9 +32,9 @@ import com.poletto.bookstore.repositories.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
 
 @Service
-public class UserService {
+public class UserServiceV1 {
 	
-	private static final Logger logger = LoggerFactory.getLogger(UserService.class);
+	private static final Logger logger = LoggerFactory.getLogger(UserServiceV1.class);
 
 	@Autowired
 	private UserRepository userRepository;
@@ -53,13 +53,13 @@ public class UserService {
 
 	@Transactional(readOnly = true)
 	@Deprecated
-	public List<UserDTO> findAll() {
+	public List<UserDTOv1> findAll() {
 		List<User> list = userRepository.findAll();
-		return list.stream().map(x -> new UserDTO(x)).toList();
+		return list.stream().map(x -> new UserDTOv1(x)).toList();
 	}
 	
 	@Transactional(readOnly = true)
-	public Page<UserDTO> findAllPaged(Pageable pageable) {
+	public Page<UserDTOv1> findAllPaged(Pageable pageable) {
 		
 		Page<User> userPage = userRepository.findAll(pageable);
 		
@@ -70,7 +70,7 @@ public class UserService {
 	}
 
 	@Transactional(readOnly = true)
-	public UserDTO findById(Long id) {
+	public UserDTOv1 findById(Long id) {
 		
 		Optional<User> user = userRepository.findById(id);
 		
@@ -83,7 +83,7 @@ public class UserService {
 	}
 
 	@Transactional
-	public UserDTO insert(UserAuthDTO dto) {
+	public UserDTOv1 insert(UserAuthDTOv1 dto) {
 
 		User entity = UserMapper.convertDtoToEntity(dto);
 		
@@ -100,7 +100,7 @@ public class UserService {
 	}
 	
 	@Transactional (readOnly = true)
-	public UserAuthDTO authenticate(UserAuthDTO dto) { // TODO verificar dados presentes na response
+	public UserAuthDTOv1 authenticate(UserAuthDTOv1 dto) { // TODO verificar dados presentes na response
 		
 		try {
 			
@@ -112,7 +112,7 @@ public class UserService {
 
 		User entity = userRepository.findByEmail(dto.getEmail()).orElseThrow();
 		
-		UserAuthDTO userAuthDTO = UserMapper.convertEntityToAuthDto(entity);
+		UserAuthDTOv1 userAuthDTO = UserMapper.convertEntityToAuthDto(entity);
 
 		String jwtToken = jwtService.generateToken(entity);
 
@@ -125,7 +125,7 @@ public class UserService {
 	}
 
 	@Transactional
-	public UserDTO update(Long id, UserAuthDTO dto) {
+	public UserDTOv1 update(Long id, UserAuthDTOv1 dto) {
 
 		try {
 
@@ -137,7 +137,7 @@ public class UserService {
 			
 			entity.getRoles().clear();
 			
-			for (RoleDTO roleDTO : dto.getRoles()) {
+			for (RoleDTOv1 roleDTO : dto.getRoles()) {
 				entity.getRoles().add(roleRepository.getReferenceById(roleDTO.getId()));
 			}
 

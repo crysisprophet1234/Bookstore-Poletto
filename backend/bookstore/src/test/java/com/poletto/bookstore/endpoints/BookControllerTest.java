@@ -26,18 +26,18 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import com.poletto.bookstore.config.JwtService;
-import com.poletto.bookstore.controllers.BookController;
-import com.poletto.bookstore.dto.v1.BookDTO;
+import com.poletto.bookstore.controllers.v1.BookControllerV1;
+import com.poletto.bookstore.dto.v1.BookDTOv1;
 import com.poletto.bookstore.entities.Author;
 import com.poletto.bookstore.entities.Book;
 import com.poletto.bookstore.entities.enums.BookStatus;
 import com.poletto.bookstore.exceptions.ResourceNotFoundException;
 import com.poletto.bookstore.mocks.MockBook;
 import com.poletto.bookstore.repositories.BookRepository;
-import com.poletto.bookstore.services.BookService;
+import com.poletto.bookstore.services.v1.BookServiceV1;
 
 @RunWith(SpringRunner.class)
-@WebMvcTest(BookController.class)
+@WebMvcTest(BookControllerV1.class)
 public class BookControllerTest {
 
 	private Logger logger = Logger.getLogger(BookControllerTest.class.getName());
@@ -52,7 +52,7 @@ public class BookControllerTest {
 	private BookRepository bookRepository;
 
 	@MockBean
-	private BookService bookService;
+	private BookServiceV1 bookService;
 
 	@InjectMocks
 	MockBook inputObject;
@@ -157,7 +157,7 @@ public class BookControllerTest {
 		Book persisted = entity;
 		persisted.setId(1L);
 
-		BookDTO bookDTO = inputObject.mockDTO(1);
+		BookDTOv1 bookDTO = inputObject.mockDTO(1);
 		bookDTO.setId(1L);
 
 		when(bookRepository.save(entity)).thenReturn(persisted);

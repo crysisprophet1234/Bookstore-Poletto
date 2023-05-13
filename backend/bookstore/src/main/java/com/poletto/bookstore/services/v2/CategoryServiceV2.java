@@ -1,4 +1,4 @@
-package com.poletto.bookstore.services;
+package com.poletto.bookstore.services.v2;
 
 import java.util.List;
 import java.util.Optional;
@@ -14,49 +14,49 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.poletto.bookstore.converter.DozerMapperConverter;
-import com.poletto.bookstore.dto.v1.CategoryDTO;
+import com.poletto.bookstore.dto.v1.CategoryDTOv1;
 import com.poletto.bookstore.entities.Category;
 import com.poletto.bookstore.exceptions.ResourceNotFoundException;
 import com.poletto.bookstore.repositories.CategoryRepository;
 
 @Service
-public class CategoryService {
+public class CategoryServiceV2 {
 	
-	private static final Logger logger = LoggerFactory.getLogger(UserService.class);
+	private static final Logger logger = LoggerFactory.getLogger(UserServiceV2.class);
 
 	@Autowired
 	private CategoryRepository categoryRepository;
 	
 	@Transactional (readOnly = true)
-	public Set<CategoryDTO> findAll() {
+	public Set<CategoryDTOv1> findAll() {
 		
 		List<Category> list = categoryRepository.findAll();
 		
-		logger.info("Resource CATEGORY list found: " + DozerMapperConverter.parseListObjects(list, CategoryDTO.class));
+		logger.info("Resource CATEGORY list found: " + DozerMapperConverter.parseListObjects(list, CategoryDTOv1.class));
 		
-		return list.stream().map(x -> DozerMapperConverter.parseObject(x, CategoryDTO.class)).collect(Collectors.toSet());
+		return list.stream().map(x -> DozerMapperConverter.parseObject(x, CategoryDTOv1.class)).collect(Collectors.toSet());
 		
 	}
 	
 	@Transactional(readOnly = true)
-	public Page<CategoryDTO> findAllPaged(Pageable pageable) {
+	public Page<CategoryDTOv1> findAllPaged(Pageable pageable) {
 		
 		Page<Category> categoryPage = categoryRepository.findAll(pageable);
 		
-		logger.info("Resource CATEGORY page found: " + "PAGE NUMBER [" + categoryPage.getNumber() + "] - CONTENT: " + DozerMapperConverter.parseListObjects(categoryPage.getContent(), CategoryDTO.class));
+		logger.info("Resource CATEGORY page found: " + "PAGE NUMBER [" + categoryPage.getNumber() + "] - CONTENT: " + DozerMapperConverter.parseListObjects(categoryPage.getContent(), CategoryDTOv1.class));
 		
-		return categoryPage.map(x -> DozerMapperConverter.parseObject(x, CategoryDTO.class));
+		return categoryPage.map(x -> DozerMapperConverter.parseObject(x, CategoryDTOv1.class));
 		
 	}
 	
 	@Transactional(readOnly = true)
-	public CategoryDTO findById(Long id) {
+	public CategoryDTOv1 findById(Long id) {
 		
 		Optional<Category> obj = categoryRepository.findById(id);
 		
 		Category entity = obj.orElseThrow(() -> new ResourceNotFoundException("Resource CATEGORY not found. ID " + id));
 		
-		CategoryDTO dto = DozerMapperConverter.parseObject(entity, CategoryDTO.class);
+		CategoryDTOv1 dto = DozerMapperConverter.parseObject(entity, CategoryDTOv1.class);
 		
 		logger.info("Resource CATEGORY found: " + dto);
 		

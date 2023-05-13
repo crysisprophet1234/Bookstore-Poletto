@@ -3,8 +3,9 @@ package com.poletto.bookstore.converter.custom;
 import org.springframework.stereotype.Service;
 
 import com.poletto.bookstore.converter.DozerMapperConverter;
-import com.poletto.bookstore.dto.v1.CategoryDTO;
-import com.poletto.bookstore.dto.v1.BookDTO;
+import com.poletto.bookstore.dto.v1.CategoryDTOv1;
+import com.poletto.bookstore.dto.v2.BookDTOv2;
+import com.poletto.bookstore.dto.v1.BookDTOv1;
 import com.poletto.bookstore.entities.Book;
 import com.poletto.bookstore.entities.Category;
 import com.poletto.bookstore.entities.enums.BookStatus;
@@ -12,9 +13,9 @@ import com.poletto.bookstore.entities.enums.BookStatus;
 @Service
 public class BookMapper {
 
-	public static BookDTO convertEntityToDto(Book book) {
+	public static BookDTOv1 convertEntityToDto(Book book) {
 		
-		BookDTO bookDto = new BookDTO();
+		BookDTOv1 bookDto = new BookDTOv1();
 		bookDto.setId(book.getId());
 		bookDto.setName(book.getName());
 		bookDto.setImgUrl(book.getImgUrl());
@@ -25,7 +26,7 @@ public class BookMapper {
 		bookDto.getCategories().clear();
 		
 		for (Category category : book.getCategories()) {
-			bookDto.getCategories().add(DozerMapperConverter.parseObject(category, CategoryDTO.class));
+			bookDto.getCategories().add(DozerMapperConverter.parseObject(category, CategoryDTOv1.class));
 		}
 		
 
@@ -33,7 +34,7 @@ public class BookMapper {
 
 	}
 
-	public static Book convertDtoToEntity(BookDTO dto) {
+	public static Book convertDtoToEntity(BookDTOv1 dto) {
 
 		Book book = new Book();
 		book.setId(dto.getId());
@@ -45,7 +46,7 @@ public class BookMapper {
 		
 		book.getCategories().clear();
 		
-		for (CategoryDTO categoryDTO : dto.getCategories()) {
+		for (CategoryDTOv1 categoryDTO : dto.getCategories()) {
 			book.getCategories().add(DozerMapperConverter.parseObject(categoryDTO, Category.class));
 		}
 
@@ -53,9 +54,9 @@ public class BookMapper {
 
 	}
 	
-	public static com.poletto.bookstore.dto.v2.BookDTO convertEntityToDtoV2(Book book) {
+	public static BookDTOv2 convertEntityToDtoV2(Book book) {
 		
-		com.poletto.bookstore.dto.v2.BookDTO bookDto = new com.poletto.bookstore.dto.v2.BookDTO();
+		BookDTOv2 bookDto = new BookDTOv2();
 		bookDto.setId(book.getId());
 		bookDto.setName(book.getName());
 		bookDto.setImgUrl(book.getImgUrl());
@@ -66,7 +67,7 @@ public class BookMapper {
 		bookDto.getCategories().clear();
 		
 		for (Category category : book.getCategories()) {
-			bookDto.getCategories().add(DozerMapperConverter.parseObject(category, CategoryDTO.class));
+			bookDto.getCategories().add(DozerMapperConverter.parseObject(category, CategoryDTOv1.class));
 		}
 		
 

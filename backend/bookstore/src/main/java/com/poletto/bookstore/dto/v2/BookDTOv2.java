@@ -7,13 +7,16 @@ import java.util.Set;
 
 import org.springframework.hateoas.RepresentationModel;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.github.dozermapper.core.Mapping;
-import com.poletto.bookstore.dto.v1.CategoryDTO;
+import com.poletto.bookstore.dto.v1.CategoryDTOv1;
 import com.poletto.bookstore.entities.Author;
 import com.poletto.bookstore.entities.enums.BookStatus;
 
-public class BookDTO extends RepresentationModel<BookDTO> implements Serializable {
+@JsonPropertyOrder(value = {"id"})
+public class BookDTOv2 extends RepresentationModel<BookDTOv2> implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 	
@@ -25,15 +28,17 @@ public class BookDTO extends RepresentationModel<BookDTO> implements Serializabl
 	private LocalDate releaseDate;
 	private String imgUrl;
 	private String status;
+	
+	@JsonIgnoreProperties(value = {"nacionality"})
 	private Author author;
 
-	private Set<CategoryDTO> categories = new HashSet<>();
+	private Set<CategoryDTOv1> categories = new HashSet<>();
 	
-	public BookDTO() {
+	public BookDTOv2() {
 		
 	}
 
-	public BookDTO(Long id, String name, LocalDate releaseDate, String imgUrl, BookStatus status, Author author) {
+	public BookDTOv2(Long id, String name, LocalDate releaseDate, String imgUrl, BookStatus status, Author author) {
 		this.key = id;
 		this.name = name;
 		this.releaseDate = releaseDate;
@@ -90,7 +95,7 @@ public class BookDTO extends RepresentationModel<BookDTO> implements Serializabl
 		this.author = author;
 	}
 
-	public Set<CategoryDTO> getCategories() {
+	public Set<CategoryDTOv1> getCategories() {
 		return categories;
 	}
 

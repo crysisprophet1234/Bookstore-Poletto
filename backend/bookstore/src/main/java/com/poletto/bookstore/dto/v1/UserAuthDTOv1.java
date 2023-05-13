@@ -2,24 +2,24 @@ package com.poletto.bookstore.dto.v1;
 
 import java.util.Set;
 
-public class UserAuthDTO extends UserDTO {
+public class UserAuthDTOv1 extends UserDTOv1 {
 
 	private static final long serialVersionUID = 1L;
 
 	private String password;
 	private String token;
 
-	public UserAuthDTO() {
+	public UserAuthDTOv1() {
 		super();
 	}
 
-	public UserAuthDTO(String password, String token) {
+	public UserAuthDTOv1(String password, String token) {
 		super();
 		this.password = password;
 		this.token = token;
 	}
 	
-	public UserAuthDTO(UserDTO userDTO, String password, String token) {
+	public UserAuthDTOv1(UserDTOv1 userDTO, String password, String token) {
 		setId(userDTO.getId());
 		setFirstname(userDTO.getFirstname());
 		setLastname(userDTO.getLastname());
@@ -45,7 +45,7 @@ public class UserAuthDTO extends UserDTO {
 		this.token = token;
 	}
 	
-	public Set<RoleDTO> getRoles() {
+	public Set<RoleDTOv1> getRoles() {
 		return roles;
 	}
 

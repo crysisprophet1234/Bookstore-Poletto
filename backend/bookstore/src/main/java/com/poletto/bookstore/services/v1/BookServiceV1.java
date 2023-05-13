@@ -1,4 +1,4 @@
-package com.poletto.bookstore.services;
+package com.poletto.bookstore.services.v1;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
@@ -18,10 +18,11 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.poletto.bookstore.controllers.BookController;
+import com.poletto.bookstore.controllers.v1.BookControllerV1;
 import com.poletto.bookstore.converter.custom.BookMapper;
-import com.poletto.bookstore.dto.v1.CategoryDTO;
-import com.poletto.bookstore.dto.v1.BookDTO;
+import com.poletto.bookstore.dto.v1.CategoryDTOv1;
+import com.poletto.bookstore.dto.v2.BookDTOv2;
+import com.poletto.bookstore.dto.v1.BookDTOv1;
 import com.poletto.bookstore.entities.Book;
 import com.poletto.bookstore.entities.Category;
 import com.poletto.bookstore.entities.enums.BookStatus;
@@ -34,9 +35,9 @@ import com.poletto.bookstore.repositories.CategoryRepository;
 import jakarta.persistence.EntityNotFoundException;
 
 @Service
-public class BookService {
+public class BookServiceV1 {
 	
-	private static final Logger logger = LoggerFactory.getLogger(BookService.class);
+	private static final Logger logger = LoggerFactory.getLogger(BookServiceV1.class);
 
 	@Autowired
 	private BookRepository bookRepository;
@@ -49,16 +50,16 @@ public class BookService {
 
 	@Deprecated
 	@Transactional(readOnly = true)
-	public List<BookDTO> findAll() {
+	public List<BookDTOv1> findAll() {
 
 		List<Book> list = bookRepository.findAll();
 
-		return list.stream().map(x -> new BookDTO(x)).collect(Collectors.toList());
+		return list.stream().map(x -> new BookDTOv1(x)).collect(Collectors.toList());
 		
 	}
 
 	@Transactional(readOnly = true)
-	public Page<BookDTO> findAllPaged(Pageable pageable, Long categoryId, String name, String booked) {
+	public Page<BookDTOv1> findAllPaged(Pageable pageable, Long categoryId, String name, String booked) {
 
 		List<Category> categories = (categoryId == 0) ? null
 				: Arrays.asList(categoryRepository.getReferenceById(categoryId));
@@ -90,7 +91,7 @@ public class BookService {
 	}
 	
 	@Transactional(readOnly = true)
-	public Page<com.poletto.bookstore.dto.v2.BookDTO> findAllPagedV2(Pageable pageable, Long categoryId, String name, String booked) {
+	public Page<BookDTOv2> findAllPagedV2(Pageable pageable, Long categoryId, String name, String booked) {
 
 		List<Category> categories = (categoryId == 0) ? null
 				: Arrays.asList(categoryRepository.getReferenceById(categoryId));
@@ -117,16 +118,16 @@ public class BookService {
 		
 		logger.info("Resource BOOK page found: " + "PAGE NUMBER [" + bookPage.getNumber() + "] - CONTENT: " + bookPage.getContent());
 		
-		Page<com.poletto.bookstore.dto.v2.BookDTO> dtos = bookPage.map(x -> BookMapper.convertEntityToDtoV2(x));
+		Page<BookDTOv2> dtos = bookPage.map(x -> BookMapper.convertEntityToDtoV2(x));
 		
-		dtos.stream().forEach(x -> x.add(linkTo(methodOn(BookController.class).findById(x.getId())).withSelfRel()));
+		dtos.stream().forEach(x -> x.add(linkTo(methodOn(BookControllerV1.class).findById(x.getId())).withSelfRel()));
 
 		return dtos;
 
 	}
 
 	@Transactional(readOnly = true)
-	public BookDTO findById(Long id) {
+	public BookDTOv1 findById(Long id) {
 		
 		Optional<Book> obj = bookRepository.findById(id);
 		
@@ -139,7 +140,7 @@ public class BookService {
 	}
 
 	@Transactional
-	public BookDTO insert(BookDTO dto) {
+	public BookDTOv1 insert(BookDTOv1 dto) {
 		
 		dto.setStatus(BookStatus.AVAILABLE);
 		
@@ -149,7 +150,7 @@ public class BookService {
 		
 		entity.getCategories().clear();
 		
-		for (CategoryDTO categoryDTO : dto.getCategories()) {
+		for (CategoryDTOv1 categoryDTO : dto.getCategories()) {
 			try {
 			Category category = categoryRepository.getReferenceById(categoryDTO.getId());
 			entity.getCategories().add(category);
@@ -167,7 +168,7 @@ public class BookService {
 	}
 
 	@Transactional
-	public BookDTO update(Long id, BookDTO dto) {
+	public BookDTOv1 update(Long id, BookDTOv1 dto) {
 
 		try {
 			

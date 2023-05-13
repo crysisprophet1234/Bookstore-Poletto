@@ -3,27 +3,28 @@ package com.poletto.bookstore.dto.v1;
 import java.io.Serializable;
 import java.util.Objects;
 
-import com.poletto.bookstore.entities.Category;
+import com.poletto.bookstore.entities.Role;
 
-public class CategoryDTO implements Serializable {
+public class RoleDTOv1 implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
 	private Long id;
-	private String name;
+	private String authority;
 
-	public CategoryDTO() {
-
+	public RoleDTOv1() {
 	}
 
-	public CategoryDTO(Long id, String name) {
+	public RoleDTOv1(Long id, String authority) {
+		super();
 		this.id = id;
-		this.name = name;
+		this.authority = authority;
 	}
 
-	public CategoryDTO(Category entity) {
+	public RoleDTOv1(Role entity) {
+		super();
 		id = entity.getId();
-		name = entity.getName();
+		authority = entity.getAuthority();
 	}
 
 	public Long getId() {
@@ -34,12 +35,12 @@ public class CategoryDTO implements Serializable {
 		this.id = id;
 	}
 
-	public String getName() {
-		return name;
+	public String getAuthority() {
+		return authority;
 	}
 
-	public void setName(String name) {
-		this.name = name;
+	public void setAuthority(String authority) {
+		this.authority = authority;
 	}
 
 	@Override
@@ -55,13 +56,13 @@ public class CategoryDTO implements Serializable {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		CategoryDTO other = (CategoryDTO) obj;
+		RoleDTOv1 other = (RoleDTOv1) obj;
 		return Objects.equals(id, other.id);
 	}
 
 	@Override
 	public String toString() {
-		return "CategoryDTO [id=" + id + ", name=" + name + "]";
-	}	
-
+		return "RoleDTO [id=" + id + ", authority=" + authority + "]";
+	}
+	
 }

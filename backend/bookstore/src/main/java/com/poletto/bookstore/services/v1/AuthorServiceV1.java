@@ -1,4 +1,4 @@
-package com.poletto.bookstore.services;
+package com.poletto.bookstore.services.v1;
 
 import java.util.List;
 import java.util.Optional;
@@ -13,43 +13,43 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.poletto.bookstore.converter.DozerMapperConverter;
-import com.poletto.bookstore.dto.v1.AuthorDTO;
+import com.poletto.bookstore.dto.v1.AuthorDTOv1;
 import com.poletto.bookstore.entities.Author;
 import com.poletto.bookstore.repositories.AuthorRepository;
 import com.poletto.bookstore.exceptions.ResourceNotFoundException;
 
 @Service
-public class AuthorService {
+public class AuthorServiceV1 {
 	
-	private static final Logger logger = LoggerFactory.getLogger(AuthorService.class);
+	private static final Logger logger = LoggerFactory.getLogger(AuthorServiceV1.class);
 	
 	@Autowired
 	private AuthorRepository authorRepository;
 	
 	@Transactional(readOnly = true)
-	public List<AuthorDTO> findAll() {
+	public List<AuthorDTOv1> findAll() {
 		
 		List<Author> list = authorRepository.findAll();
 		
 		logger.info("Resoucer AUTHOR list found: " + list);
 		
-		return list.stream().map(x -> DozerMapperConverter.parseObject(x, AuthorDTO.class)).collect(Collectors.toList());
+		return list.stream().map(x -> DozerMapperConverter.parseObject(x, AuthorDTOv1.class)).collect(Collectors.toList());
 		
 	}
 	
 	@Transactional(readOnly = true)
-	public Page<AuthorDTO> findAllPaged(Pageable pageable) {
+	public Page<AuthorDTOv1> findAllPaged(Pageable pageable) {
 		
 		Page<Author> authorPage = authorRepository.findAll(pageable);
 		
 		logger.info("Resource AUTHOR page found: " + "PAGE NUMBER [" + authorPage.getNumber() + "] - CONTENT: " + authorPage.getContent());
 		
-		return authorPage.map(x -> DozerMapperConverter.parseObject(x, AuthorDTO.class));
+		return authorPage.map(x -> DozerMapperConverter.parseObject(x, AuthorDTOv1.class));
 		
 	}
 	
 	@Transactional(readOnly = true)
-	public AuthorDTO findById(Long id) {
+	public AuthorDTOv1 findById(Long id) {
 		
 		Optional<Author> obj = authorRepository.findById(id);
 		
@@ -57,7 +57,7 @@ public class AuthorService {
 		
 		logger.info("Resource AUTHOR found: " + entity.toString());
 		
-		return DozerMapperConverter.parseObject(entity, AuthorDTO.class);
+		return DozerMapperConverter.parseObject(entity, AuthorDTOv1.class);
 		
 	}
 
