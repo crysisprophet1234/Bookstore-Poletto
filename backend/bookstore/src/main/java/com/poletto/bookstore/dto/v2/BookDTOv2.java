@@ -15,6 +15,8 @@ import com.poletto.bookstore.dto.v1.CategoryDTOv1;
 import com.poletto.bookstore.entities.Author;
 import com.poletto.bookstore.entities.enums.BookStatus;
 
+import jakarta.validation.constraints.PastOrPresent;
+
 @JsonPropertyOrder(value = {"id"})
 public class BookDTOv2 extends RepresentationModel<BookDTOv2> implements Serializable {
 
@@ -25,6 +27,8 @@ public class BookDTOv2 extends RepresentationModel<BookDTOv2> implements Seriali
 	private Long key;
 
 	private String name;
+	
+	@PastOrPresent
 	private LocalDate releaseDate;
 	private String imgUrl;
 	private String status;

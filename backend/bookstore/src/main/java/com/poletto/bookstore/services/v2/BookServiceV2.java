@@ -97,13 +97,13 @@ public class BookServiceV2 {
 	}
 
 	@Transactional
-	public BookDTOv1 insert(BookDTOv1 dto) {
+	public BookDTOv2 insert(BookDTOv2 dto) {
 		
 		dto.setStatus(BookStatus.AVAILABLE);
 		
 		dto.setAuthor(authorRepository.findById(dto.getAuthor().getId()).orElseThrow(() -> new ResourceNotFoundException("Resource AUTHOR not found. ID " + dto.getAuthor().getId())));
 
-		Book entity = BookMapper.convertDtoToEntity(dto);
+		Book entity = BookMapper.convertDtoToEntityV2(dto);
 		
 		entity.getCategories().clear();
 		
@@ -120,7 +120,7 @@ public class BookServiceV2 {
 		
 		logger.info("Resource BOOK saved: " + entity.toString());
 
-		return BookMapper.convertEntityToDto(entity);
+		return BookMapper.convertEntityToDtoV2(entity);
 
 	}
 

@@ -24,8 +24,6 @@ import com.poletto.bookstore.dto.v1.BookDTOv1;
 import com.poletto.bookstore.services.v1.BookServiceV1;
 import com.poletto.bookstore.util.MediaType;
 
-import jakarta.validation.Valid;
-
 @RestController
 @RequestMapping(value = "/books/v1")
 public class BookControllerV1 {
@@ -60,7 +58,7 @@ public class BookControllerV1 {
 	}
 	
 	@PostMapping
-	public ResponseEntity<BookDTOv1> insert(@RequestBody @Valid BookDTOv1 dto) {
+	public ResponseEntity<BookDTOv1> insert(@RequestBody BookDTOv1 dto) {
 		dto = bookService.insert(dto);
 		URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(dto.getId()).toUri();
 		return ResponseEntity.created(uri).body(dto);

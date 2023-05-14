@@ -61,7 +61,7 @@ public class BookControllerV2 {
 	}
 	
 	@PostMapping
-	public ResponseEntity<BookDTOv1> insert(@RequestBody @Valid BookDTOv1 dto) {
+	public ResponseEntity<BookDTOv2> insert(@RequestBody @Valid BookDTOv2 dto) {
 		dto = bookService.insert(dto);
 		URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(dto.getId()).toUri();
 		return ResponseEntity.created(uri).body(dto);

@@ -74,5 +74,25 @@ public class BookMapper {
 		return bookDto;
 
 	}
+	
+	public static Book convertDtoToEntityV2(BookDTOv2 dto) {
+
+		Book book = new Book();
+		book.setId(dto.getId());
+		book.setName(dto.getName());
+		book.setImgUrl(dto.getImgUrl());
+		book.setReleaseDate(dto.getReleaseDate());
+		book.setStatus(BookStatus.valueOf(dto.getStatus()));
+		book.setAuthor(dto.getAuthor());
+		
+		book.getCategories().clear();
+		
+		for (CategoryDTOv1 categoryDTO : dto.getCategories()) {
+			book.getCategories().add(DozerMapperConverter.parseObject(categoryDTO, Category.class));
+		}
+
+		return book;
+
+	}
 
 }
