@@ -5,6 +5,7 @@ import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.hibernate.validator.constraints.URL;
 import org.springframework.hateoas.RepresentationModel;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -15,7 +16,11 @@ import com.poletto.bookstore.dto.v1.CategoryDTOv1;
 import com.poletto.bookstore.entities.Author;
 import com.poletto.bookstore.entities.enums.BookStatus;
 
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.PastOrPresent;
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
 
 @JsonPropertyOrder(value = {"id"})
 public class BookDTOv2 extends RepresentationModel<BookDTOv2> implements Serializable {
@@ -26,16 +31,27 @@ public class BookDTOv2 extends RepresentationModel<BookDTOv2> implements Seriali
 	@JsonProperty("id")
 	private Long key;
 
+	@Pattern(regexp = "^[a-zA-Z0-9\\s]*$", message = "aceita apenas letras e números")
+    @Size(min = 1, max = 50)
 	private String name;
 	
 	@PastOrPresent
+	@NotNull
 	private LocalDate releaseDate;
+	
+	@URL
+	@NotEmpty
 	private String imgUrl;
+	
+	@Pattern (regexp = "AVAILABLE|BOOKED")
 	private String status;
 	
+	//@Valid
+	@NotNull
 	@JsonIgnoreProperties(value = {"nacionality"})
 	private Author author;
 
+	//@Valid
 	private Set<CategoryDTOv1> categories = new HashSet<>();
 	
 	public BookDTOv2() {
