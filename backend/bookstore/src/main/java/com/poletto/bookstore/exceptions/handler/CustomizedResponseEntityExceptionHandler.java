@@ -105,8 +105,23 @@ public class CustomizedResponseEntityExceptionHandler extends ResponseEntityExce
 		StringBuilder sb = new StringBuilder();
 		
 	    BindingResult results = ex.getBindingResult();
+	    
 	    for (FieldError e: results.getFieldErrors()) {
-	        sb.append(e.getObjectName() + ": campo [" + e.getField() + "] " + e.getDefaultMessage() + ". Valor passado: " + e.getRejectedValue());
+
+	        sb.append(e.getObjectName())
+	          .append(": campo [")
+	          .append(e.getField())
+	          .append("] ")
+	          .append(e.getDefaultMessage())
+	          .append(". Valor passado: ");
+	        
+	        if (e.getRejectedValue() != null) {
+	          sb.append(e.getRejectedValue().equals("") ? "(empty)" : ("'" + e.getRejectedValue()) + "'");
+	        } else {
+	        	sb.append("(null)");
+	        }
+	          sb.append(". ");
+	    	
 	    }
 		
 		ExceptionResponse exceptionResponse = new ExceptionResponse(new Date(), HttpStatus.UNPROCESSABLE_ENTITY.toString(), sb.toString(), request.getDescription(false));
