@@ -49,6 +49,7 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter {
 		userEmail = null;
 		
 		/*
+		 TODO
 		 possivelmente o catch de jwt vencido ou inválido
 		 deveria ser em outra localização mas por enquanto
 		 está funcionando aqui. 
