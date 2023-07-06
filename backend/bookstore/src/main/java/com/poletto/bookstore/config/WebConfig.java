@@ -12,7 +12,7 @@ import com.poletto.bookstore.serialization.converter.YamlJacksonToHttpMessageCon
 
 @Configuration
 public class WebConfig implements WebMvcConfigurer {
-	
+
 	private static final MediaType MEDIA_TYPE_APPLICATION_YML = MediaType.valueOf("application/x-yaml");
 
 	@Override
@@ -20,20 +20,19 @@ public class WebConfig implements WebMvcConfigurer {
 		converters.add(new YamlJacksonToHttpMessageConverter());
 	}
 
-
-
 	@Override
 	public void configureContentNegotiation(ContentNegotiationConfigurer configurer) {
-		
-		configurer.favorParameter(false)
-					.ignoreAcceptHeader(false)
-					.useRegisteredExtensionsOnly(false)
-					.defaultContentType(MediaType.APPLICATION_JSON)
-						.mediaType("json", MediaType.APPLICATION_JSON)
-						.mediaType("xml", MediaType.APPLICATION_XML)
-						.mediaType("text/plain", MediaType.TEXT_PLAIN)
-						//.mediaType("format-data", MediaType.form) verificar form url encoded
-						.mediaType("x-yaml", MEDIA_TYPE_APPLICATION_YML);
+
+		configurer
+			.favorParameter(false)
+			.ignoreAcceptHeader(false)
+			.useRegisteredExtensionsOnly(false)
+				.mediaType("json", MediaType.APPLICATION_JSON)
+				.mediaType("xml", MediaType.APPLICATION_XML)
+				.mediaType("text/plain", MediaType.TEXT_PLAIN)
+				.mediaType("x-yaml", MEDIA_TYPE_APPLICATION_YML)
+				//.mediaType("format-data", MediaType.form) //verificar form url encoded
+			.defaultContentType(MediaType.APPLICATION_JSON);
 
 	}
 

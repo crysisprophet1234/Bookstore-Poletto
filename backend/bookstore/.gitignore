@@ -1,6 +1,9 @@
 /target/
 !.mvn/wrapper/maven-wrapper.jar
 
+# ssl cert and key
+src/main/resources/key/
+
 ### STS ###
 .apt_generated
 .classpath
