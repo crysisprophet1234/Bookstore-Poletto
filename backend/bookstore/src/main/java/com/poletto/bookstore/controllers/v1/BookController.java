@@ -1,4 +1,4 @@
-package com.poletto.bookstore.controllers.v2;
+package com.poletto.bookstore.controllers.v1;
 
 import java.net.URI;
 
@@ -21,23 +21,20 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import com.poletto.bookstore.dto.v1.BookDTOv1;
-import com.poletto.bookstore.dto.v2.BookDTOv2;
-import com.poletto.bookstore.services.v2.BookServiceV2;
+import com.poletto.bookstore.services.v1.BookService;
 import com.poletto.bookstore.util.MediaType;
 
-import jakarta.validation.Valid;
-
 @RestController
-@RequestMapping(value = "/books/v2")
-public class BookControllerV2 {
+@RequestMapping(value = "/books/v1")
+public class BookController {
 
 	@Autowired
-	private BookServiceV2 bookService;
-	
+	private BookService bookService;
+
 	@GetMapping(
 			produces = { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.APPLICATION_YML },
 			consumes = { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.APPLICATION_YML })
-	public ResponseEntity<Page<BookDTOv2>> findAllPaged(
+	public ResponseEntity<Page<BookDTOv1>> findAllPaged(
 			@RequestParam(value = "page", defaultValue = "0") Integer page,
 			@RequestParam(value = "size", defaultValue = "12") Integer size,
 			@RequestParam(value = "sort", defaultValue = "asc") String sort,
@@ -61,7 +58,7 @@ public class BookControllerV2 {
 	}
 	
 	@PostMapping
-	public ResponseEntity<BookDTOv2> insert(@RequestBody @Valid BookDTOv2 dto) {
+	public ResponseEntity<BookDTOv1> insert(@RequestBody BookDTOv1 dto) {
 		dto = bookService.insert(dto);
 		URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(dto.getId()).toUri();
 		return ResponseEntity.created(uri).body(dto);

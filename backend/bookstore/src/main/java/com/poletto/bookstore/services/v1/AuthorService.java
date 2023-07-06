@@ -19,9 +19,9 @@ import com.poletto.bookstore.repositories.AuthorRepository;
 import com.poletto.bookstore.exceptions.ResourceNotFoundException;
 
 @Service
-public class AuthorServiceV1 {
+public class AuthorService {
 	
-	private static final Logger logger = LoggerFactory.getLogger(AuthorServiceV1.class);
+	private static final Logger logger = LoggerFactory.getLogger(AuthorService.class);
 	
 	@Autowired
 	private AuthorRepository authorRepository;

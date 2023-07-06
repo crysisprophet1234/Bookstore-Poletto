@@ -1,4 +1,4 @@
-package com.poletto.bookstore.controllers.v2;
+package com.poletto.bookstore.controllers.v1;
 
 import java.net.URI;
 
@@ -17,14 +17,14 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import com.poletto.bookstore.dto.v1.ReservationDTOv1;
-import com.poletto.bookstore.services.v2.ReservationServiceV2;
+import com.poletto.bookstore.services.v1.ReservationService;
 
 @RestController
-@RequestMapping(value = "/reservations/v2")
-public class ReservationControllerV2 {
+@RequestMapping(value = "/reservations/v1")
+public class ReservationController {
 
 	@Autowired
-	private ReservationServiceV2 reservationService;
+	private ReservationService reservationService;
 
 	@GetMapping
 	public ResponseEntity<Page<ReservationDTOv1>> findAll(@RequestParam (value = "client", defaultValue = "0") Long userId, Pageable pageable) {

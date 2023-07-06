@@ -1,4 +1,4 @@
-package com.poletto.bookstore.services.v2;
+package com.poletto.bookstore.services.v1;
 
 import java.util.List;
 import java.util.Optional;
@@ -20,9 +20,9 @@ import com.poletto.bookstore.exceptions.ResourceNotFoundException;
 import com.poletto.bookstore.repositories.CategoryRepository;
 
 @Service
-public class CategoryServiceV2 {
+public class CategoryService {
 	
-	private static final Logger logger = LoggerFactory.getLogger(UserServiceV2.class);
+	private static final Logger logger = LoggerFactory.getLogger(UserService.class);
 
 	@Autowired
 	private CategoryRepository categoryRepository;

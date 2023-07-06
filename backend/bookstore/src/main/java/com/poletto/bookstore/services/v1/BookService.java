@@ -18,7 +18,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.poletto.bookstore.controllers.v1.BookControllerV1;
+import com.poletto.bookstore.controllers.v1.BookController;
 import com.poletto.bookstore.converter.custom.BookMapper;
 import com.poletto.bookstore.dto.v1.CategoryDTOv1;
 import com.poletto.bookstore.dto.v2.BookDTOv2;
@@ -35,9 +35,9 @@ import com.poletto.bookstore.repositories.CategoryRepository;
 import jakarta.persistence.EntityNotFoundException;
 
 @Service
-public class BookServiceV1 {
+public class BookService {
 	
-	private static final Logger logger = LoggerFactory.getLogger(BookServiceV1.class);
+	private static final Logger logger = LoggerFactory.getLogger(BookService.class);
 
 	@Autowired
 	private BookRepository bookRepository;
@@ -120,7 +120,7 @@ public class BookServiceV1 {
 		
 		Page<BookDTOv2> dtos = bookPage.map(x -> BookMapper.convertEntityToDtoV2(x));
 		
-		dtos.stream().forEach(x -> x.add(linkTo(methodOn(BookControllerV1.class).findById(x.getId())).withSelfRel()));
+		dtos.stream().forEach(x -> x.add(linkTo(methodOn(BookController.class).findById(x.getId())).withSelfRel()));
 
 		return dtos;
 

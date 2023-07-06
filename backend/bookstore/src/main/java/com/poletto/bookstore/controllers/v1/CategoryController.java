@@ -1,4 +1,4 @@
-package com.poletto.bookstore.controllers.v2;
+package com.poletto.bookstore.controllers.v1;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -10,14 +10,14 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.poletto.bookstore.dto.v1.CategoryDTOv1;
-import com.poletto.bookstore.services.v1.CategoryServiceV1;
+import com.poletto.bookstore.services.v1.CategoryService;
 
 @Controller
-@RequestMapping (value = "/categories/v2")
-public class CategoryControllerV2 {
+@RequestMapping (value = "/categories/v1")
+public class CategoryController {
 	
 	@Autowired
-	private CategoryServiceV1 categoryService;
+	private CategoryService categoryService;
 	
 	@GetMapping
 	public ResponseEntity<Page<CategoryDTOv1>> findAll(Pageable pageable) {

@@ -1,4 +1,4 @@
-package com.poletto.bookstore.services.v2;
+package com.poletto.bookstore.services.v1;
 
 import java.time.Instant;
 import java.util.Optional;
@@ -29,9 +29,9 @@ import com.poletto.bookstore.repositories.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
 
 @Service
-public class ReservationServiceV2 {
+public class ReservationService {
 
-	private static final Logger logger = LoggerFactory.getLogger(ReservationServiceV2.class);
+	private static final Logger logger = LoggerFactory.getLogger(ReservationService.class);
 
 	@Autowired
 	private ReservationRepository reservationRepository;
@@ -74,8 +74,6 @@ public class ReservationServiceV2 {
 
 	}
 
-	// TODO implementar mapper
-
 	@Transactional
 	public ReservationDTOv1 reserveBooks(ReservationDTOv1 dto) {
 
@@ -115,8 +113,6 @@ public class ReservationServiceV2 {
 		return ReservationMapper.convertEntityToDto(entity);
 
 	}
-
-	// TODO change this logic when frontend is capable to reserve more than one book
 
 	@Transactional
 	public void returnBooks(Long bookId) {

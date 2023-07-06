@@ -1,4 +1,4 @@
-package com.poletto.bookstore.controllers.v2;
+package com.poletto.bookstore.controllers.v1;
 
 import java.net.URI;
 
@@ -12,14 +12,14 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import com.poletto.bookstore.dto.v1.UserAuthDTOv1;
 import com.poletto.bookstore.dto.v1.UserDTOv1;
-import com.poletto.bookstore.services.v1.UserServiceV1;
+import com.poletto.bookstore.services.v1.UserService;
 
 @RestController
-@RequestMapping (value = "/auth/v2")
-public class AuthControllerV2 {
+@RequestMapping (value = "/auth/v1")
+public class AuthController {
 
 	@Autowired
-	private UserServiceV1 userService;
+	private UserService userService;
 
 	@PostMapping("/register")
 	public ResponseEntity<UserDTOv1> insert(@RequestBody UserAuthDTOv1 userDTO) {

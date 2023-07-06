@@ -1,4 +1,4 @@
-package com.poletto.bookstore.controllers.v2;
+package com.poletto.bookstore.controllers.v1;
 
 import java.util.List;
 
@@ -12,14 +12,14 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.poletto.bookstore.dto.v1.AuthorDTOv1;
-import com.poletto.bookstore.services.v1.AuthorServiceV1;
+import com.poletto.bookstore.services.v1.AuthorService;
 
 @Controller
-@RequestMapping("/authors/v2")
-public class AuthorControllerV2 {
+@RequestMapping("/authors/v1")
+public class AuthorController {
 	
 	@Autowired
-	private AuthorServiceV1 authorService;
+	private AuthorService authorService;
 	
 	@Deprecated
 	@GetMapping

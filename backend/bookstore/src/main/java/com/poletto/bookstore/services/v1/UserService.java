@@ -32,9 +32,9 @@ import com.poletto.bookstore.repositories.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
 
 @Service
-public class UserServiceV1 {
+public class UserService {
 	
-	private static final Logger logger = LoggerFactory.getLogger(UserServiceV1.class);
+	private static final Logger logger = LoggerFactory.getLogger(UserService.class);
 
 	@Autowired
 	private UserRepository userRepository;
@@ -100,7 +100,7 @@ public class UserServiceV1 {
 	}
 	
 	@Transactional (readOnly = true)
-	public UserAuthDTOv1 authenticate(UserAuthDTOv1 dto) { // TODO verificar dados presentes na response
+	public UserAuthDTOv1 authenticate(UserAuthDTOv1 dto) {
 		
 		try {
 			

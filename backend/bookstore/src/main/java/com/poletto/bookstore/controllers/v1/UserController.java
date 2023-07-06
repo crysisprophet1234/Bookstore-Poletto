@@ -16,14 +16,14 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.poletto.bookstore.dto.v1.UserAuthDTOv1;
 import com.poletto.bookstore.dto.v1.UserDTOv1;
-import com.poletto.bookstore.services.v1.UserServiceV1;
+import com.poletto.bookstore.services.v1.UserService;
 
 @RestController
 @RequestMapping(value = "/users/v1")
-public class UserControllerV1 {
+public class UserController {
 
 	@Autowired
-	private UserServiceV1 userService;
+	private UserService userService;
 
 	@GetMapping
 	@Deprecated

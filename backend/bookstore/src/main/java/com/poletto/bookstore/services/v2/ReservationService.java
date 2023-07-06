@@ -1,4 +1,7 @@
-package com.poletto.bookstore.services.v1;
+package com.poletto.bookstore.services.v2;
+
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 import java.time.Instant;
 import java.util.Optional;
@@ -11,9 +14,11 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.poletto.bookstore.controllers.v2.BookController;
+import com.poletto.bookstore.controllers.v2.ReservationController;
 import com.poletto.bookstore.converter.custom.ReservationMapper;
-import com.poletto.bookstore.dto.v1.ReservationDTOv1;
-import com.poletto.bookstore.dto.v1.BookDTOv1;
+import com.poletto.bookstore.dto.v2.BookDTOv2;
+import com.poletto.bookstore.dto.v2.ReservationDTOv2;
 import com.poletto.bookstore.entities.Book;
 import com.poletto.bookstore.entities.BookReservation;
 import com.poletto.bookstore.entities.Reservation;
@@ -28,10 +33,13 @@ import com.poletto.bookstore.repositories.UserRepository;
 
 import jakarta.persistence.EntityNotFoundException;
 
-@Service
-public class ReservationServiceV1 {
+@Service("ReservationServiceV2")
+public class ReservationService {
 
-	private static final Logger logger = LoggerFactory.getLogger(ReservationServiceV1.class);
+	// TODO testar reservation
+	// for some reason its not saving more than one book ...
+
+	private static final Logger logger = LoggerFactory.getLogger(ReservationService.class);
 
 	@Autowired
 	private ReservationRepository reservationRepository;
@@ -46,7 +54,7 @@ public class ReservationServiceV1 {
 	private BookRepository bookRepository;
 
 	@Transactional(readOnly = true)
-	public Page<ReservationDTOv1> findAll(Pageable pageable, Long userId) {
+	public Page<ReservationDTOv2> findAll(Pageable pageable, Long userId) {
 
 		Page<Reservation> reservationPage = reservationRepository.findAll(pageable);
 
@@ -57,27 +65,44 @@ public class ReservationServiceV1 {
 		logger.info("Resource RESERVATION page found: " + "PAGE NUMBER [" + reservationPage.getNumber()
 				+ "] - CONTENT: " + reservationPage.getContent());
 
-		return reservationPage.map(x -> ReservationMapper.convertEntityToDto(x));
+		Page<ReservationDTOv2> dtos = reservationPage.map(x -> ReservationMapper.convertEntityToDtoV2(x));
+
+		dtos.stream().forEach(x -> x
+				.add(linkTo(methodOn(ReservationController.class).findById(x.getId())).withSelfRel().withType("GET"))
+				.add(linkTo(methodOn(ReservationController.class).updateStatus(x.getId())).withRel("return").withType("PUT")));
+
+		return dtos;
 
 	}
 
 	@Transactional(readOnly = true)
-	public ReservationDTOv1 findById(Long id) {
+	public ReservationDTOv2 findById(Long id) {
 
 		Optional<Reservation> user = reservationRepository.findById(id);
 
 		var entity = user.orElseThrow(() -> new ResourceNotFoundException("Resource RESERVATION not found. ID " + id));
 
 		logger.info("Resource RESERVATION found: " + entity.toString());
+		
+		ReservationDTOv2 dto = ReservationMapper.convertEntityToDtoV2(entity);
+		
+		for (BookDTOv2 bookDTO : dto.getBooks()) {
+			
+			bookDTO.add(linkTo(methodOn(BookController.class).findById(bookDTO.getId())).withSelfRel().withType("GET"));
+			bookDTO.add(linkTo(methodOn(BookController.class).delete(bookDTO.getId())).withRel("delete").withType("DELETE"));
+			bookDTO.add(linkTo(methodOn(BookController.class).update(bookDTO.getId(), bookDTO)).withRel("update").withType("PUT"));
+			
+		}
+		
+		dto.add(linkTo(methodOn(ReservationController.class).findById(dto.getId())).withSelfRel().withType("GET"));
+		dto.add(linkTo(methodOn(ReservationController.class).updateStatus(dto.getId())).withRel("return").withType("PUT"));
 
-		return ReservationMapper.convertEntityToDto(entity);
+		return dto;
 
 	}
 
-	// TODO implementar mapper
-
 	@Transactional
-	public ReservationDTOv1 reserveBooks(ReservationDTOv1 dto) {
+	public ReservationDTOv2 reserveBooks(ReservationDTOv2 dto) {
 
 		Reservation entity = new Reservation();
 
@@ -93,13 +118,17 @@ public class ReservationServiceV1 {
 
 		entity.getBooks().clear();
 
-		for (BookDTOv1 bookDTO : dto.getBooks()) {
+		for (BookDTOv2 bookDTO : dto.getBooks()) {
+
 			Book bookEntity = bookRepository.getReferenceById(bookDTO.getId());
+
 			if (bookEntity.getStatus().equals(BookStatus.BOOKED)) {
 				throw new InvalidStatusException(bookEntity);
 			}
+
 			bookEntity.setStatus(BookStatus.BOOKED);
 			entity.getBooks().add(new BookReservation(entity, bookEntity));
+			
 		}
 
 		entity = reservationRepository.save(entity);
@@ -111,12 +140,27 @@ public class ReservationServiceV1 {
 		logger.info("Resource RESERVATION saved: " + entity.toString());
 
 		logger.info("Resource BOOK status changed: " + entity.getBooks());
+		
+		ReservationDTOv2 newDto = ReservationMapper.convertEntityToDtoV2(entity);
+		
+		for (BookDTOv2 bookDTO : newDto.getBooks()) {
+			
+			bookDTO.add(linkTo(methodOn(BookController.class).findById(bookDTO.getId())).withSelfRel().withType("GET"));
+			bookDTO.add(linkTo(methodOn(BookController.class).delete(bookDTO.getId())).withRel("delete").withType("DELETE"));
+			bookDTO.add(linkTo(methodOn(BookController.class).update(bookDTO.getId(), bookDTO)).withRel("update").withType("PUT"));
+			
+		}
+		
+		newDto.add(linkTo(methodOn(ReservationController.class).findById(newDto.getId())).withSelfRel().withType("GET"));
+		newDto.add(linkTo(methodOn(ReservationController.class).updateStatus(newDto.getId())).withRel("return").withType("PUT"));
 
-		return ReservationMapper.convertEntityToDto(entity);
+		return newDto;
 
 	}
 
 	// TODO change this logic when frontend is capable to reserve more than one book
+	
+	// TODO should it really return by book id???
 
 	@Transactional
 	public void returnBooks(Long bookId) {
