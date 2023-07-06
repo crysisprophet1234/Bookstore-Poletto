@@ -20,7 +20,7 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
-	
+
 	@Autowired
 	private Environment env;
 
@@ -32,34 +32,31 @@ public class SecurityConfig {
 
 	@Bean
 	SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-		
+
 		if (Arrays.asList(env.getActiveProfiles()).contains("test")) {
-			http.headers().frameOptions().disable();
+			http.headers(headers -> headers.frameOptions(frame -> frame.disable()));
 		}
-		
-		http
-			.csrf().disable()
-	        .authorizeHttpRequests()
-		        .requestMatchers("/api/v1/auth/**").permitAll()
-		        .requestMatchers(HttpMethod.GET ,"/api/v1/books/**").permitAll()
-		        .requestMatchers(HttpMethod.POST ,"/api/v1/reservations").hasAuthority("ROLE_CUSTOMER")
-		        .requestMatchers(HttpMethod.GET ,"/api/v1/categories/**").permitAll()
-		        //.anyRequest().hasAuthority("ROLE_ADMIN")
-		        .anyRequest().permitAll()
-	        .and()
-	        	.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-	        .and()
-	        	.authenticationProvider(authenticationProvider)
-	        	.addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
-	
-			http.cors().configurationSource(corsConfigurationSource());
+
+		http.csrf(csrf -> csrf.disable())
+				.authorizeHttpRequests(auth -> auth.requestMatchers(HttpMethod.POST, "/api/auth/v1/**").permitAll()
+						.requestMatchers(HttpMethod.GET, "/api/books/**").permitAll()
+						.requestMatchers(HttpMethod.POST, "/api/reservations/v1/**").hasAuthority("ROLE_CUSTOMER")
+						.requestMatchers(HttpMethod.GET, "/api/categories/v1/**").permitAll()
+						// .anyRequest().hasAuthority("ROLE_ADMIN")
+						.anyRequest().permitAll())
+				.requiresChannel(channel -> //https
+						channel.anyRequest().requiresSecure())
+				.sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+				.authenticationProvider(authenticationProvider)
+				.addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
+				.cors(cors -> cors.configurationSource(corsConfigurationSource()));
 
 		return http.build();
 	}
 
 	@Bean
 	CorsConfigurationSource corsConfigurationSource() {
-		
+
 		CorsConfiguration corsConfig = new CorsConfiguration();
 		corsConfig.setAllowedOriginPatterns(Arrays.asList("http://localhost:[3000]"));
 		corsConfig.setAllowedMethods(Arrays.asList("POST", "GET", "PUT", "DELETE", "PATCH"));
@@ -69,7 +66,7 @@ public class SecurityConfig {
 		UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
 		source.registerCorsConfiguration("/**", corsConfig);
 		return source;
-		
+
 	}
 
 }
