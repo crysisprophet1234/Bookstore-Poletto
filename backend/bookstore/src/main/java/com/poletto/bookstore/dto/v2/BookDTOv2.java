@@ -12,10 +12,10 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.github.dozermapper.core.Mapping;
-import com.poletto.bookstore.dto.v1.CategoryDTOv1;
 import com.poletto.bookstore.entities.Author;
 import com.poletto.bookstore.entities.enums.BookStatus;
 
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.PastOrPresent;
@@ -25,7 +25,7 @@ import jakarta.validation.constraints.Size;
 @JsonPropertyOrder(value = {"id"})
 public class BookDTOv2 extends RepresentationModel<BookDTOv2> implements Serializable {
 
-	private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 2L;
 	
 	@Mapping("id")
 	@JsonProperty("id")
@@ -46,13 +46,13 @@ public class BookDTOv2 extends RepresentationModel<BookDTOv2> implements Seriali
 	@Pattern (regexp = "AVAILABLE|BOOKED")
 	private String status;
 	
-	//@Valid
+	@Valid
 	@NotNull
 	@JsonIgnoreProperties(value = {"nacionality"})
 	private Author author;
 
-	//@Valid
-	private Set<CategoryDTOv1> categories = new HashSet<>();
+	@Valid
+	private Set<CategoryDTOv2> categories = new HashSet<>();
 	
 	public BookDTOv2() {
 		
@@ -115,15 +115,14 @@ public class BookDTOv2 extends RepresentationModel<BookDTOv2> implements Seriali
 		this.author = author;
 	}
 
-	public Set<CategoryDTOv1> getCategories() {
+	public Set<CategoryDTOv2> getCategories() {
 		return categories;
 	}
 
 	@Override
 	public String toString() {
-		return "BookDTO [key=" + key + ", name=" + name + ", releaseDate=" + releaseDate + ", imgUrl=" + imgUrl
-				+ ", status=" + status + ", author=" + author + ", categories=" + categories + ", getLinks()="
-				+ getLinks() + "]";
+		return "BookDTOv2 [key=" + key + ", name=" + name + ", releaseDate=" + releaseDate + ", imgUrl=" + imgUrl
+				+ ", status=" + status + ", author=" + author + ", categories=" + categories + "]";
 	}
 
 }

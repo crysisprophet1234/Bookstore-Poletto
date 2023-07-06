@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import com.poletto.bookstore.converter.DozerMapperConverter;
 import com.poletto.bookstore.dto.v1.CategoryDTOv1;
 import com.poletto.bookstore.dto.v2.BookDTOv2;
+import com.poletto.bookstore.dto.v2.CategoryDTOv2;
 import com.poletto.bookstore.dto.v1.BookDTOv1;
 import com.poletto.bookstore.entities.Book;
 import com.poletto.bookstore.entities.Category;
@@ -67,7 +68,7 @@ public class BookMapper {
 		bookDto.getCategories().clear();
 		
 		for (Category category : book.getCategories()) {
-			bookDto.getCategories().add(DozerMapperConverter.parseObject(category, CategoryDTOv1.class));
+			bookDto.getCategories().add(DozerMapperConverter.parseObject(category, CategoryDTOv2.class));
 		}
 		
 
@@ -87,7 +88,7 @@ public class BookMapper {
 		
 		book.getCategories().clear();
 		
-		for (CategoryDTOv1 categoryDTO : dto.getCategories()) {
+		for (CategoryDTOv2 categoryDTO : dto.getCategories()) {
 			book.getCategories().add(DozerMapperConverter.parseObject(categoryDTO, Category.class));
 		}
 

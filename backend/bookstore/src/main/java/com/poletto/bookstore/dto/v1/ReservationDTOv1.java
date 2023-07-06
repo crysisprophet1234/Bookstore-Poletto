@@ -107,7 +107,6 @@ public class ReservationDTOv1 implements Serializable {
 		return books;
 	}
 	
-	//TODO wtf is this???
 	public UserDTOv1 createUser(User user) {
 		UserDTOv1 userDTO = new UserDTOv1();
 		userDTO.setId(user.getId());
