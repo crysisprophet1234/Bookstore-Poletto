@@ -34,6 +34,8 @@ import com.poletto.bookstore.exceptions.ObjectNotValidException;
 import com.poletto.bookstore.exceptions.ResourceNotFoundException;
 import com.poletto.bookstore.exceptions.UnauthorizedException;
 
+import jakarta.persistence.EntityNotFoundException;
+
 @Order(Ordered.HIGHEST_PRECEDENCE)
 @ControllerAdvice
 @RestController
@@ -85,6 +87,16 @@ public class CustomizedResponseEntityExceptionHandler extends ResponseEntityExce
 		
 		logger.warn(exceptionResponse.toString() + clientInfo(request));
 		return new ResponseEntity<>(exceptionResponse, HttpStatus.UNPROCESSABLE_ENTITY);
+		
+	}
+	
+	@ExceptionHandler(EntityNotFoundException.class)
+	public final ResponseEntity<ExceptionResponse> handleEntityNotFoundException(Exception ex, WebRequest request) {
+		
+		ExceptionResponse exceptionResponse = new ExceptionResponse(new Date(), HttpStatus.NOT_FOUND.toString(), ex.getMessage(), request.getDescription(false));
+		
+		logger.warn(exceptionResponse.toString() + clientInfo(request));
+		return new ResponseEntity<>(exceptionResponse, HttpStatus.NOT_FOUND);
 		
 	}
 	
