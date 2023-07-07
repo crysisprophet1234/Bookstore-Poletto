@@ -11,7 +11,7 @@ import { toast } from 'react-toastify';
 
 import './styles.css';
 import { Author } from '../../../../types/author';
-import { Reservation } from '../../../../types/reservation';
+//import { Reservation } from '../../../../types/reservation';
 
 type UrlParams = {
   bookId: string;
@@ -42,20 +42,20 @@ const Form = () => {
   } = useForm<Book>();
 
   useEffect(() => {
-    requestBackend({ url: '/api/v1/categories' }).then((response) => {
+    requestBackend({ url: '/api/categories/v2' }).then((response) => {
       setSelectCategories(response.data.content);
     });
   }, []);
 
   useEffect(() => {
-    requestBackend({ url: '/api/v1/authors' }).then((response) => {
+    requestBackend({ url: '/api/authors/v2' }).then((response) => {
       setSelectAuthors(response.data);
     });
   }, []);
 
   useEffect(() => {
     if (isEditing) {
-      requestBackend({ url: `/api/v1/books/${bookId}` }).then((response) => {
+      requestBackend({ url: `/api/books/v2/${bookId}` }).then((response) => {
         const book = response.data as Book;
 
         setValue('name', book.name);
@@ -76,7 +76,7 @@ const Form = () => {
 
     const config: AxiosRequestConfig = {
       method: isEditing ? 'PUT' : 'POST',
-      url: isEditing ? `/api/v1/books/${bookId}` : '/api/v1/books',
+      url: isEditing ? `/api/books/v2/${bookId}` : '/api/books/v2',
       data,
       withCredentials: true,
     };
@@ -99,7 +99,7 @@ const Form = () => {
 
     const configGet: AxiosRequestConfig = {
       method: 'GET',
-      url: "/api/v1/reservations",
+      url: "/api/reservations/v2",
       withCredentials: true,
     };
 
@@ -118,7 +118,7 @@ const Form = () => {
 
     const configPut: AxiosRequestConfig = {
       method: 'PUT',
-      url: `/api/v1/reservations/return/${bookId}`,
+      url: `/api/reservations/v2/return/${bookId}`,
       //data: initialData,
       withCredentials: true,
     };

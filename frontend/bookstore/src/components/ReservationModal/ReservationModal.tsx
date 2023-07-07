@@ -42,7 +42,7 @@ const ReservationModal = (props: { show: any; onClose: any | undefined; book: Bo
 
         const config: AxiosRequestConfig = {
             method: 'POST',
-            url: "/api/v1/reservations",
+            url: "/api/reservations/v2",
             data,
             withCredentials: true,
           };

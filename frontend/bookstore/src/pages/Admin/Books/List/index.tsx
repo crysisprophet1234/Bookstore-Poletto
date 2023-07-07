@@ -37,7 +37,7 @@ const List = () => {
   const getBooks = useCallback(() => {
     const config: AxiosRequestConfig = {
       method: 'GET',
-      url: '/api/v1/books/paged',
+      url: '/api/books/v2',
       params: {
         page: controlComponentsData.activePage,
         size: 3,

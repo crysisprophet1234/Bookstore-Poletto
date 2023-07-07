@@ -15,7 +15,7 @@ const Users = () => {
 
         const params: AxiosRequestConfig = {
 
-            url: '/api/v1/users/paged',
+            url: '/api/users/v2',
             withCredentials: true,
             headers: {} as AxiosRequestHeaders,
             params: {
@@ -42,7 +42,7 @@ const Users = () => {
 
         const config: AxiosRequestConfig = {
             method: 'DELETE',
-            url: `/api/v1/users/${bookId}`,
+            url: `/api/users/v2/${bookId}`,
             withCredentials: true,
         };
 
