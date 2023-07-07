@@ -22,7 +22,6 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import com.poletto.bookstore.dto.v2.BookDTOv2;
 import com.poletto.bookstore.services.v2.BookService;
-import com.poletto.bookstore.util.MediaType;
 
 import jakarta.validation.Valid;
 
@@ -33,9 +32,7 @@ public class BookController {
 	@Autowired
 	private BookService bookService;
 	
-	@GetMapping(
-			produces = { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.APPLICATION_YML },
-			consumes = { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.APPLICATION_YML })
+	@GetMapping
 	public ResponseEntity<Page<BookDTOv2>> findAllPaged(
 			@RequestParam(value = "page", defaultValue = "0") Integer page,
 			@RequestParam(value = "size", defaultValue = "12") Integer size,
