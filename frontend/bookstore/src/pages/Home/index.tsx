@@ -3,11 +3,8 @@ import { Link } from 'react-router-dom';
 import ButtonIcon from '../../components/ButtonIcon';
 
 import './styles.css';
-import { hasAnyAuthorities } from '../../utils/auth';
 
 const Home = () => {
-
-	console.log(hasAnyAuthorities(['ROLE_CUSTOMER' , 'ROLE_ADMIN']))
 
 	return (
 
