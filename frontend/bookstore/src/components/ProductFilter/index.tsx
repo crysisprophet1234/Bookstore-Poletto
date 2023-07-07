@@ -45,7 +45,7 @@ const ProductFilter = ({ onSubmitFilter }: Props) => {
   useEffect(() => {
     requestBackend({ url: '/api/categories/v2' })
       .then((response) => {
-        setSelectCategories(response.data.content);
+        setSelectCategories(response.data);
     });
   }, []);
 
