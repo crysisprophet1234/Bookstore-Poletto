@@ -193,7 +193,7 @@ const Login = () => {
                 <div className="signup-container">
 
                     <span className="not-registered">Já possui conta?</span>
-                    <Link to="/auth/signup" className="login-link-register">
+                    <Link to="/auth/login" className="login-link-register">
                         FAZER LOGIN
                     </Link>
 

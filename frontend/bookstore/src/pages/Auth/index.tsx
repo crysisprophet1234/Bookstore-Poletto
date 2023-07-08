@@ -13,7 +13,7 @@ const Auth = () => {
 
             <div className="auth-banner-container">
 
-                <h1>Descubrar os mais variados livros</h1>
+                <h1>Descubra os mais variados livros</h1>
 
                 <AuthImg />
 
