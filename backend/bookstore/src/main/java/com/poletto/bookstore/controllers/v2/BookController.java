@@ -39,9 +39,8 @@ public class BookController {
 			@RequestParam(value = "sort", defaultValue = "asc") String sort,
 			@RequestParam(value = "orderBy", defaultValue = "name") String orderBy,
 			@RequestParam(value = "categoryId", defaultValue = "0") Long categoryId,
-			@RequestParam(value = "authorId", defaultValue = "0") Long authorId,
 			@RequestParam(value = "name", defaultValue = "") String name,
-			@RequestParam(value = "booked", defaultValue = "") String booked) {
+			@RequestParam(value = "booked", defaultValue = "2") Integer booked) {
 
 		Direction sortDirection = "desc".equalsIgnoreCase(sort) ? Direction.DESC : Direction.ASC;
 

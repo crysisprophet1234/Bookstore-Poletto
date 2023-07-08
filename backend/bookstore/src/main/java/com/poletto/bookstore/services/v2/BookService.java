@@ -44,32 +44,28 @@ public class BookService {
 
 	@Autowired
 	private AuthorRepository authorRepository;
-	
-	//TODO adicionar pesquisa por autor
 
 	@Transactional(readOnly = true)
-	public Page<BookDTOv2> findAllPaged(Pageable pageable, Long categoryId, String name, String booked) {
+	public Page<BookDTOv2> findAllPaged(Pageable pageable, Long categoryId, String name, Integer booked) {
 
 		List<Category> categories = (categoryId == 0) ? null
 				: Arrays.asList(categoryRepository.getReferenceById(categoryId));
+		
+		String bookStatus = "";
 
 		switch (booked) {
 
-		case "available":
-			booked = "BOOKED";
+		case 0:
+			bookStatus = "BOOKED";
 			break;
 
-		case "booked":
-			booked = "AVAILABLE";
-			break;
-
-		case "":
-			booked = "";
+		case 1:
+			bookStatus = "AVAILABLE";
 			break;
 
 		}
 
-		Page<Book> bookPage = bookRepository.findPaged(categories, name, booked, pageable);
+		Page<Book> bookPage = bookRepository.findPaged(categories, name.toLowerCase(), bookStatus, pageable);
 
 		bookRepository.findProductsWithCategories(bookPage.getContent());
 
