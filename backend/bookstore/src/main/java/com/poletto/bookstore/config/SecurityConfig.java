@@ -38,7 +38,9 @@ public class SecurityConfig {
 		}
 
 		http.csrf(csrf -> csrf.disable())
-				.authorizeHttpRequests(auth -> auth.requestMatchers(HttpMethod.POST, "/api/auth/v1/**").permitAll()
+				.authorizeHttpRequests(auth -> auth
+						.requestMatchers("/actuator/**").permitAll()
+						.requestMatchers(HttpMethod.POST, "/api/auth/v1/**").permitAll()
 						.requestMatchers(HttpMethod.GET, "/api/books/**").permitAll()
 						.requestMatchers(HttpMethod.POST, "/api/reservations/v1/**").hasAuthority("ROLE_CUSTOMER")
 						.requestMatchers(HttpMethod.GET, "/api/categories/v1/**").permitAll()
