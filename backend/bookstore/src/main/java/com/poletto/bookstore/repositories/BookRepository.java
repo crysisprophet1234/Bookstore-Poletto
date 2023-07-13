@@ -25,19 +25,19 @@ public interface BookRepository extends JpaRepository<Book, Long> {
 //	Page<Book> findPaged(List<Category> categories, String name, String booked, Pageable pageable);
 	
 	@Query("SELECT DISTINCT obj FROM Book obj INNER JOIN obj.categories cats WHERE "
-	     + "(:categories IS NULL OR cats IN :categories) AND "
-	     + "(LOWER(obj.name) LIKE LOWER(CONCAT('%', :name, '%')) "
-	     + "OR LOWER(obj.author.name) LIKE LOWER(CONCAT('%', :name, '%'))) "
-	     + "AND (:booked IS NULL OR obj.status NOT IN (:booked))")
+	        + "(COALESCE(:categories IS NULL OR cats IN :categories) AND "
+	        + "(LOWER(obj.name) LIKE LOWER(CONCAT('%', :name, '%')) "
+	        + "OR LOWER(obj.author.name) LIKE LOWER(CONCAT('%', :name, '%'))) "
+	        + "AND (:booked IS NULL OR obj.status NOT IN (:booked)))")
 	Page<Book> findPaged(
-			@Param("categories") List<Category> categories,
-			@Param("name") String name,
-			@Param("booked") String booked,
-			Pageable pageable
-			);
+	        @Param("categories") List<Category> categories,
+	        @Param("name") String name,
+	        @Param("booked") String booked,
+	        Pageable pageable
+	);
 
 	
 	@Query(value = "SELECT obj FROM Book obj JOIN FETCH obj.categories WHERE obj IN :products")
-	List<Book> findProductsWithCategories(List<Book> products);
+	List<Book> findProductsWithCategories(@Param("products")List<Book> products);
 	
 }
