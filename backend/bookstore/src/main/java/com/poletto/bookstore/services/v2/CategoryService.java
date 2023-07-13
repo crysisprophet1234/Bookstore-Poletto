@@ -16,6 +16,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.poletto.bookstore.controllers.v2.BookController;
 import com.poletto.bookstore.controllers.v2.CategoryController;
 import com.poletto.bookstore.converter.DozerMapperConverter;
 import com.poletto.bookstore.dto.v2.CategoryDTOv2;
@@ -25,8 +26,6 @@ import com.poletto.bookstore.repositories.CategoryRepository;
 
 @Service("CategoryServiceV2")
 public class CategoryService {
-	
-	//TODO adicionar livros por categoria
 	
 	private static final Logger logger = LoggerFactory.getLogger(UserService.class);
 
@@ -43,6 +42,7 @@ public class CategoryService {
 		Set<CategoryDTOv2> dtos = DozerMapperConverter.parseListObjects(list, CategoryDTOv2.class).stream().collect(Collectors.toSet());
 		
 		dtos.forEach(x -> x.add(linkTo(methodOn(CategoryController.class).findById(x.getId())).withSelfRel().withType("GET")));
+		dtos.forEach(x -> x.add(linkTo(methodOn(BookController.class).findAllPaged(0, 12, "asc", "name", x.getId(), "", 2)).withRel("BOOKS WITH THIS CATEGORY").withType("GET")));
 		
 		return dtos;
 		
@@ -58,6 +58,7 @@ public class CategoryService {
 		Page<CategoryDTOv2> dtos = categoryPage.map(x -> DozerMapperConverter.parseObject(x, CategoryDTOv2.class));
 		
 		dtos.forEach(x -> x.add(linkTo(methodOn(CategoryController.class).findById(x.getId())).withSelfRel().withType("GET")));
+		dtos.forEach(x -> x.add(linkTo(methodOn(BookController.class).findAllPaged(0, 12, "asc", "name", x.getId(), "", 2)).withRel("BOOKS WITH THIS CATEGORY").withType("GET")));
 		
 		return dtos;
 		
@@ -71,6 +72,8 @@ public class CategoryService {
 		Category entity = obj.orElseThrow(() -> new ResourceNotFoundException("Resource CATEGORY not found. ID " + id));
 		
 		CategoryDTOv2 dto = DozerMapperConverter.parseObject(entity, CategoryDTOv2.class);
+		
+		dto.add(linkTo(methodOn(BookController.class).findAllPaged(0, 12, "asc", "name", dto.getId(), "", 2)).withRel("BOOKS WITH THIS CATEGORY").withType("GET"));
 		
 		logger.info("Resource CATEGORY found: " + dto);
 		
