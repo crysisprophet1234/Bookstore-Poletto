@@ -4,7 +4,9 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import org.slf4j.Logger;
@@ -48,38 +50,32 @@ public class BookService {
 	@Transactional(readOnly = true)
 	public Page<BookDTOv2> findAllPaged(Pageable pageable, Long categoryId, String name, Integer booked) {
 
-		List<Category> categories = (categoryId == 0) ? null
-				: Arrays.asList(categoryRepository.getReferenceById(categoryId));
-		
-		String bookStatus = "";
+		List<Category> categories = null;
 
-		switch (booked) {
-
-		case 0:
-			bookStatus = "BOOKED";
-			break;
-
-		case 1:
-			bookStatus = "AVAILABLE";
-			break;
-
+		if (categoryId != 0) {
+			Category category = categoryRepository.findById(categoryId)
+					.orElseThrow(() -> new ResourceNotFoundException("Resource CATEGORY not found. ID " + categoryId));
+			categories = Arrays.asList(category);
 		}
 
-		Page<Book> bookPage = bookRepository.findPaged(categories, name.toLowerCase(), bookStatus, pageable);
+		Map<Integer, String> statusMap = new HashMap<>();
+		statusMap.put(1, "AVAILABLE");
+		statusMap.put(0, "BOOKED");
 
-		bookRepository.findProductsWithCategories(bookPage.getContent());
+		Page<Book> bookPage = bookRepository.findPaged(categories, name.toLowerCase(),
+				statusMap.getOrDefault(booked, ""), pageable);
 
 		logger.info("Resource BOOK page found: " + "PAGE NUMBER [" + bookPage.getNumber() + "] - CONTENT: "
 				+ bookPage.getContent());
 
-		Page<BookDTOv2> dtos = bookPage.map(x -> BookMapper.convertEntityToDtoV2(x));
+		Page<BookDTOv2> dtosPage = bookPage.map(x -> BookMapper.convertEntityToDtoV2(x));
 
-		dtos.stream().forEach(x -> x
+		dtosPage.stream().forEach(x -> x
 				.add(linkTo(methodOn(BookController.class).findById(x.getId())).withSelfRel().withType("GET"))
 				.add(linkTo(methodOn(BookController.class).delete(x.getId())).withRel("delete").withType("DELETE"))
 				.add(linkTo(methodOn(BookController.class).update(x.getId(), x)).withRel("update").withType("PUT")));
 
-		return dtos;
+		return dtosPage;
 
 	}
 
@@ -102,38 +98,38 @@ public class BookService {
 
 	}
 
-	// TODO n esta retornando categorias no response de book.insert
-
 	@Transactional
-	public BookDTOv2 insert(BookDTOv2 dto) {	
+	public BookDTOv2 insert(BookDTOv2 dto) {
 
 		dto.setStatus(BookStatus.AVAILABLE);
 
-		dto.setAuthor(authorRepository.findById(dto.getAuthor().getId()).orElseThrow(() -> new ResourceNotFoundException("Resource AUTHOR not found. ID " + dto.getAuthor().getId())));
+		dto.setAuthor(authorRepository.findById(dto.getAuthor().getId()).orElseThrow(
+				() -> new ResourceNotFoundException("Resource AUTHOR not found. ID " + dto.getAuthor().getId())));
 
 		Book entity = BookMapper.convertDtoToEntityV2(dto);
 
 		entity.getCategories().clear();
 
 		for (CategoryDTOv2 categoryDTO : dto.getCategories()) {
-			try {
-				Category category = categoryRepository.getReferenceById(categoryDTO.getId());
-				entity.getCategories().add(category);
-			} catch (EntityNotFoundException ex) {
-				throw new ResourceNotFoundException("Resource CATEGORY not found. ID " + categoryDTO.getId());
-			}
+
+			Category category = categoryRepository.findById(categoryDTO.getId())
+					.orElseThrow(() -> new ResourceNotFoundException("Resource CATEGORY not found. ID " + categoryDTO.getId()));
+			
+			entity.getCategories().add(category);
+
 		}
 
 		entity = bookRepository.save(entity);
 
 		logger.info("Resource BOOK saved: " + entity.toString());
-		
+
 		BookDTOv2 newDto = BookMapper.convertEntityToDtoV2(entity);
 
 		newDto.add(linkTo(methodOn(BookController.class).findById(newDto.getId())).withSelfRel().withType("GET"));
 		newDto.add(linkTo(methodOn(BookController.class).delete(newDto.getId())).withRel("delete").withType("DELETE"));
-		newDto.add(linkTo(methodOn(BookController.class).update(newDto.getId(), newDto)).withRel("update").withType("PUT"));
-		
+		newDto.add(linkTo(methodOn(BookController.class).update(newDto.getId(), newDto)).withRel("update")
+				.withType("PUT"));
+
 		return newDto;
 
 	}
