@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.poletto.bookstore.controllers.v2.AuthorController;
+import com.poletto.bookstore.controllers.v2.BookController;
 import com.poletto.bookstore.converter.DozerMapperConverter;
 import com.poletto.bookstore.dto.v2.AuthorDTOv2;
 import com.poletto.bookstore.entities.Author;
@@ -29,8 +30,6 @@ public class AuthorService {
 	@Autowired
 	private AuthorRepository authorRepository;
 
-	// TODO link para livros baseado em autor
-
 	@Transactional(readOnly = true)
 	public List<AuthorDTOv2> findAll() {
 
@@ -41,7 +40,8 @@ public class AuthorService {
 		List<AuthorDTOv2> dtos = DozerMapperConverter.parseListObjects(list, AuthorDTOv2.class);
 
 		dtos.stream().forEach(x -> x
-				.add(linkTo(methodOn(AuthorController.class).findById(x.getId())).withSelfRel().withType("GET")));
+				.add(linkTo(methodOn(AuthorController.class).findById(x.getId())).withSelfRel().withType("GET"))
+				.add(linkTo(methodOn(BookController.class).findAllPaged(0, 12, "asc", "name", 0L, x.getName(), 2)).withRel("BOOKS BY AUTHOR").withType("GET")));
 
 		return dtos;
 
@@ -58,7 +58,8 @@ public class AuthorService {
 		Page<AuthorDTOv2> dtos = authorPage.map(x -> DozerMapperConverter.parseObject(x, AuthorDTOv2.class));
 
 		dtos.stream().forEach(x -> x
-				.add(linkTo(methodOn(AuthorController.class).findById(x.getId())).withSelfRel().withType("GET")));
+				.add(linkTo(methodOn(AuthorController.class).findById(x.getId())).withSelfRel().withType("GET"))
+				.add(linkTo(methodOn(BookController.class).findAllPaged(0, 12, "asc", "name", 0L, x.getName(), 2)).withRel("BOOKS BY AUTHOR").withType("GET")));
 
 		return dtos;
 
@@ -73,7 +74,8 @@ public class AuthorService {
 
 		logger.info("Resource AUTHOR found: " + entity.toString());
 
-		return DozerMapperConverter.parseObject(entity, AuthorDTOv2.class);
+		return DozerMapperConverter.parseObject(entity, AuthorDTOv2.class)
+				.add(linkTo(methodOn(BookController.class).findAllPaged(0, 12, "asc", "name", 0L, entity.getName(), 2)).withRel("BOOKS BY AUTHOR").withType("GET"));
 
 	}
 
