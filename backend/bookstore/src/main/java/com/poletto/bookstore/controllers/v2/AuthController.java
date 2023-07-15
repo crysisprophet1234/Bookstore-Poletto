@@ -12,6 +12,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import com.poletto.bookstore.dto.v2.UserAuthDTOv2;
 import com.poletto.bookstore.dto.v2.UserDTOv2;
+import com.poletto.bookstore.services.v2.EmailService;
 import com.poletto.bookstore.services.v2.UserService;
 
 import jakarta.validation.Valid;
@@ -22,11 +23,15 @@ public class AuthController {
 
 	@Autowired
 	private UserService userService;
+	
+	@Autowired
+	private EmailService emailService;
 
 	@PostMapping("/register")
 	public ResponseEntity<UserDTOv2> insert(@RequestBody @Valid UserAuthDTOv2 userDTO) {
 		UserDTOv2 dto = userService.insert(userDTO);
 		URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(dto.getId()).toUri();
+		emailService.sendEmailFromTemplate(dto.getEmail(), "Confirmação de criação de conta", dto.getFirstname() + " " + dto.getLastname());
 		return ResponseEntity.created(uri).body(dto);
 	}
 
