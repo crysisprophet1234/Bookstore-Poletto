@@ -30,6 +30,8 @@ local.properties
 .loadpath
 .recommenders
 
+src/main/resources/*.properties
+
 # External tool builders
 .externalToolBuilders/
 
