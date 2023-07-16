@@ -20,7 +20,7 @@ import jakarta.mail.internet.MimeMessage;
 
 @Service
 public class EmailService {
-	
+
 	private static final Logger logger = LoggerFactory.getLogger(EmailService.class);
 
 	@Autowired
@@ -28,53 +28,54 @@ public class EmailService {
 
 	@Async
 	public void sendEmail(String to, String subject, String body) {
-		
+
 		SimpleMailMessage message = new SimpleMailMessage();
 		message.setTo(to);
 		message.setSubject(subject);
 		message.setText(body);
 
 		mailSender.send(message);
-		
-		logger.debug("{\"From\": \"" 		+ message.getFrom() 	+
-    			     "\", \"To\": \"" 		+ message.getTo() 		+
-    			     "\", \"Subject\": \"" 	+ message.getSubject()	+
-    			     "\", \"Body\": \"" 	+ message.getText()		+ "\"}");
-		
+
+		logger.debug("EMAIL SENT {\"From\": \"" + message.getFrom() + "\","
+					+ " \"To\": \"" + message.getTo() + "\","
+					+ " \"Subject\": \"" + message.getSubject() + "\","
+					+ " \"Body\": \"" + message.getText() + "\"}");
+
 	}
 
 	@Async
 	public void sendEmailFromTemplate(String to, String subject, String username) {
-		
+
 		MimeMessage message = mailSender.createMimeMessage();
-		
+
 		try {
 
 			message.setFrom(new InternetAddress("polettobookstore@gmail.com"));
 			message.setRecipients(MimeMessage.RecipientType.TO, to);
 			message.setSubject(subject);
-	
+
 			String htmlTemplate = generateAccountCreationEmailBody(username);
-	
+
 			message.setContent(htmlTemplate, "text/html; charset=utf-8");
-		
+
 		} catch (MessagingException e) {
 			e.printStackTrace();
-		}	
+		}
 
 		mailSender.send(message);
-		
-		logger.info("{\"From\": \"" 		+ "polettobookstore@gmail.com" 	+
-				     "\", \"To\": \"" 		+ to 		+
-				     "\", \"Subject\": \"" 	+ subject	+
-				     "\", \"Username\": \"" + username		+ "\"}");
-		
+
+		logger.info("EMAIL SENT {\"From\": \"" + "polettobookstore@gmail.com" + "\","
+					+ " \"To\": \"" + to + "\","
+					+ " \"Subject\": \"" + subject + "\","
+					+ " \"Username\": \"" + username + "\"}");
+
 	}
 
 	private String generateAccountCreationEmailBody(String username) {
 		try {
 			ClassPathResource resource = new ClassPathResource("templates/account-creation-template.html");
-			return StreamUtils.copyToString(resource.getInputStream(), StandardCharsets.UTF_8).replace("{username}", username);
+			return StreamUtils.copyToString(resource.getInputStream(), StandardCharsets.UTF_8).replace("{username}",
+					username);
 		} catch (IOException e) {
 			e.printStackTrace();
 			return null;
