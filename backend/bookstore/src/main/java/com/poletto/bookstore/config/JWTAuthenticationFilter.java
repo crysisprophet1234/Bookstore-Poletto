@@ -1,7 +1,6 @@
 package com.poletto.bookstore.config;
 
 import java.io.IOException;
-import java.util.Date;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -14,7 +13,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.poletto.bookstore.exceptions.ExceptionResponse;
+import com.poletto.bookstore.exceptions.ExceptionResponse.ExceptionResponse;
 
 import io.jsonwebtoken.JwtException;
 import jakarta.servlet.FilterChain;
@@ -61,8 +60,7 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter {
 
 		} catch (JwtException e) {
 
-			ExceptionResponse errorResponse = new ExceptionResponse(new Date(), HttpStatus.UNAUTHORIZED.toString(),
-					e.getMessage(), request.getRequestURI());
+			ExceptionResponse errorResponse = new ExceptionResponse( HttpStatus.UNAUTHORIZED, e.getMessage(), e.getLocalizedMessage(), request.getRequestURI());
 
 			response.setStatus(HttpStatus.UNAUTHORIZED.value());
 			response.setContentType("json");
