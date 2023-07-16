@@ -27,7 +27,7 @@ public class UserDTOv2 extends RepresentationModel<UserDTOv2> implements Seriali
 	@Pattern(regexp = "^[A-Za-z]+$", message = "aceita apenas letras")
 	private String firstname;
 	
-	@Pattern(regexp = "^[A-Za-z]+$", message = "aceita apenas letras")
+	@Pattern(regexp = "^[A-Za-z]+(\\s[A-Za-z]+)*$", message = "aceita apenas letras")
 	private String lastname;
 	
 	@Email
