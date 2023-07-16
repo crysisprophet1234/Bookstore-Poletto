@@ -29,6 +29,36 @@ public class SecurityConfig {
 
 	@Autowired
 	private AuthenticationProvider authenticationProvider;
+	
+	private static final String[] AUTH_WHITELIST = {
+			
+			//default resources from spring, swagger, h2 and etc
+			"/h2-console/**",
+	        "/swagger-resources",
+	        "/swagger-resources/**",
+	        "/configuration/ui",
+	        "/configuration/security",
+	        "/swagger-ui.html",
+	        "/webjars/**",
+	        "/v3/api-docs/**",
+	        "/auth/**",
+	        "/actuator/**",
+	        "/swagger-ui/**",
+	        
+	        //authentication
+	        "/auth/**"
+	        
+	};
+	
+	private static final String[] ENTITIES_ALL_WHITELIST = {
+			
+			"books/**",
+			"categories/**",
+			"authors/**"
+						
+	};
+	
+	//TODO adicionar entities que requerem role de operador, admin e etc...
 
 	@Bean
 	SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -38,16 +68,14 @@ public class SecurityConfig {
 		}
 
 		http.csrf(csrf -> csrf.disable())
-				.authorizeHttpRequests(auth -> auth
-						.requestMatchers("/actuator/**").permitAll()
-						.requestMatchers(HttpMethod.POST, "/api/auth/v1/**").permitAll()
-						.requestMatchers(HttpMethod.GET, "/api/books/**").permitAll()
-						.requestMatchers(HttpMethod.POST, "/api/reservations/v1/**").hasAuthority("ROLE_CUSTOMER")
-						.requestMatchers(HttpMethod.GET, "/api/categories/v1/**").permitAll()
-						// .anyRequest().hasAuthority("ROLE_ADMIN")
-						.anyRequest().permitAll())
-				.requiresChannel(channel -> //https
-						channel.anyRequest().requiresSecure())
+				.authorizeHttpRequests(auth -> auth					
+						.requestMatchers(AUTH_WHITELIST).permitAll()
+						.requestMatchers(HttpMethod.GET, ENTITIES_ALL_WHITELIST).permitAll()
+//						.requestMatchers(HttpMethod.GET, "/api/books/**").authenticated()
+//						.requestMatchers(HttpMethod.POST, "/api/reservations/v1/**").hasAuthority("ROLE_CUSTOMER")
+//						.requestMatchers(HttpMethod.GET, "/api/categories/v1/**").permitAll()
+						.anyRequest().authenticated())
+				.requiresChannel(channel -> channel.anyRequest().requiresSecure())
 				.sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 				.authenticationProvider(authenticationProvider)
 				.addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
