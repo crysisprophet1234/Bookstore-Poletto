@@ -43,12 +43,12 @@ const Form = () => {
 
   useEffect(() => {
     requestBackend({ url: '/api/categories/v2' }).then((response) => {
-      setSelectCategories(response.data.content);
+      setSelectCategories(response.data);
     });
   }, []);
 
   useEffect(() => {
-    requestBackend({ url: '/api/authors/v2' }).then((response) => {
+    requestBackend({ url: '/api/authors/v2/all' }).then((response) => {
       setSelectAuthors(response.data);
     });
   }, []);
@@ -83,7 +83,7 @@ const Form = () => {
 
     requestBackend(config)
       .then(() => {
-        toast.info('Produto cadastrado com sucess');
+        toast.info('Produto cadastrado com sucesso');
         history.push('/admin/books');
       })
       .catch(() => {
@@ -172,12 +172,12 @@ const Form = () => {
                     <Select
                       {...field}
                       options={selectCategories}
+                      isClearable
                       classNamePrefix="product-crud-select"
                       isMulti
+                      onChange={(value) => setValue('categories', [...value])}
                       getOptionLabel={(category: Category) => category.name}
-                      getOptionValue={(category: Category) =>
-                        String(category.id)
-                      }
+                      getOptionValue={(category: Category) => String(category.id)}
                     />
                   )}
                 />
@@ -199,10 +199,9 @@ const Form = () => {
                       {...field}
                       options={selectAuthors}
                       classNamePrefix="product-crud-select"
+                      onChange={(value) => setValue('author', value as Author)}
                       getOptionLabel={(author: Author) => author.name}
-                      getOptionValue={(author: Author) =>
-                        String(author.id)
-                      }
+                      getOptionValue={(author: Author) => String(author.id)}
                     />
                   )}
                 />
