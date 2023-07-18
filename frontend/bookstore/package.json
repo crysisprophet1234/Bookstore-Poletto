@@ -1,8 +1,9 @@
 {
   "name": "bookstore",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "private": true,
   "dependencies": {
+    "@babel/plugin-proposal-private-property-in-object": "*",
     "@hookform/resolvers": "^2.9.11",
     "@popperjs/core": "^2.11.6",
     "@testing-library/jest-dom": "^5.16.5",
