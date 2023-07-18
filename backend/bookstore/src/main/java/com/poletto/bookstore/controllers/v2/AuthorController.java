@@ -1,5 +1,7 @@
 package com.poletto.bookstore.controllers.v2;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -18,6 +20,12 @@ public class AuthorController {
 	
 	@Autowired
 	private AuthorService authorService;
+	
+	@GetMapping(path = "/all")
+	public ResponseEntity<List<AuthorDTOv2>> findAll(Pageable pageable) {
+		List<AuthorDTOv2> list = authorService.findAll();		
+		return ResponseEntity.ok().body(list);
+	}
 	
 	@GetMapping
 	public ResponseEntity<Page<AuthorDTOv2>> findAllPaged(Pageable pageable) {
