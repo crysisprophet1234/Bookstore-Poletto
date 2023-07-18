@@ -21,7 +21,7 @@ public class CategoryDTOv2 extends RepresentationModel<CategoryDTOv2> implements
 	@JsonProperty("id")
 	private Long key;
 	
-	@Pattern(regexp = "^[A-Za-z]+$", message = "aceita apenas letras")
+	@Pattern(regexp = "^[A-Za-z\\s-]+$", message = "aceita apenas letras")
 	@Size(min = 1, max = 50)
     private String name;
 
