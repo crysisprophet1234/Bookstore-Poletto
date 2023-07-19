@@ -30,7 +30,7 @@ public class WebConfig implements WebMvcConfigurer {
 				.mediaType("json", MediaType.APPLICATION_JSON)
 				.mediaType("xml", MediaType.APPLICATION_XML)
 				.mediaType("text/plain", MediaType.TEXT_PLAIN)
-				.mediaType("x-yaml", MEDIA_TYPE_APPLICATION_YML)
+				.mediaType("x-yaml", MEDIA_TYPE_APPLICATION_YML) //TODO quando existe data no response, o yaml n parsa
 				//.mediaType("format-data", MediaType.form) //verificar form url encoded
 			.defaultContentType(MediaType.APPLICATION_JSON);
 
