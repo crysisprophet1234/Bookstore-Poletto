@@ -13,7 +13,7 @@ const Home = () => {
 			<div className="base-card home-card">
 				<div className="home-content-container">
 					<div>
-						<h1>Conheça o melhor catálogo de livrosss</h1>
+						<h1>Conheça o melhor catálogo de livros</h1>
 						<p>
 							Ajudaremos você a encontrar o livro que mais combina com seus gostos.
 						</p>
