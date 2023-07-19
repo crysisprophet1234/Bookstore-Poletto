@@ -27,3 +27,5 @@ yarn-error.log*
 
 **.css.map
 **.scss
+
+!src/assets/styles/custom.scss
