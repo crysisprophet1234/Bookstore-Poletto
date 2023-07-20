@@ -57,8 +57,6 @@ public class SecurityConfig {
 			"authors/**"
 						
 	};
-	
-	//TODO adicionar entities que requerem role de operador, admin e etc...
 
 	@Bean
 	SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -71,9 +69,11 @@ public class SecurityConfig {
 				.authorizeHttpRequests(auth -> auth					
 						.requestMatchers(AUTH_WHITELIST).permitAll()
 						.requestMatchers(HttpMethod.GET, ENTITIES_ALL_WHITELIST).permitAll()
-//						.requestMatchers(HttpMethod.GET, "/api/books/**").authenticated()
-//						.requestMatchers(HttpMethod.POST, "/api/reservations/v1/**").hasAuthority("ROLE_CUSTOMER")
-//						.requestMatchers(HttpMethod.GET, "/api/categories/v1/**").permitAll()
+						.requestMatchers(HttpMethod.GET, "reservations/**").hasAnyRole("OPERATOR", "ADMIN")
+						.requestMatchers(HttpMethod.POST, "books/**", "reservations/**").hasAnyRole("OPERATOR", "ADMIN")
+						.requestMatchers(HttpMethod.PUT, "books/**", "reservations/**").hasAnyRole("OPERATOR", "ADMIN")
+						.requestMatchers(HttpMethod.DELETE, "books/**").hasRole("ADMIN")
+						.requestMatchers("users/**").hasRole("ADMIN")
 						.anyRequest().authenticated())
 				.requiresChannel(channel -> channel.anyRequest().requiresSecure())
 				.sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
