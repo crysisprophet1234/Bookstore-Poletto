@@ -30,20 +30,13 @@ export const hasAnyAuthorities = (authorities: Authority[]): boolean => {
 
   const tokenAuthorities = getTokenData()?.authorities;
 
-  console.log(tokenAuthorities)
-
-  console.log(authorities)
-
-  if (tokenAuthorities !== undefined) {
-    
-    for (var i = 0; i < authorities.length; i++) {
-      if (tokenAuthorities.includes(authorities[i])) {
-        
-        return true;
-      }
+  tokenAuthorities?.forEach(a => {
+    console.log(a)
+    console.log(authorities[1])
+    if (a.toString() === authorities[1]) {
+      return true;
     }
-    
-  }
+  })
 
   return false;
 
