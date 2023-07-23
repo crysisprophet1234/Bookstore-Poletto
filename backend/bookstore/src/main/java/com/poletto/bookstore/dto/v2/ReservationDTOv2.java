@@ -10,6 +10,7 @@ import java.util.Set;
 
 import org.springframework.hateoas.RepresentationModel;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
@@ -35,6 +36,7 @@ public class ReservationDTOv2 extends RepresentationModel<ReservationDTOv2> impl
 	
 	@PastOrPresent
 	@NotNull
+	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy 'T' HH:mm 'BRT'", timezone = "America/Sao_Paulo")
 	private Instant moment;
 	
 	@Future

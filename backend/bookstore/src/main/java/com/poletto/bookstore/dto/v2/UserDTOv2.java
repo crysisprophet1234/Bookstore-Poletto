@@ -13,6 +13,7 @@ import com.github.dozermapper.core.Mapping;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Pattern;
 
 @JsonPropertyOrder(value = {"id"})
@@ -25,9 +26,11 @@ public class UserDTOv2 extends RepresentationModel<UserDTOv2> implements Seriali
 	private Long key;
 	
 	@Pattern(regexp = "^[A-Za-z]+$", message = "aceita apenas letras")
+	@NotEmpty
 	private String firstname;
 	
 	@Pattern(regexp = "^[A-Za-z]+(\\s[A-Za-z]+)*$", message = "aceita apenas letras")
+	@NotEmpty
 	private String lastname;
 	
 	@Email

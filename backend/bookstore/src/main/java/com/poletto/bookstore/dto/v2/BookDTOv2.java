@@ -48,7 +48,7 @@ public class BookDTOv2 extends RepresentationModel<BookDTOv2> implements Seriali
 	
 	@Valid
 	@NotNull
-	@JsonIgnoreProperties(value = {"nacionality"})
+	@JsonIgnoreProperties(value = {"nacionality", "books"})
 	private Author author;
 
 	@Valid

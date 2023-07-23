@@ -8,7 +8,6 @@ import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import com.poletto.bookstore.entities.enums.ReservationStatus;
 
 import jakarta.persistence.Column;
@@ -22,7 +21,7 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
 @Entity
-@Table(name = "tb_reservation")
+@Table(name = "reservation")
 public class Reservation implements Serializable {
 
 	private static final long serialVersionUID = 1L;
@@ -31,7 +30,6 @@ public class Reservation implements Serializable {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
-	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm'Z'", timezone = "GMT")
 	private Instant moment;
 	
 	@Column(columnDefinition = "VARCHAR(255) CHECK (upper(status) IN ('IN_PROGRESS', 'FINISHED')) DEFAULT 'IN_PROGRESS'")
