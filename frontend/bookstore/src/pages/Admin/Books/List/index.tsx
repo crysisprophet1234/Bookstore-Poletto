@@ -17,7 +17,7 @@ type ControlComponentsData = {
 };
 
 const List = () => {
-  
+
   const [page, setPage] = useState<SpringPage<Book>>();
 
   const [controlComponentsData, setControlComponentsData] =
@@ -31,7 +31,7 @@ const List = () => {
   };
 
   const handleSubmitFilter = (data: ProductFilterData) => {
-    setControlComponentsData({ activePage: 0, filterData: data });   
+    setControlComponentsData({ activePage: 0, filterData: data });
   };
 
   const getBooks = useCallback(() => {
@@ -71,11 +71,19 @@ const List = () => {
       </div>
 
       <div className="row">
-        {page?.content.map((book) => (
-          <div key={book.id} className="col-sm-6 col-md-12">
-            <ProductCrudCard book={book} onDelete={getBooks} />
-          </div>
-        ))}
+
+        {page?.empty ? <h2>Nenhum livro registrado</h2> :
+
+          (
+            page?.content?.map((book) => (
+              <div key={book.id} className="col-sm-6 col-md-12">
+                <ProductCrudCard book={book} onDelete={getBooks} />
+              </div>
+
+            ))
+
+          )}
+
       </div>
 
       <Pagination

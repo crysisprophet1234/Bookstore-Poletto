@@ -79,7 +79,7 @@ const Catalog = () => {
 
       <div className="row">
 
-        {isLoading || !page ? <CardLoader /> :
+        {isLoading || page?.empty ? <CardLoader /> :
 
           (
 
