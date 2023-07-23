@@ -1,3 +1,5 @@
+\c bookstore-dev
+
 --usuarios
 
 INSERT INTO tb_user (email, firstname, lastname, password) VALUES ('leo@gmail.com', 'Leonardo', 'Poletto Casagrande', '$2a$10$YYdXGIgspPM/gnVuk1S/m.NqKmE3Gg3gkWLk74PRlpnnqELnpyW7O');
