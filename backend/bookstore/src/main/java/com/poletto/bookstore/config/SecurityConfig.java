@@ -74,7 +74,7 @@ public class SecurityConfig {
 						.requestMatchers(HttpMethod.PUT, "books/**", "reservations/**").hasAnyRole("OPERATOR", "ADMIN")
 						.requestMatchers(HttpMethod.DELETE, "books/**").hasRole("ADMIN")
 						.requestMatchers("users/**").hasRole("ADMIN")
-						.anyRequest().authenticated())
+						.anyRequest().permitAll())
 				.requiresChannel(channel -> channel.anyRequest().requiresSecure())
 				.sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 				.authenticationProvider(authenticationProvider)
