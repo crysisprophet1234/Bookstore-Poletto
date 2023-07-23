@@ -155,7 +155,7 @@ const Form = () => {
                   type="text"
                   className={`form-control base-input ${errors.name ? 'is-invalid' : ''
                     }`}
-                  placeholder="Nome do produto"
+                  placeholder="Título do livro"
                   name="name"
                 />
                 <div className="invalid-feedback d-block">
@@ -178,6 +178,7 @@ const Form = () => {
                       onChange={(value) => setValue('categories', [...value])}
                       getOptionLabel={(category: Category) => category.name}
                       getOptionValue={(category: Category) => String(category.id)}
+                      placeholder="Categoria"
                     />
                   )}
                 />
@@ -202,6 +203,7 @@ const Form = () => {
                       onChange={(value) => setValue('author', value as Author)}
                       getOptionLabel={(author: Author) => author.name}
                       getOptionValue={(author: Author) => String(author.id)}
+                      placeholder="Autor"
                     />
                   )}
                 />
@@ -225,7 +227,7 @@ const Form = () => {
                   type="text"
                   className={`form-control base-input ${errors.imgUrl ? 'is-invalid' : ''
                     }`}
-                  placeholder="URL da imagem do produto"
+                  placeholder="URL da imagem do livro"
                   name="imgUrl"
                 />
                 <div className="invalid-feedback d-block">
@@ -241,7 +243,7 @@ const Form = () => {
                   type="date"
                   className={`form-control base-input ${errors.releaseDate ? 'is-invalid' : ''
                     }`}
-                  placeholder="URL da imagem do produto"
+                  placeholder="Release date"
                   name="releaseDate"
                 />
                 <div className="invalid-feedback d-block">
