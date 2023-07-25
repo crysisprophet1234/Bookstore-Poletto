@@ -142,7 +142,7 @@ public class CustomizedResponseEntityExceptionHandler extends ResponseEntityExce
 
 		for (FieldError e : results.getFieldErrors()) {
 
-			sb.append("{ " + e.getObjectName()).append(": campo [").append(e.getField()).append("] ")
+			sb.append(e.getObjectName()).append(": campo [").append(e.getField()).append("] ")
 					.append(e.getDefaultMessage()).append(". Valor passado: ");
 
 			if (e.getRejectedValue() != null) {
@@ -150,7 +150,6 @@ public class CustomizedResponseEntityExceptionHandler extends ResponseEntityExce
 			} else {
 				sb.append("(null)");
 			}
-			sb.append(" } ");
 
 		}
 
