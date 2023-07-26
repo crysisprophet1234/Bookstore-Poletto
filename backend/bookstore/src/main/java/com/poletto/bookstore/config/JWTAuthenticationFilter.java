@@ -3,7 +3,6 @@ package com.poletto.bookstore.config;
 import java.io.IOException;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -12,8 +11,7 @@ import org.springframework.security.web.authentication.WebAuthenticationDetailsS
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.poletto.bookstore.exceptions.ExceptionResponse.ExceptionResponse;
+import com.poletto.bookstore.exceptions.handler.CustomJwtExceptionHandler;
 
 import io.jsonwebtoken.JwtException;
 import jakarta.servlet.FilterChain;
@@ -36,7 +34,7 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter {
 
 		final String authHeader = request.getHeader("Authorization");
 		final String jwt;
-		String userEmail;
+		String userEmail = null;
 
 		if (authHeader == null || !authHeader.startsWith("Bearer ")) {
 			filterChain.doFilter(request, response);
@@ -44,30 +42,16 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter {
 		}
 
 		jwt = authHeader.substring(7);
-		
-		userEmail = null;
-		
-		/*
-		 TODO
-		 possivelmente o catch de jwt vencido ou inválido
-		 deveria ser em outra localização mas por enquanto
-		 está funcionando aqui. 
-		*/
 
 		try {
 
 			userEmail = jwtService.extractUsername(jwt);
-
-		} catch (JwtException e) {
-
-			ExceptionResponse errorResponse = new ExceptionResponse( HttpStatus.UNAUTHORIZED, e.getMessage(), e.getLocalizedMessage(), request.getRequestURI());
-
-			response.setStatus(HttpStatus.UNAUTHORIZED.value());
-			response.setContentType("json");
-			response.getOutputStream().print(new ObjectMapper().writeValueAsString(errorResponse));
-			return;
 			
-		}
+		} catch (JwtException ex) {
+			
+			new CustomJwtExceptionHandler().handleAuthenticationException(request, response, ex);
+
+		} 
 
 		if (userEmail != null && SecurityContextHolder.getContext().getAuthentication() == null) {
 
