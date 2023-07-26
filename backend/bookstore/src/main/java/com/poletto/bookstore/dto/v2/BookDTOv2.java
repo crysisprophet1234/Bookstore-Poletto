@@ -31,7 +31,7 @@ public class BookDTOv2 extends RepresentationModel<BookDTOv2> implements Seriali
 	@JsonProperty("id")
 	private Long key;
 
-	@Pattern(regexp = "^[a-zA-Z0-9\\s]*$", message = "aceita apenas letras e números")
+	@Pattern(regexp = "^[A-Za-z0-9' -]+$", message = "aceita apenas letras e números")
     @Size(min = 1, max = 50)
 	private String name;
 	
