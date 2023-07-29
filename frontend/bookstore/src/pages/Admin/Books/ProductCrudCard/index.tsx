@@ -21,7 +21,7 @@ const ProductCrudCard = ({ book, onDelete }: Props) => {
 
     const config: AxiosRequestConfig = {
       method: 'DELETE',
-      url: `/api/v1/books/${bookId}`,
+      url: `/api/books/v2/${bookId}`,
       withCredentials: true,
     };
 

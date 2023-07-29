@@ -53,4 +53,9 @@ public class BookReservationPK implements Serializable {
 		return Objects.equals(book, other.book) && Objects.equals(reservation, other.reservation);
 	}
 
+	@Override
+	public String toString() {
+		return "BookReservationPK [reservation=" + reservation.getId() + ", book=" + book + "]";
+	}
+
 }

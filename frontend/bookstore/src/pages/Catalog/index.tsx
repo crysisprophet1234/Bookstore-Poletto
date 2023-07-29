@@ -40,7 +40,7 @@ const Catalog = () => {
   const getBooks = useCallback(() => {
     const config: AxiosRequestConfig = {
       method: 'GET',
-      url: '/api/v1/books/paged',
+      url: '/api/books/v2',
       params: {
         page: controlComponentsData.activePage,
         size: 12,
@@ -79,7 +79,7 @@ const Catalog = () => {
 
       <div className="row">
 
-        {isLoading || !page ? <CardLoader /> :
+        {isLoading || page?.empty ? <CardLoader /> :
 
           (
 

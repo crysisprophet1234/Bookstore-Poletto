@@ -1,17 +1,25 @@
 import { AxiosRequestConfig } from 'axios';
+
 import { useState } from 'react';
 import { useEffect } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { useHistory, useParams } from 'react-router-dom';
+
 import Select from 'react-select';
+
 import { Category } from '../../../../types/category';
 import { Book } from '../../../../types/book';
+import { Author } from '../../../../types/author';
+
 import { requestBackend } from '../../../../utils/requests';
-import { toast } from 'react-toastify';
+
+import { ToastOptions, toast } from 'react-toastify';
+import ToastMessage from "../../../../components/ToastMessage"
 
 import './styles.css';
-import { Author } from '../../../../types/author';
-import { Reservation } from '../../../../types/reservation';
+
+
+//import { Reservation } from '../../../../types/reservation';
 
 type UrlParams = {
   bookId: string;
@@ -33,6 +41,19 @@ const Form = () => {
 
   const [selectAuthors, setSelectAuthors] = useState<Author[]>([]);
 
+  const toastParameters : ToastOptions = {
+
+    position: "bottom-center",
+    autoClose: false,
+    hideProgressBar: false,
+    closeOnClick: true,
+    pauseOnHover: true,
+    draggable: true,
+    progress: undefined,
+    theme: "light"
+
+  }
+
   const {
     register,
     handleSubmit,
@@ -42,20 +63,20 @@ const Form = () => {
   } = useForm<Book>();
 
   useEffect(() => {
-    requestBackend({ url: '/api/v1/categories' }).then((response) => {
-      setSelectCategories(response.data.content);
+    requestBackend({ url: '/api/categories/v2' }).then((response) => {
+      setSelectCategories(response.data);
     });
   }, []);
 
   useEffect(() => {
-    requestBackend({ url: '/api/v1/authors' }).then((response) => {
+    requestBackend({ url: '/api/authors/v2/all' }).then((response) => {
       setSelectAuthors(response.data);
     });
   }, []);
 
   useEffect(() => {
     if (isEditing) {
-      requestBackend({ url: `/api/v1/books/${bookId}` }).then((response) => {
+      requestBackend({ url: `/api/books/v2/${bookId}` }).then((response) => {
         const book = response.data as Book;
 
         setValue('name', book.name);
@@ -76,18 +97,18 @@ const Form = () => {
 
     const config: AxiosRequestConfig = {
       method: isEditing ? 'PUT' : 'POST',
-      url: isEditing ? `/api/v1/books/${bookId}` : '/api/v1/books',
+      url: isEditing ? `/api/books/v2/${bookId}` : '/api/books/v2',
       data,
       withCredentials: true,
     };
 
     requestBackend(config)
       .then(() => {
-        toast.info('Produto cadastrado com sucess');
+        toast.info('Produto cadastrado com sucesso');
         history.push('/admin/books');
       })
-      .catch(() => {
-        toast.error('Erro ao cadastrar produto');
+      .catch((error) => {
+        toast.error(`Falha ao cadastrar livro: \n ${error.response.data.message}`, toastParameters);
       });
   };
 
@@ -99,7 +120,7 @@ const Form = () => {
 
     const configGet: AxiosRequestConfig = {
       method: 'GET',
-      url: "/api/v1/reservations",
+      url: "/api/reservations/v2",
       withCredentials: true,
     };
 
@@ -114,11 +135,9 @@ const Form = () => {
         console.log(err);
       });
 
-
-
     const configPut: AxiosRequestConfig = {
       method: 'PUT',
-      url: `/api/v1/reservations/return/${bookId}`,
+      url: `/api/reservations/v2/return/${bookId}`,
       //data: initialData,
       withCredentials: true,
     };
@@ -136,6 +155,9 @@ const Form = () => {
 
   return (
     <div className="product-crud-container">
+
+      <ToastMessage />
+
       <div className="base-card product-crud-form-card">
         <h1 className="product-crud-form-title">DADOS DO LIVRO {isEditing && ` - código ${bookId}`}</h1>
 
@@ -155,7 +177,7 @@ const Form = () => {
                   type="text"
                   className={`form-control base-input ${errors.name ? 'is-invalid' : ''
                     }`}
-                  placeholder="Nome do produto"
+                  placeholder="Título do livro"
                   name="name"
                 />
                 <div className="invalid-feedback d-block">
@@ -172,12 +194,13 @@ const Form = () => {
                     <Select
                       {...field}
                       options={selectCategories}
+                      isClearable
                       classNamePrefix="product-crud-select"
                       isMulti
+                      onChange={(value) => setValue('categories', [...value])}
                       getOptionLabel={(category: Category) => category.name}
-                      getOptionValue={(category: Category) =>
-                        String(category.id)
-                      }
+                      getOptionValue={(category: Category) => String(category.id)}
+                      placeholder="Categoria"
                     />
                   )}
                 />
@@ -199,10 +222,10 @@ const Form = () => {
                       {...field}
                       options={selectAuthors}
                       classNamePrefix="product-crud-select"
+                      onChange={(value) => setValue('author', value as Author)}
                       getOptionLabel={(author: Author) => author.name}
-                      getOptionValue={(author: Author) =>
-                        String(author.id)
-                      }
+                      getOptionValue={(author: Author) => String(author.id)}
+                      placeholder="Autor"
                     />
                   )}
                 />
@@ -226,7 +249,7 @@ const Form = () => {
                   type="text"
                   className={`form-control base-input ${errors.imgUrl ? 'is-invalid' : ''
                     }`}
-                  placeholder="URL da imagem do produto"
+                  placeholder="URL da imagem do livro"
                   name="imgUrl"
                 />
                 <div className="invalid-feedback d-block">
@@ -242,7 +265,7 @@ const Form = () => {
                   type="date"
                   className={`form-control base-input ${errors.releaseDate ? 'is-invalid' : ''
                     }`}
-                  placeholder="URL da imagem do produto"
+                  placeholder="Release date"
                   name="releaseDate"
                 />
                 <div className="invalid-feedback d-block">

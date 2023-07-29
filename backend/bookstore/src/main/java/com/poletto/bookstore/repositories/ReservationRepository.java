@@ -8,15 +8,12 @@ import org.springframework.data.jpa.repository.Query;
 import com.poletto.bookstore.entities.Reservation;
 
 public interface ReservationRepository extends JpaRepository<Reservation, Long> {
-	
-	@Query(value = "SELECT * FROM tb_reservation res "
-			 + "LEFT JOIN tb_book_reservation bookres "
-			 + "ON res.id = bookres.reservation_id "
-			 + "WHERE bookres.book_id = :id AND res.status NOT IN ('FINISHED')", nativeQuery = true)
+
+	@Query("SELECT res FROM Reservation res " + "LEFT JOIN BookReservation bookres "
+			+ "WHERE bookres.id.book.id = :id AND res.status NOT IN ('FINISHED')")
 	Reservation findByBook(Long id);
-	
-	@Query(value = "SELECT * from tb_reservation "
-				 + "WHERE client_id = :id ", nativeQuery = true)
+
+	@Query("SELECT res FROM Reservation res WHERE res.client.id = :id")
 	Page<Reservation> findByClient(Long id, Pageable pageable);
 
 }

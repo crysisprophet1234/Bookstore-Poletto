@@ -35,7 +35,7 @@ const BookDetails = () => {
         const params = {
 
             method: 'GET',
-            url: `/api/v1/books/${bookId}`,
+            url: `/api/books/v2/${bookId}`,
             headers: {} as AxiosRequestHeaders
 
         }

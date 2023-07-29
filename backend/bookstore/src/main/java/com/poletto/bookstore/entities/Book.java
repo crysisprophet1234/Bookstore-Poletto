@@ -21,7 +21,7 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
 @Entity
-@Table(name = "tb_book")
+@Table(name = "book")
 public class Book implements Serializable {
 
 	private static final long serialVersionUID = 1L;
@@ -45,7 +45,7 @@ public class Book implements Serializable {
 	private Set<BookReservation> reservations = new HashSet<>();
 	
 	@ManyToMany
-	@JoinTable(name = "tb_book_category", joinColumns = @JoinColumn(name = "book_id"), inverseJoinColumns = @JoinColumn(name = "category_id"))
+	@JoinTable(name = "book_category", joinColumns = @JoinColumn(name = "book_id"), inverseJoinColumns = @JoinColumn(name = "category_id"))
 	private Set<Category> categories = new HashSet<>();
 	
 	public Book() {
@@ -140,8 +140,8 @@ public class Book implements Serializable {
 
 	@Override
 	public String toString() {
-		return "Book [id=" + id + ", name=" + name + ", author=" + author + ", releaseDate=" + releaseDate + ", imgUrl="
-				+ imgUrl + "]";
+		return "Book [id=" + id + ", name=" + name + ", releaseDate=" + releaseDate + ", imgUrl=" + imgUrl + ", status="
+				+ status + ", author=" + author;
 	}
 
 }

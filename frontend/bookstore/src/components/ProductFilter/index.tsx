@@ -43,9 +43,9 @@ const ProductFilter = ({ onSubmitFilter }: Props) => {
   };
 
   useEffect(() => {
-    requestBackend({ url: '/api/v1/categories' })
+    requestBackend({ url: '/api/categories/v2' })
       .then((response) => {
-        setSelectCategories(response.data.content);
+        setSelectCategories(response.data);
     });
   }, []);
 
@@ -57,7 +57,7 @@ const ProductFilter = ({ onSubmitFilter }: Props) => {
             {...register('name')}
             type="text"
             className="form-control"
-            placeholder="Nome do produto"
+            placeholder="Nome do livro ou autor"
             name="name"
           />
           <button className="product-filter-search-icon">

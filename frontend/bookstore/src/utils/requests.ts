@@ -2,10 +2,7 @@ import axios, { AxiosRequestConfig } from 'axios';
 import history from './history';
 import { getAuthData } from './storage';
 
-//import * as dotenv from 'dotenv'
-//dotenv.config();
-
-export const BASE_URL = process.env.REACT_APP_BACKEND_URL ?? 'http://localhost:8080';
+export const BASE_URL = "https://192.168.15.13:8443"
 
 type LoginData = {
 
@@ -25,7 +22,7 @@ type SignupData = {
 
 export const requestBackend = (config: AxiosRequestConfig) => {
 
-    const headers: any = { ...config.headers };
+    const headers: any = { ...config.headers};
 
     if (config.withCredentials) {
 
@@ -51,7 +48,7 @@ export const requestBackendLogin = (loginData: LoginData) => {
 
     });
 
-    return axios({ method: 'POST', baseURL: BASE_URL, url: '/api/v1/auth/authenticate', data, headers });
+    return axios({ method: 'POST', baseURL: BASE_URL, url: '/api/auth/v2/authenticate', data, headers });
 
 }
 
@@ -71,7 +68,7 @@ export const requestBackendSignup = (signupData: SignupData) => {
 
     });
 
-    return axios({ method: 'POST', baseURL: BASE_URL, url: '/api/v1/auth/register', data, headers });
+    return axios({ method: 'POST', baseURL: BASE_URL, url: '/api/auth/v2/register', data, headers });
 
 }
 
@@ -93,4 +90,5 @@ axios.interceptors.response.use(function (response) {
     }
 
     return Promise.reject(error);
+    
 });

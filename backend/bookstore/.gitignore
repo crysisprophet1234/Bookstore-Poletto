@@ -1,6 +1,9 @@
 /target/
 !.mvn/wrapper/maven-wrapper.jar
 
+# ssl cert and key
+src/main/resources/key/
+
 ### STS ###
 .apt_generated
 .classpath
@@ -26,6 +29,10 @@ local.properties
 .settings/
 .loadpath
 .recommenders
+
+src/main/resources/*.properties
+
+src/main/resources/META-INF/
 
 # External tool builders
 .externalToolBuilders/
@@ -117,6 +124,7 @@ local.properties
 *.nar
 *.ear
 *.zip
+*.gz
 *.tar.gz
 *.rar
 
@@ -145,6 +153,7 @@ ehthumbs_vista.db
 
 # Dump file
 *.stackdump
+/db_backup/
 
 # Folder config file
 [Dd]esktop.ini

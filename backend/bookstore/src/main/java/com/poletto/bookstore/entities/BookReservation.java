@@ -8,7 +8,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 
 @Entity
-@Table(name = "tb_book_reservation")
+@Table(name = "book_reservation")
 public class BookReservation implements Serializable {
 
 	private static final long serialVersionUID = 1L;
@@ -57,6 +57,11 @@ public class BookReservation implements Serializable {
 			return false;
 		BookReservation other = (BookReservation) obj;
 		return Objects.equals(id, other.id);
+	}
+
+	@Override
+	public String toString() {
+		return "BookReservation [id=" + id + "]";
 	}
 	
 }

@@ -11,6 +11,9 @@ import org.springframework.security.web.authentication.WebAuthenticationDetailsS
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
+import com.poletto.bookstore.exceptions.handler.CustomJwtExceptionHandler;
+
+import io.jsonwebtoken.JwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -31,7 +34,7 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter {
 
 		final String authHeader = request.getHeader("Authorization");
 		final String jwt;
-		final String userEmail;
+		String userEmail = null;
 
 		if (authHeader == null || !authHeader.startsWith("Bearer ")) {
 			filterChain.doFilter(request, response);
@@ -39,7 +42,16 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter {
 		}
 
 		jwt = authHeader.substring(7);
-		userEmail = jwtService.extractUsername(jwt);
+
+		try {
+
+			userEmail = jwtService.extractUsername(jwt);
+			
+		} catch (JwtException ex) {
+			
+			new CustomJwtExceptionHandler().handleAuthenticationException(request, response, ex);
+
+		} 
 
 		if (userEmail != null && SecurityContextHolder.getContext().getAuthentication() == null) {
 
@@ -55,6 +67,7 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter {
 				SecurityContextHolder.getContext().setAuthentication(authToken);
 
 			}
+
 		}
 
 		filterChain.doFilter(request, response);

@@ -1,5 +1,5 @@
 import ContentLoader from 'react-content-loader'
-import './CardLoader.css'
+import './styles.css'
 
 function width() {
 

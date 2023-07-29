@@ -9,9 +9,10 @@
 /coverage
 
 # production
-/build
+#/build
 
 # misc
+/config
 .DS_Store
 .env
 .env.test
@@ -26,3 +27,5 @@ yarn-error.log*
 
 **.css.map
 **.scss
+
+!src/assets/styles/custom.scss

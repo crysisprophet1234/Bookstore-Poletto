@@ -16,7 +16,7 @@ const Reserves = () => {
 
         const params: AxiosRequestConfig = {
 
-            url: '/api/v1/reservations',
+            url: '/api/reservations/v2',
             withCredentials: true,
             headers: {} as AxiosRequestHeaders,
             params: {

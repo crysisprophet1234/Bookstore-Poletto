@@ -13,8 +13,6 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -28,7 +26,7 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
 @Entity
-@Table (name = "tb_user")
+@Table (name = "bookstore_user")
 public class User implements UserDetails, Serializable  {
 	
 	private static final long serialVersionUID = 1L;
@@ -44,12 +42,11 @@ public class User implements UserDetails, Serializable  {
 	private String firstname;
 	private String lastname;
 	
-	@JsonIgnore
 	@OneToMany(mappedBy = "client")
 	private List<Reservation> orders = new ArrayList<>();
 	
 	@ManyToMany(fetch = FetchType.EAGER)
-	@JoinTable(name = "tb_user_role",
+	@JoinTable(name = "user_role",
 	joinColumns = @JoinColumn(name = "user_id"),
 	inverseJoinColumns = @JoinColumn(name = "role_id"))
 	private Set<Role> roles = new HashSet<>();

@@ -1,3 +1,4 @@
+import { Author } from "./author"
 import { Category } from "./category"
 
 export type Book = {
@@ -7,7 +8,7 @@ export type Book = {
     releaseDate: string,
     imgUrl: string,
     status: string,
-    author: { id: number, name: string},
-    categories: [Category]
+    author: Author,
+    categories: Category[]
     
 }
