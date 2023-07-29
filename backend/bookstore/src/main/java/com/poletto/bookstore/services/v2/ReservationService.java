@@ -16,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.poletto.bookstore.controllers.v2.BookController;
 import com.poletto.bookstore.controllers.v2.ReservationController;
+import com.poletto.bookstore.controllers.v2.UserController;
 import com.poletto.bookstore.converter.custom.ReservationMapper;
 import com.poletto.bookstore.dto.v2.BookDTOv2;
 import com.poletto.bookstore.dto.v2.ReservationDTOv2;
@@ -35,9 +36,6 @@ import jakarta.persistence.EntityNotFoundException;
 
 @Service("ReservationServiceV2")
 public class ReservationService {
-
-	// TODO testar reservation
-	// for some reason its not saving more than one book ...
 
 	private static final Logger logger = LoggerFactory.getLogger(ReservationService.class);
 
@@ -67,9 +65,14 @@ public class ReservationService {
 
 		Page<ReservationDTOv2> dtos = reservationPage.map(x -> ReservationMapper.convertEntityToDtoV2(x));
 
-		dtos.stream().forEach(x -> x
-				.add(linkTo(methodOn(ReservationController.class).findById(x.getId())).withSelfRel().withType("GET"))
-				.add(linkTo(methodOn(ReservationController.class).updateStatus(x.getId())).withRel("return").withType("PUT")));
+		dtos.stream().forEach(dto -> {
+		    dto.add(linkTo(methodOn(ReservationController.class).findById(dto.getId())).withSelfRel().withType("GET"))
+		       .add(linkTo(methodOn(ReservationController.class).updateStatus(dto.getId())).withRel("return").withType("PUT"));
+		    dto.getBooks().forEach(book -> book.add(linkTo(methodOn(BookController.class).findById(book.getId())).withSelfRel().withType("GET")));
+		    dto.getClient().add(linkTo(methodOn(UserController.class).findById(dto.getClient().getId())).withSelfRel().withType("GET"));
+		});
+
+				
 
 		return dtos;
 
@@ -86,20 +89,17 @@ public class ReservationService {
 		
 		ReservationDTOv2 dto = ReservationMapper.convertEntityToDtoV2(entity);
 		
-		for (BookDTOv2 bookDTO : dto.getBooks()) {
-			
-			bookDTO.add(linkTo(methodOn(BookController.class).findById(bookDTO.getId())).withSelfRel().withType("GET"));
-			bookDTO.add(linkTo(methodOn(BookController.class).delete(bookDTO.getId())).withRel("delete").withType("DELETE"));
-			bookDTO.add(linkTo(methodOn(BookController.class).update(bookDTO.getId(), bookDTO)).withRel("update").withType("PUT"));
-			
-		}
-		
-		dto.add(linkTo(methodOn(ReservationController.class).findById(dto.getId())).withSelfRel().withType("GET"));
-		dto.add(linkTo(methodOn(ReservationController.class).updateStatus(dto.getId())).withRel("return").withType("PUT"));
+		dto.add(linkTo(methodOn(ReservationController.class).findById(dto.getId())).withSelfRel().withType("GET"))
+	       .add(linkTo(methodOn(ReservationController.class).updateStatus(dto.getId())).withRel("return").withType("PUT"));
+	    dto.getBooks().forEach(book -> book.add(linkTo(methodOn(BookController.class).findById(book.getId())).withSelfRel().withType("GET")));
+	    dto.getClient().add(linkTo(methodOn(UserController.class).findById(dto.getClient().getId())).withSelfRel().withType("GET"));
 
 		return dto;
 
 	}
+	
+	// FIXME testar reservation
+	// for some reason its not saving more than one book ...
 
 	@Transactional
 	public ReservationDTOv2 reserveBooks(ReservationDTOv2 dto) {
@@ -120,7 +120,8 @@ public class ReservationService {
 
 		for (BookDTOv2 bookDTO : dto.getBooks()) {
 
-			Book bookEntity = bookRepository.getReferenceById(bookDTO.getId());
+			Book bookEntity = bookRepository.findById(bookDTO.getId()).orElseThrow(
+					() -> new ResourceNotFoundException("Resource BOOK not found. ID " + bookDTO.getId()));
 
 			if (bookEntity.getStatus().equals(BookStatus.BOOKED)) {
 				throw new InvalidStatusException(bookEntity);
@@ -143,16 +144,10 @@ public class ReservationService {
 		
 		ReservationDTOv2 newDto = ReservationMapper.convertEntityToDtoV2(entity);
 		
-		for (BookDTOv2 bookDTO : newDto.getBooks()) {
-			
-			bookDTO.add(linkTo(methodOn(BookController.class).findById(bookDTO.getId())).withSelfRel().withType("GET"));
-			bookDTO.add(linkTo(methodOn(BookController.class).delete(bookDTO.getId())).withRel("delete").withType("DELETE"));
-			bookDTO.add(linkTo(methodOn(BookController.class).update(bookDTO.getId(), bookDTO)).withRel("update").withType("PUT"));
-			
-		}
-		
-		newDto.add(linkTo(methodOn(ReservationController.class).findById(newDto.getId())).withSelfRel().withType("GET"));
-		newDto.add(linkTo(methodOn(ReservationController.class).updateStatus(newDto.getId())).withRel("return").withType("PUT"));
+		newDto.add(linkTo(methodOn(ReservationController.class).findById(newDto.getId())).withSelfRel().withType("GET"))
+	       .add(linkTo(methodOn(ReservationController.class).updateStatus(newDto.getId())).withRel("return").withType("PUT"));
+	    newDto.getBooks().forEach(book -> book.add(linkTo(methodOn(BookController.class).findById(book.getId())).withSelfRel().withType("GET")));
+	    newDto.getClient().add(linkTo(methodOn(UserController.class).findById(newDto.getClient().getId())).withSelfRel().withType("GET"));
 
 		return newDto;
 
