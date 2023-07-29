@@ -1,16 +1,24 @@
 import { AxiosRequestConfig } from 'axios';
+
 import { useState } from 'react';
 import { useEffect } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { useHistory, useParams } from 'react-router-dom';
+
 import Select from 'react-select';
+
 import { Category } from '../../../../types/category';
 import { Book } from '../../../../types/book';
+import { Author } from '../../../../types/author';
+
 import { requestBackend } from '../../../../utils/requests';
-import { toast } from 'react-toastify';
+
+import { ToastOptions, toast } from 'react-toastify';
+import ToastMessage from "../../../../components/ToastMessage"
 
 import './styles.css';
-import { Author } from '../../../../types/author';
+
+
 //import { Reservation } from '../../../../types/reservation';
 
 type UrlParams = {
@@ -32,6 +40,19 @@ const Form = () => {
   const [selectCategories, setSelectCategories] = useState<Category[]>([]);
 
   const [selectAuthors, setSelectAuthors] = useState<Author[]>([]);
+
+  const toastParameters : ToastOptions = {
+
+    position: "bottom-center",
+    autoClose: false,
+    hideProgressBar: false,
+    closeOnClick: true,
+    pauseOnHover: true,
+    draggable: true,
+    progress: undefined,
+    theme: "light"
+
+  }
 
   const {
     register,
@@ -86,8 +107,8 @@ const Form = () => {
         toast.info('Produto cadastrado com sucesso');
         history.push('/admin/books');
       })
-      .catch(() => {
-        toast.error('Erro ao cadastrar produto');
+      .catch((error) => {
+        toast.error(`Falha ao cadastrar livro: \n ${error.response.data.message}`, toastParameters);
       });
   };
 
@@ -114,8 +135,6 @@ const Form = () => {
         console.log(err);
       });
 
-
-
     const configPut: AxiosRequestConfig = {
       method: 'PUT',
       url: `/api/reservations/v2/return/${bookId}`,
@@ -136,6 +155,9 @@ const Form = () => {
 
   return (
     <div className="product-crud-container">
+
+      <ToastMessage />
+
       <div className="base-card product-crud-form-card">
         <h1 className="product-crud-form-title">DADOS DO LIVRO {isEditing && ` - código ${bookId}`}</h1>
 
