@@ -4,9 +4,9 @@ import java.io.Serializable;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
-import java.util.HashSet;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
-import java.util.Set;
 
 import org.springframework.hateoas.RepresentationModel;
 
@@ -25,7 +25,7 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.PastOrPresent;
 import jakarta.validation.constraints.Pattern;
 
-@JsonPropertyOrder(value = {"id"})
+@JsonPropertyOrder(value = { "id" })
 public class ReservationDTOv2 extends RepresentationModel<ReservationDTOv2> implements Serializable {
 
 	private static final long serialVersionUID = 2L;
@@ -33,29 +33,29 @@ public class ReservationDTOv2 extends RepresentationModel<ReservationDTOv2> impl
 	@Mapping("id")
 	@JsonProperty("id")
 	private Long key;
-	
+
 	@PastOrPresent
 	@NotNull
 	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy 'T' HH:mm 'BRT'", timezone = "America/Sao_Paulo")
 	private Instant moment;
-	
+
 	@Future
 	private LocalDate devolution;
-	
+
 	@Min(value = 1)
 	private Integer weeks;
-	
-	@Pattern (regexp = "IN_PROGRESS|FINISHED")
+
+	@Pattern(regexp = "IN_PROGRESS|FINISHED")
 	private String status;
-	
+
 	@Valid
 	@NotNull
-	@JsonIgnoreProperties({"roles"})
+	@JsonIgnoreProperties({ "roles" })
 	private UserDTOv2 client;
 
-	//@Valid
-	@JsonIgnoreProperties({"imgUrl", "categories", "releaseDate"})
-	private Set<BookDTOv2> books = new HashSet<>();
+	@Valid
+	@JsonIgnoreProperties({ "imgUrl", "categories", "releaseDate" })
+	private List<BookDTOv2> books = new ArrayList<>();
 
 	public ReservationDTOv2() {
 
@@ -101,7 +101,7 @@ public class ReservationDTOv2 extends RepresentationModel<ReservationDTOv2> impl
 	public void setWeeks(Integer weeks) {
 		this.weeks = weeks;
 	}
-	
+
 	public String getStatus() {
 		return status;
 	}
@@ -117,8 +117,8 @@ public class ReservationDTOv2 extends RepresentationModel<ReservationDTOv2> impl
 	public void setClient(UserDTOv2 client) {
 		this.client = client;
 	}
-
-	public Set<BookDTOv2> getBooks() {
+	
+	public List<BookDTOv2> getBooks() {
 		return books;
 	}
 

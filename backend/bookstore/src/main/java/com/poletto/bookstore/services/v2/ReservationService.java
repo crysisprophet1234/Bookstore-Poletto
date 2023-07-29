@@ -97,9 +97,6 @@ public class ReservationService {
 		return dto;
 
 	}
-	
-	// FIXME testar reservation
-	// for some reason its not saving more than one book ...
 
 	@Transactional
 	public ReservationDTOv2 reserveBooks(ReservationDTOv2 dto) {
