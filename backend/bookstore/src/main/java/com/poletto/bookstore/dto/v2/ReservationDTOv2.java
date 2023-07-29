@@ -36,7 +36,7 @@ public class ReservationDTOv2 extends RepresentationModel<ReservationDTOv2> impl
 
 	@PastOrPresent
 	@NotNull
-	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy 'T' HH:mm 'BRT'", timezone = "America/Sao_Paulo")
+	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy HH:mm:ss", timezone = "America/Sao_Paulo")
 	private Instant moment;
 
 	@Future
