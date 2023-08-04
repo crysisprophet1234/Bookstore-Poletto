@@ -160,4 +160,5 @@
 			</plugin>
 		</plugins>
 	</build>
+	<url>polettobookstore.netlify.com</url>
 </project>
