@@ -21,7 +21,7 @@ const Catalog = () => {
 
   const [page, setPage] = useState<SpringPage<Book>>();
 
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
   const [controlComponentsData, setControlComponentsData] =
     useState<ControlComponentsData>({
@@ -73,30 +73,28 @@ const Catalog = () => {
 
       <div className="product-crud-bar-container">
 
-        <ProductFilter onSubmitFilter={handleSubmitFilter}/>
+        <ProductFilter onSubmitFilter={handleSubmitFilter} />
 
       </div>
 
       <div className="row">
 
-        {isLoading || page?.empty ? <CardLoader /> :
+        {!page ? <CardLoader /> :
 
           (
-
-            page?.content.map(book => {
+            page.content.map(book => {
 
               return (
-
                 <div className="col-sm-6 col-lg-4 col-xl-3" key={book.id}>
                   <Link to={`books/${book.id}`}>
                     <BookCard book={book} />
                   </Link>
                 </div>
-
-              );
+              )
 
             })
           )
+          
         }
 
       </div>
