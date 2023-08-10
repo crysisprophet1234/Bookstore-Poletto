@@ -10,9 +10,7 @@ import BookInfoLoader from './BookInfoLoader';
 import BookDetailsLoader from './BookDetailsLoader';
 import { Book } from '../../types/book';
 import BookStatus from '../../components/BookStatus';
-import ReservationModal from '../../components/ReservationModal/ReservationModal';
 import { formatDate } from '../../utils/formatters';
-import PrivateRoute from '../../components/PrivateRoute';
 
 type UrlParam = {
 
@@ -124,13 +122,19 @@ const BookDetails = () => {
                                         </div>
                                         <p>Código {book?.id}</p>
                                     </span>
-                                    <Link to={`/books/${book?.id}/reservation`} onClick={() => setShowModal(true)}>
+
+                                    <BookStatus status={book?.status} />
+
+                                    {/* TODO: será implementado de volta quando houver carrinho de livros */}
+
+                                    {/* <Link to={`/books/${book?.id}/reservation`} onClick={() => setShowModal(true)}>
                                         <BookStatus status={book?.status} />
                                     </Link>
 
-                                    <PrivateRoute path={`/books/${book?.id}/reservation`}>
-                                        <ReservationModal onClose={() => setShowModal(false)} show={showModal} book={book as Book} />
-                                    </PrivateRoute>
+                                    <PrivateRoute
+                                        path={`/books/${book?.id}/reservation`}
+                                        element={<ReservationModal onClose={() => setShowModal(false)} show={showModal} book={book as Book} />}
+                                    /> */}
 
                                 </div>
 

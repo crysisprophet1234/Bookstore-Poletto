@@ -13,7 +13,7 @@ const BookStatus = ({ status }: Props) => {
         <div className="book-status-container primary">
 
             <button type='button' className={status?.toLowerCase()} disabled={status === 'BOOKED'}>
-                {status === 'AVAILABLE' ? 'Reservar' : 'Reservado'}
+                {status === 'AVAILABLE' ? 'DISABLED' : 'DISABLED'}
             </button>
 
         </div>
