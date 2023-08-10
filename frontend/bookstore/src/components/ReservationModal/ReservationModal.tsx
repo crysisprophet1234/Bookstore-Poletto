@@ -3,10 +3,10 @@ import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { Book } from '../../types/book';
 import { formatDate } from '../../utils/formatters';
-import history from '../../utils/history';
 import { requestBackend } from '../../utils/requests';
 import { getAuthData } from '../../utils/storage';
 import './styles.css';
+import { useNavigate } from 'react-router-dom';
 
 type FormData = {
 
@@ -25,6 +25,8 @@ const ReservationModal = (props: { show: any; onClose: any | undefined; book: Bo
     const [isSubmitSuccessful, setIsSubmitSuccessful] = useState(false);
 
     const { register, handleSubmit } = useForm<FormData>();
+
+    const history = useNavigate()
 
     const onSubmit = (formData: FormData) => {
 
@@ -85,11 +87,11 @@ const ReservationModal = (props: { show: any; onClose: any | undefined; book: Bo
 
     function onClick(event: any) {
         event.stopPropagation()
-        history.replace(`/books/${props.book.id}`);
+        history(`/books/${props.book.id}`);
     }
 
     if (!props.show) {
-        history.replace(`/books/${props.book.id}`);
+        history(`/books/${props.book.id}`);
         return null
     }
 

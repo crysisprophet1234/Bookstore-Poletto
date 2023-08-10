@@ -1,6 +1,6 @@
 import './assets/styles/custom.scss';
 import './App.css';
-import Routes from './Routes';
+import AppRoutes from './AppRoutes';
 import { AuthContext, AuthContextData } from './AuthContext';
 import { useState } from 'react';
 
@@ -10,7 +10,7 @@ function App() {
 
   return (
     <AuthContext.Provider value={{ authContextData, setAuthContextData }}>
-      <Routes />
+      <AppRoutes />
   </AuthContext.Provider>
   );
 }

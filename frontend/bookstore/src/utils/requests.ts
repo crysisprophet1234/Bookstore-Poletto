@@ -1,8 +1,8 @@
-import axios, { AxiosRequestConfig } from 'axios';
-import history from './history';
-import { getAuthData } from './storage';
+import axios, { AxiosRequestConfig } from 'axios'
+import { getAuthData } from './storage'
+import { createBrowserHistory } from 'history'
 
-export const BASE_URL = "https://192.168.15.13:8443"
+export const BASE_URL = 'https://192.168.15.13:8443'
 
 type LoginData = {
 
@@ -22,15 +22,15 @@ type SignupData = {
 
 export const requestBackend = (config: AxiosRequestConfig) => {
 
-    const headers: any = { ...config.headers};
+    const headers: any = { ...config.headers}
 
     if (config.withCredentials) {
 
-        headers.Authorization = `Bearer ${getAuthData()?.token}`;
+        headers.Authorization = `Bearer ${getAuthData()?.token}`
 
     }
 
-    return axios({ ...config, baseURL: BASE_URL, headers, data: config.data });
+    return axios({ ...config, baseURL: BASE_URL, headers, data: config.data })
 
 }
 
@@ -46,9 +46,9 @@ export const requestBackendLogin = (loginData: LoginData) => {
         email: loginData.username,
         password: loginData.password,
 
-    });
+    })
 
-    return axios({ method: 'POST', baseURL: BASE_URL, url: '/api/auth/v2/authenticate', data, headers });
+    return axios({ method: 'POST', baseURL: BASE_URL, url: '/api/auth/v2/authenticate', data, headers })
 
 }
 
@@ -66,29 +66,39 @@ export const requestBackendSignup = (signupData: SignupData) => {
         firstname: signupData.firstname,
         lastname: signupData.lastname
 
-    });
+    })
 
-    return axios({ method: 'POST', baseURL: BASE_URL, url: '/api/auth/v2/register', data, headers });
+    return axios({ method: 'POST', baseURL: BASE_URL, url: '/api/auth/v2/register', data, headers })
 
 }
 
-axios.interceptors.request.use(function (config) {
-    return config;
-}, function (error) {
-    return Promise.reject(error);
+//FIXME: reformular os interceptors
 
-});
+axios.interceptors.request.use(function (config) {
+    return config
+}, function (error) {
+    return Promise.reject(error)
+
+})
 
 axios.interceptors.response.use(function (response) {
-    return response;
+    return response
 }, function (error) {
 
-    const status = error.response.status;
-
-    if (status === 401 /* status === 403 --handling do 403 exibido na página */) {
-        history.push('/admin/auth/login');
+    if (error.code === 'ERR_NETWORK') {
+        return Promise.resolve(error)
     }
 
-    return Promise.reject(error);
+
+    console.log(error)
+    const status = error.response.status
+
+    const history = createBrowserHistory()
+
+    if (status === 401 /* status === 403 --handling do 403 exibido na página */) {
+        history.push('/admin/auth/login')
+    }
+
+    return Promise.reject(error)
     
-});
+})

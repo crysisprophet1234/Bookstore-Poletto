@@ -1,16 +1,17 @@
 import './styles.css';
 import 'bootstrap/js/src/collapse.js';
 
-import { Link, NavLink } from 'react-router-dom';
+import { Link, NavLink, useNavigate } from 'react-router-dom';
 import { getTokenData, isAuthenticated } from '../../utils/auth';
 import { useContext, useEffect } from 'react';
-import history from '../../utils/history';
 import { AuthContext } from '../../AuthContext';
 import { removeAuthData } from '../../utils/storage';
 
 const Navbar = () => {
 
   const  { authContextData, setAuthContextData } = useContext(AuthContext);
+
+  const history = useNavigate()
 
   useEffect(() => {
 
@@ -37,7 +38,7 @@ const Navbar = () => {
 
     setAuthContextData({ authenticated: false });
 
-    history.replace('/');
+    history('/');
 
   }
 
@@ -61,17 +62,17 @@ const Navbar = () => {
         <div className="collapse navbar-collapse" id="dscatalog-navbar">
           <ul className="navbar-nav offset-md-2 main-menu">
             <li>
-              <NavLink to="/" activeClassName="active" exact>
+              <NavLink to="/" className={({isActive}) => isActive ? 'active' : ''} end>
                 HOME
               </NavLink>
             </li>
             <li>
-              <NavLink to="/books" activeClassName="active">
+              <NavLink to="/books" className={({isActive}) => isActive ? 'active' : ''} end>
                 CATÁLOGO
               </NavLink>
             </li>
             <li>
-              <NavLink to="/admin" activeClassName="active">
+              <NavLink to="/admin" className={({isActive}) => isActive ? 'active' : ''} end>
                 ADMIN
               </NavLink>
             </li>

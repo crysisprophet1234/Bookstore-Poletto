@@ -2,14 +2,15 @@ import { AxiosRequestConfig, AxiosRequestHeaders } from 'axios';
 import { useEffect, useState } from 'react';
 import { User } from '../../../types/user';
 import { SpringPage } from '../../../types/vendor/spring';
-import history from '../../../utils/history';
 import { requestBackend } from '../../../utils/requests';
-
 import './styles.css'
+import { useNavigate } from 'react-router-dom';
 
 const Users = () => {
 
     const [page, setPage] = useState<SpringPage<User>>();
+
+    const history = useNavigate()
 
     useEffect(() => {
 
@@ -47,13 +48,13 @@ const Users = () => {
         };
 
         requestBackend(config).then(() => {
-            history.replace('/admin/users')
+            history('/admin/users')
         });
     };
 
     return (
 
-        <div>
+        <div className="user-container">
 
             {true ?
 
