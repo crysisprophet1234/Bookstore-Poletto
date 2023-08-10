@@ -1,7 +1,6 @@
 .admin-nav-container {
   padding: 10px;
   background-color: #fff;
-  border: 0.5px solid black;
 }
 .admin-nav-container ul {
   display: flex;
