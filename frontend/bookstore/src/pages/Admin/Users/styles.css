@@ -1,10 +1,9 @@
-table {
+.user-container table {
   border: 1px solid black;
   text-align: center;
   width: auto;
 }
-
-th, td {
+.user-container th, .user-container td {
   border: 1px solid black;
   padding-left: 10px;
   padding-right: 10px;
