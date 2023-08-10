@@ -1,7 +1,5 @@
-import { ToastContainer } from 'react-toastify';
-
-import 'react-toastify/dist/ReactToastify.css';
-
+import { ToastContainer } from 'react-toastify'
+import 'react-toastify/dist/ReactToastify.css'
 
 const ToastMessage = () => {
 
@@ -9,7 +7,7 @@ const ToastMessage = () => {
 
         <ToastContainer
             position="bottom-center"
-            autoClose={5000}
+            autoClose={false}
             hideProgressBar={false}
             newestOnTop={false}
             closeOnClick
@@ -17,7 +15,7 @@ const ToastMessage = () => {
             pauseOnFocusLoss
             draggable
             pauseOnHover
-            style={{ width: "80vw", alignSelf: 'center', maxWidth: "800px" }}
+            style={{ width: '80vw', alignSelf: 'center', maxWidth: '800px' }}
             theme="light"
         />
 
@@ -25,4 +23,4 @@ const ToastMessage = () => {
 
 }
 
-export default ToastMessage;
+export default ToastMessage
