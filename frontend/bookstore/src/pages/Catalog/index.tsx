@@ -21,8 +21,6 @@ const Catalog = () => {
 
   const [page, setPage] = useState<SpringPage<Book>>();
 
-  const [isLoading, setIsLoading] = useState(true);
-
   const [controlComponentsData, setControlComponentsData] =
     useState<ControlComponentsData>({
       activePage: 0,
@@ -51,11 +49,10 @@ const Catalog = () => {
 
     requestBackend(config)
       .then((response) => {
-        setIsLoading(false)
         setPage(response.data);
       })
       .catch((err) => {
-        setIsLoading(true)
+        console.log(err.response.data)
       })
   }, [controlComponentsData]);
 
@@ -86,7 +83,7 @@ const Catalog = () => {
 
               return (
                 <div className="col-sm-6 col-lg-4 col-xl-3" key={book.id}>
-                  <Link to={`books/${book.id}`}>
+                  <Link to={`/books/${book.id}`}>
                     <BookCard book={book} />
                   </Link>
                 </div>
