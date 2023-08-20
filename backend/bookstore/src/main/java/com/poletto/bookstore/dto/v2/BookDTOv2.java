@@ -8,6 +8,7 @@ import java.util.Set;
 import org.hibernate.validator.constraints.URL;
 import org.springframework.hateoas.RepresentationModel;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
@@ -37,6 +38,7 @@ public class BookDTOv2 extends RepresentationModel<BookDTOv2> implements Seriali
 	
 	@PastOrPresent
 	@NotNull
+	@JsonFormat(pattern = "dd-MM-yyyy")
 	private LocalDate releaseDate;
 	
 	@URL
