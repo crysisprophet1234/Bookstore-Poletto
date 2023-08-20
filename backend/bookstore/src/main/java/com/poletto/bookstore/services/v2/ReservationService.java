@@ -72,8 +72,6 @@ public class ReservationService {
 		    dto.getClient().add(linkTo(methodOn(UserController.class).findById(dto.getClient().getId())).withSelfRel().withType("GET"));
 		});
 
-				
-
 		return dtos;
 
 	}
@@ -81,9 +79,9 @@ public class ReservationService {
 	@Transactional(readOnly = true)
 	public ReservationDTOv2 findById(Long id) {
 
-		Optional<Reservation> user = reservationRepository.findById(id);
+		Optional<Reservation> reservation = reservationRepository.findById(id);
 
-		var entity = user.orElseThrow(() -> new ResourceNotFoundException("Resource RESERVATION not found. ID " + id));
+		var entity = reservation.orElseThrow(() -> new ResourceNotFoundException("Resource RESERVATION not found. ID " + id));
 
 		logger.info("Resource RESERVATION found: " + entity.toString());
 		
