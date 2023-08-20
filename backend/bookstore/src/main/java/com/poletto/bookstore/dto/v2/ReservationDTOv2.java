@@ -40,6 +40,7 @@ public class ReservationDTOv2 extends RepresentationModel<ReservationDTOv2> impl
 	private Instant moment;
 
 	@Future
+	@JsonFormat(pattern="dd-MM-yyyy")
 	private LocalDate devolution;
 
 	@Min(value = 1)
@@ -52,9 +53,8 @@ public class ReservationDTOv2 extends RepresentationModel<ReservationDTOv2> impl
 	@NotNull
 	@JsonIgnoreProperties({ "roles" })
 	private UserDTOv2 client;
-
+	
 	@Valid
-	@JsonIgnoreProperties({ "imgUrl", "categories", "releaseDate" })
 	private List<BookDTOv2> books = new ArrayList<>();
 
 	public ReservationDTOv2() {
