@@ -181,7 +181,7 @@ public class BookService {
 
 		} catch (DataIntegrityViolationException e) {
 
-			throw new DatabaseException("Integrity violation");
+			throw new DatabaseException(e.getMessage());
 
 		}
 

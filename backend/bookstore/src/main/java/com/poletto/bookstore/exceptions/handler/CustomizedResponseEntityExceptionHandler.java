@@ -56,7 +56,7 @@ public class CustomizedResponseEntityExceptionHandler extends ResponseEntityExce
 	@ExceptionHandler(DatabaseException.class)
 	public final ResponseEntity<ExceptionResponse> handleDatabaseException(Exception ex, WebRequest request) {
 
-		ExceptionResponse exceptionResponse = new ExceptionResponse(HttpStatus.INTERNAL_SERVER_ERROR, ex.getMessage(),
+		ExceptionResponse exceptionResponse = new ExceptionResponse(HttpStatus.INTERNAL_SERVER_ERROR, "Somente livros nunca reservados podem ser deletados",
 				ex.getLocalizedMessage(), request.getDescription(false));
 
 		logger.warn(exceptionResponse.toString() + clientInfo(request));
