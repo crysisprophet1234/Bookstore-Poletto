@@ -46,8 +46,8 @@ public class ReservationController {
 	}
 	
 	@PutMapping(value = "/return/{id}")
-	public ResponseEntity<ReservationDTOv2> updateStatus(@PathVariable Long id) {
-		reservationService.returnBooks(id);
+	public ResponseEntity<ReservationDTOv2> returnReservation(@PathVariable Long id) {
+		reservationService.returnReservation(id);
 		return ResponseEntity.noContent().build();
 	}
 
