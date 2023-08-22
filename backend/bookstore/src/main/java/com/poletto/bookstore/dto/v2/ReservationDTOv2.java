@@ -36,11 +36,11 @@ public class ReservationDTOv2 extends RepresentationModel<ReservationDTOv2> impl
 
 	@PastOrPresent
 	@NotNull
-	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy HH:mm:ss", timezone = "America/Sao_Paulo")
+	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "America/Sao_Paulo")
 	private Instant moment;
 
 	@Future
-	@JsonFormat(pattern="dd-MM-yyyy")
+	@JsonFormat(pattern="yyyy-MM-dd")
 	private LocalDate devolution;
 
 	@Min(value = 1)
