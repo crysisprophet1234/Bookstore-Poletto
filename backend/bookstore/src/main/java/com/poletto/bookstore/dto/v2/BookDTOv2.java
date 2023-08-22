@@ -32,13 +32,13 @@ public class BookDTOv2 extends RepresentationModel<BookDTOv2> implements Seriali
 	@JsonProperty("id")
 	private Long key;
 
-	@Pattern(regexp = "^[A-Za-z0-9' -]+$", message = "aceita apenas letras e números")
+	@Pattern(regexp = "^[A-Za-z0-9'& -#]+$", message = "aceita apenas letras e números")
     @Size(min = 1, max = 50)
 	private String name;
 	
 	@PastOrPresent
 	@NotNull
-	@JsonFormat(pattern = "dd-MM-yyyy")
+	@JsonFormat(pattern = "yyyy-MM-dd")
 	private LocalDate releaseDate;
 	
 	@URL
