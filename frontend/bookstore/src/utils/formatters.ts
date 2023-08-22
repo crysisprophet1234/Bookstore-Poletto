@@ -1,21 +1,19 @@
 export const formatDate = (date: string | undefined) => {
 
-    let str = date?.replace('-', '')
+    const datePart = date?.split(" ")[0]
+    const dateParts = datePart?.split("-")
+    const formattedDate = dateParts ? `${dateParts[2]}/${dateParts[1]}/${dateParts[0]}` : null
 
-    let year = str?.substring(0, 4)
-    let month = str?.substring(4, 6)
-    let day = str?.substring(7)
-
-    return `${day}/${month}/${year}`
+    return formattedDate
 
 }
 
 export const formatDateTime = (date: string) => {
 
-    const datePart = date.split(" ")[0];
-    const timePart = date.split(" ")[2];
-    const dateParts = datePart.split("-");
-    const formattedDate = `${dateParts[0]}/${dateParts[1]}/${dateParts[2]} ${timePart}`;
+    const datePart = date.split(" ")[0]
+    const timePart = date.split(" ")[2]
+    const dateParts = datePart.split("-")
+    const formattedDate = `${dateParts[2]}/${dateParts[1]}/${dateParts[0]} ${timePart}`
 
     return formattedDate
 
