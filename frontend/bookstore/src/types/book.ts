@@ -1,5 +1,6 @@
 import { Author } from "./author"
 import { Category } from "./category"
+import { Link } from "./link"
 
 export type Book = {
 
@@ -10,5 +11,6 @@ export type Book = {
     status: string,
     author: Author,
     categories: Category[]
-    
+    links: Link[]
+
 }
