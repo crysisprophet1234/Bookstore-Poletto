@@ -1,0 +1,13 @@
+ul {
+
+    padding: 0;
+
+}
+
+.reservation-cards-container {
+
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+
+}

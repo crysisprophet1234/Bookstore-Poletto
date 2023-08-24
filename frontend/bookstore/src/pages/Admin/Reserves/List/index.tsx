@@ -2,14 +2,13 @@ import { AxiosRequestConfig, AxiosRequestHeaders } from 'axios'
 import { useCallback, useEffect, useState } from 'react'
 import { Reservation } from '../../../../types/reservation'
 import { SpringPage } from '../../../../types/vendor/spring'
-import { formatDate, formatDateTime } from '../../../../utils/formatters'
 import { requestBackend } from '../../../../utils/requests'
-import { FiExternalLink } from 'react-icons/fi'
-//import { getAuthData } from '../../../utils/storage'
 
-import ReservesFilter, { ReserveFilterData } from '../../../../components/ReservesFilter'
 import Pagination from '../../../../components/Pagination'
-import { Link } from 'react-router-dom'
+import ReservesFilter, { ReserveFilterData } from '../../../../components/ReservesFilter'
+
+import ReservationCard from '../ReservationCard'
+import './styles.css'
 
 type ControlComponentsData = {
     activePage: number
@@ -29,7 +28,9 @@ const List = () => {
                 devolutionDate: new Date(),
                 clientId: '',
                 bookId: '',
-                status: 'all'
+                status: 'all',
+                orderBy: 'id',
+                order: 'asc'
             },
         })
 
@@ -43,32 +44,51 @@ const List = () => {
 
     const getReservations = useCallback(() => {
 
-        //TODO: se tiver reservation id, deve direcionar pra página da reservation
+        const reservationId = controlComponentsData.filterData.id
+
+        const url = reservationId !== '' ? `/${reservationId}` : ''
 
         const config: AxiosRequestConfig = {
             method: 'GET',
-            url: '/api/reservations/v2',
+            url: `/api/reservations/v2${url}`,
             withCredentials: true,
             headers: {} as AxiosRequestHeaders,
             params: {
                 page: controlComponentsData.activePage,
-                size: 10,
+                size: 5,
                 client: controlComponentsData.filterData.clientId,
                 book: controlComponentsData.filterData.bookId,
                 startingDate: controlComponentsData.filterData.startingDate,
                 devolutionDate: controlComponentsData.filterData.devolutionDate,
-                status: controlComponentsData.filterData.status
+                status: controlComponentsData.filterData.status,
+                orderBy: controlComponentsData.filterData.orderBy,
+                order: controlComponentsData.filterData.order
             }
         }
 
         requestBackend(config)
             .then((response) => {
-                setPage(response.data)
+
+                if (reservationId !== '') {
+
+                    setPage({
+                        content: [response.data],
+                        totalPages: 1,
+                        totalElements: 1,
+                    } as SpringPage<Reservation>)
+
+                } else {
+
+                    setPage(response.data)
+
+                }
+
             })
             .catch((error) => {
                 //FIXME: handling apropriado
                 console.log(error)
             })
+
     }, [controlComponentsData])
 
     useEffect(() => {
@@ -90,47 +110,13 @@ const List = () => {
                 />
             </div>
 
-            <div className='table-responsive'>
+            <div className='reservation-cards-container'>
 
-                <table className='table table-striped table-hover table-bordered border-dark'>
+                {page?.content.map((reservation) => (
 
-                    <thead className='bg-primary text-white'>
+                    <ReservationCard reservation={reservation} key={reservation.id} />
 
-                        <tr>
-                            <th scope='col'>ID</th>
-                            <th scope='col'>ÍNICIO</th>
-                            <th scope='col'>SEMANAS</th>
-                            <th scope='col'>DEVOLUÇÃO</th>
-                            <th scope='col'>STATUS</th>
-                            <th scope='col'>CLIENTE</th>
-                            <th scope='col' className='text-center'>AÇÃO</th>
-                        </tr>
-
-                    </thead>
-
-                    <tbody>
-
-                        {page?.content.map((reservation) => (
-
-                            <tr key={reservation.id}>
-                                <td>{reservation.id}</td>
-                                <td>{formatDateTime(reservation.moment)}</td>
-                                <td>{reservation.weeks}</td>
-                                <td>{formatDate(reservation.devolution)}</td>
-                                <td>{reservation.status === 'IN_PROGRESS' ? 'Em andamento' : 'Finalizado'}</td>
-                                <td>{reservation.client.firstname + ' ' + reservation.client.lastname}</td>
-                                <td className='text-center'>
-                                    <Link to={`/admin/reserves/${reservation.id}`}>
-                                        <FiExternalLink />
-                                    </Link>
-                                </td>
-                            </tr>
-
-                        ))}
-
-                    </tbody>
-
-                </table>
+                ))}
 
             </div>
 
