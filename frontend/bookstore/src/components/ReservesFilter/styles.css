@@ -1,5 +1,27 @@
-.filter-container .expand-filter {
+.filter-container .filter-btn-container {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+}
+.filter-container .filter-btn-container .filter-right-btn {
   float: right;
+  margin-left: 15px;
+  height: 40px;
+}
+@media (max-width: 768px) {
+  .filter-container .filter-btn-container {
+    justify-content: space-around;
+  }
+  .filter-container .filter-btn-container .filter-right-btn {
+    float: left;
+    margin: 5px;
+    font-size: 14px;
+    line-height: 40px;
+    text-overflow: clip;
+  }
+  .filter-container .filter-btn-container :last-child {
+    line-height: unset;
+  }
 }
 .filter-container label {
   font-size: 0.95rem;
