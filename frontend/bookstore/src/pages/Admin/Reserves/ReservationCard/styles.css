@@ -1,0 +1,162 @@
+@media (max-width: 992px) {
+  .reservation-card {
+    padding-top: 5px !important;
+    padding-bottom: 10px !important;
+  }
+}
+.reservation-card .folded-section {
+  display: grid;
+  grid-template-columns: 1fr 0.75fr 0.5fr 0.5fr 0.5fr 1.2fr 1.2fr 1fr;
+  gap: 2rem;
+}
+@media (max-width: 992px) {
+  .reservation-card .folded-section {
+    grid-template-columns: 80% 1fr 1fr;
+    grid-template-areas: "column-1 column-3" "column-2 column-2";
+    gap: 0;
+  }
+  .reservation-card .folded-section .field-value {
+    display: none;
+  }
+  .reservation-card .folded-section .field-value:first-child {
+    display: grid;
+    grid-area: column-1;
+  }
+  .reservation-card .folded-section .field-value:nth-child(2) {
+    display: grid;
+    grid-area: column-2;
+  }
+  .reservation-card .folded-section .field-value:nth-child(2) .upper-section {
+    display: none;
+  }
+  .reservation-card .folded-section .field-value:last-child {
+    display: grid;
+    grid-area: column-3;
+  }
+}
+.reservation-card .folded-section .expand-section {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+}
+@media (max-width: 992px) {
+  .reservation-card .folded-section .expand-section {
+    justify-content: flex-end;
+    align-items: start;
+    padding-top: 0.5rem;
+  }
+}
+.reservation-card .folded-section .expand-section .expand-btn {
+  border: 0;
+  background-color: transparent;
+  font-weight: 600;
+}
+.reservation-card .folded-section .expand-section .expand-btn :hover {
+  text-shadow: 0.5px 0.5px 1px rgba(131, 129, 129, 0.5);
+}
+.reservation-card .folded-section .expand-section .expand-btn :focus {
+  transform: rotate(45deg);
+}
+.reservation-card .folded-section .upper-section h3 {
+  font-size: 0.95rem;
+}
+.reservation-card .folded-section .bottom-section h3 {
+  font-size: 0.85rem;
+  font-weight: 400;
+}
+.reservation-card .folded-section .folded-books {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 1;
+  overflow: hidden;
+  max-width: 200px;
+}
+.reservation-card .expanded-section h4 {
+  font-size: 1.2rem;
+}
+.reservation-card .expanded-section .books-container {
+  margin-top: 1rem;
+  display: flex;
+  flex-direction: row;
+  gap: 1rem;
+  flex-grow: 100;
+  flex-wrap: nowrap;
+}
+.reservation-card .expanded-section .books-container span {
+  display: none;
+}
+@media (max-width: 992px) {
+  .reservation-card .expanded-section .books-container {
+    flex-direction: column;
+  }
+}
+.reservation-card .expanded-section .books-container .product-crud-card {
+  width: 50%;
+  height: 150px;
+}
+@media (max-width: 992px) {
+  .reservation-card .expanded-section .books-container .product-crud-card {
+    width: 100%;
+    height: 100px;
+  }
+  .reservation-card .expanded-section .books-container .product-crud-card .product-crud-card-bottom-container {
+    padding: 10px 20px;
+  }
+}
+.reservation-card .expanded-section .books-container .product-crud-card .product-crud-card-top-container {
+  width: auto;
+}
+@media (max-width: 992px) {
+  .reservation-card .expanded-section .books-container .product-crud-card .product-crud-card-top-container {
+    display: none;
+  }
+}
+.reservation-card .expanded-section .books-container .product-crud-card .product-crud-card-top-container img {
+  height: 100%;
+  max-width: 80%;
+}
+.reservation-card .expanded-section .bottom-section {
+  display: flex;
+  flex-direction: row;
+  flex-grow: 100;
+}
+@media (max-width: 992px) {
+  .reservation-card .expanded-section .bottom-section {
+    flex-direction: column;
+  }
+}
+.reservation-card .expanded-section .bottom-section .client-container {
+  width: 50%;
+}
+.reservation-card .expanded-section .bottom-section .client-container h5 {
+  font-size: 0.9rem;
+  font-weight: 400;
+}
+@media (max-width: 992px) {
+  .reservation-card .expanded-section .bottom-section .client-container {
+    width: 100%;
+    justify-content: center;
+  }
+}
+.reservation-card .expanded-section .bottom-section .btn-container {
+  width: 50%;
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+  align-items: flex-end;
+  gap: 1rem;
+}
+@media (max-width: 992px) {
+  .reservation-card .expanded-section .bottom-section .btn-container {
+    width: 100%;
+    justify-content: center;
+    align-items: center;
+    margin-top: 15px;
+  }
+}
+.reservation-card .expanded-section .bottom-section .btn-container button {
+  width: auto !important;
+  border-radius: 10px !important;
+  height: 50%;
+  color: white;
+}/*# sourceMappingURL=styles.css.map */
