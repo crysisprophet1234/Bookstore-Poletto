@@ -2,15 +2,15 @@ import './styles.css';
 
 import { ReactComponent as ArrowIcon } from "../../assets/images/arrow.svg";
 
-import { Link, useParams } from 'react-router-dom';
-import { useEffect, useState } from 'react';
 import { AxiosRequestHeaders } from 'axios';
-import { requestBackend } from '../../utils/requests';
-import BookInfoLoader from './BookInfoLoader';
-import BookDetailsLoader from './BookDetailsLoader';
-import { Book } from '../../types/book';
+import { useEffect, useState } from 'react';
+import { Link, useParams } from 'react-router-dom';
 import BookStatus from '../../components/BookStatus';
+import { Book } from '../../types/book';
 import { formatDate } from '../../utils/formatters';
+import { requestBackend } from '../../utils/requests';
+import BookDetailsLoader from './BookDetailsLoader';
+import BookInfoLoader from './BookInfoLoader';
 
 type UrlParam = {
 
@@ -23,8 +23,6 @@ const BookDetails = () => {
     const { bookId } = useParams<UrlParam>();
 
     const [book, setBook] = useState<Book>();
-
-    const [showModal, setShowModal] = useState(false);
 
     const [isLoading, setIsLoading] = useState(false);
 
