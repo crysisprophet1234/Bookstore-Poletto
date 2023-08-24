@@ -1,12 +1,12 @@
-import { useEffect, useState } from 'react'
-import { BiSolidDownArrow } from 'react-icons/bi'
-import Select from 'react-select'
-import { Controller, useForm } from 'react-hook-form'
+import { yupResolver } from '@hookform/resolvers/yup'
 import { AxiosRequestConfig } from 'axios'
-import { requestBackend } from '../../utils/requests'
+import { useEffect, useState } from 'react'
+import { Controller, useForm } from 'react-hook-form'
+import { BiSolidDownArrow } from 'react-icons/bi'
+import Select, { CSSObjectWithLabel, ControlProps, StylesConfig } from 'react-select'
 import { toast } from 'react-toastify'
-import * as Yup from 'yup';
-import { yupResolver } from '@hookform/resolvers/yup';
+import * as Yup from 'yup'
+import { requestBackend } from '../../utils/requests'
 
 import './styles.css'
 
@@ -18,6 +18,8 @@ export type ReserveFilterData = {
     clientId: string
     bookId: string
     status: string
+    orderBy: string
+    order: string
 
 }
 
@@ -27,12 +29,61 @@ type Props = {
 
 }
 
+const selectStyles: StylesConfig<any, false> = {
+
+    control: (provided: CSSObjectWithLabel, props: ControlProps<any, false>) => ({
+        ...provided,
+        height: '40px',
+        border: '1px solid #407bff',
+        ":hover": {
+            border: '1px solid #407bff'
+        }
+    }),
+
+    valueContainer: (provided) => ({
+        ...provided,
+        height: '40px',
+        padding: '0px 8px'
+    }),
+
+    input: (provided) => ({
+        ...provided,
+        margin: '0px',
+    }),
+
+    singleValue: (provided) => ({
+        ...provided,
+        marginBottom: '8px',
+        textOverflow: 'initial',
+        overflow: 'visible'
+    }),
+
+    indicatorsContainer: (provided) => ({
+        ...provided,
+        height: '40px'
+    }),
+
+    indicatorSeparator: (provided) => ({
+        ...provided
+    })
+}
+
+
 const ReservesFilter = ({ onSubmitFilter }: Props) => {
 
     const validationSchema = Yup.object().shape({
 
+        id: Yup.string()
+            .matches(/^(?:[1-9][0-9]*)?$/, 'Código deve ser maior que 0'),
+
+        clientId: Yup.string()
+            .matches(/^(?:[1-9][0-9]*)?$/, 'Código deve ser maior que 0'),
+
+        bookId: Yup.string()
+            .matches(/^(?:[1-9][0-9]*)?$/, 'Código deve ser maior que 0'),
+
         startingDate: Yup.date()
-            .max(new Date(), 'Data inicial não pode ser maior que hoje')
+            .max(new Date(), 'Data inicial não pode ser maior que hoje'),
 
         //devolutionDate: Yup.date() //TODO: verificar como limita data de devolução
         //   .min()
@@ -121,9 +172,61 @@ const ReservesFilter = ({ onSubmitFilter }: Props) => {
 
         <div className='base-card p-3 mb-2 filter-container'>
 
-            <p>
+            <div className='filter-btn-container'>
+
+                <Controller
+                    name='orderBy'
+                    control={control}
+                    defaultValue=''
+                    render={({ field }) => (
+                        <Select
+                            {...field}
+                            isMulti={false}
+                            options={[
+                                { label: 'Ordernar por', value: '' },
+                                { label: 'Código', value: 'id' },
+                                { label: 'Data de criação', value: 'startingDate' },
+                                { label: 'Status', value: 'status' }
+                            ]}
+                            className='select-order filter-right-btn'
+                            onChange={(selectedOption) => setValue('orderBy', selectedOption?.value as string)}
+                            value={undefined}
+                            defaultValue={{ label: 'Ordernar por', value: '' }}
+                            getOptionLabel={(orderBy) => String(orderBy?.label)}
+                            getOptionValue={(orderBy) => String(orderBy?.value)}
+                            form='reservations-filter-form'
+                            styles={selectStyles}
+                        />
+                    )}
+                />
+
+                <Controller
+                    name='order'
+                    control={control}
+                    defaultValue=''
+                    render={({ field }) => (
+                        <Select
+                            {...field}
+                            isMulti={false}
+                            options={[
+                                { label: 'Ordem', value: '' },
+                                { label: 'Crescente', value: 'asc' },
+                                { label: 'Decrescente', value: 'desc' }
+                            ]}
+                            className='select-order filter-right-btn'
+                            onChange={(selectedOption) => setValue('order', selectedOption?.value as string)}
+                            value={undefined}
+                            defaultValue={{ label: 'Ordem', value: '' }}
+                            getOptionLabel={(order) => String(order?.label)}
+                            getOptionValue={(order) => String(order?.value)}
+                            form='reservations-filter-form'
+                            styles={selectStyles}
+                        />
+                    )}
+                />
+
                 <button
-                    className='btn btn-outline-primary expand-filter'
+                    className='btn btn-outline-primary filter-right-btn'
                     type='button'
                     data-bs-toggle='collapse'
                     data-bs-target='#full-filter'
@@ -133,7 +236,8 @@ const ReservesFilter = ({ onSubmitFilter }: Props) => {
                 >
                     {window.innerWidth < 768 ? <BiSolidDownArrow /> : 'Expandir filtros'}
                 </button>
-            </p>
+
+            </div>
 
             <div className='mb-3 double-input-container'>
 
@@ -193,7 +297,10 @@ const ReservesFilter = ({ onSubmitFilter }: Props) => {
                                         height: '45px',
                                         padding: '0px 8px'
                                     }),
-
+                                    singleValue: (provided) => ({
+                                        ...provided,
+                                        lineHeight: '20px'
+                                    }),
                                     input: (provided) => ({
                                         ...provided,
                                         margin: '0px',
