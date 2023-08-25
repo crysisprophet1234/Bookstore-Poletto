@@ -19,7 +19,7 @@ export type ReserveFilterData = {
     bookId: string
     status: string
     orderBy: string
-    order: string
+    sort: string
 
 }
 
@@ -201,7 +201,7 @@ const ReservesFilter = ({ onSubmitFilter }: Props) => {
                 />
 
                 <Controller
-                    name='order'
+                    name='sort'
                     control={control}
                     defaultValue=''
                     render={({ field }) => (
@@ -214,11 +214,11 @@ const ReservesFilter = ({ onSubmitFilter }: Props) => {
                                 { label: 'Decrescente', value: 'desc' }
                             ]}
                             className='select-order filter-right-btn'
-                            onChange={(selectedOption) => setValue('order', selectedOption?.value as string)}
+                            onChange={(selectedOption) => setValue('sort', selectedOption?.value as string)}
                             value={undefined}
                             defaultValue={{ label: 'Ordem', value: '' }}
-                            getOptionLabel={(order) => String(order?.label)}
-                            getOptionValue={(order) => String(order?.value)}
+                            getOptionLabel={(sort) => String(sort?.label)}
+                            getOptionValue={(sort) => String(sort?.value)}
                             form='reservations-filter-form'
                             styles={selectStyles}
                         />

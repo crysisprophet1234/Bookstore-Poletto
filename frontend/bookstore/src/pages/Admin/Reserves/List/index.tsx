@@ -30,7 +30,7 @@ const List = () => {
                 bookId: '',
                 status: 'all',
                 orderBy: 'id',
-                order: 'asc'
+                sort: 'asc'
             },
         })
 
@@ -62,7 +62,7 @@ const List = () => {
                 devolutionDate: controlComponentsData.filterData.devolutionDate,
                 status: controlComponentsData.filterData.status,
                 orderBy: controlComponentsData.filterData.orderBy,
-                order: controlComponentsData.filterData.order
+                sort: controlComponentsData.filterData.sort
             }
         }
 
