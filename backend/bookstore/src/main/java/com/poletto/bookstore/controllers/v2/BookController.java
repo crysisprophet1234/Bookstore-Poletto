@@ -37,16 +37,16 @@ public class BookController {
 			@RequestParam(value = "page", defaultValue = "0") Integer page,
 			@RequestParam(value = "size", defaultValue = "12") Integer size,
 			@RequestParam(value = "sort", defaultValue = "asc") String sort,
-			@RequestParam(value = "orderBy", defaultValue = "name") String orderBy,
-			@RequestParam(value = "categoryId", defaultValue = "0") Long categoryId,
+			@RequestParam(value = "orderBy", defaultValue = "id") String orderBy,
+			@RequestParam(value = "categoryId", defaultValue = "") Long categoryId,
 			@RequestParam(value = "name", defaultValue = "") String name,
-			@RequestParam(value = "booked", defaultValue = "2") Integer booked) {
+			@RequestParam(value = "status", defaultValue = "all") String status) {
 
-		Direction sortDirection = "desc".equalsIgnoreCase(sort) ? Direction.DESC : Direction.ASC;
+		Pageable pageable = PageRequest.of(page, size, Sort.by(Direction.valueOf(sort.toUpperCase()), orderBy));
+		
+		Page<BookDTOv2> books = bookService.findAllPaged(pageable, categoryId, name.trim(), status);
 
-		Pageable pageable = PageRequest.of(page, size, Sort.by(sortDirection, orderBy));
-
-		return ResponseEntity.ok(bookService.findAllPaged(pageable, categoryId, name.trim(), booked));
+		return ResponseEntity.ok(books);
 
 	}
 

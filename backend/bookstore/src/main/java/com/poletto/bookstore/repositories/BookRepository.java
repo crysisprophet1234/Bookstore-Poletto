@@ -15,29 +15,37 @@ public interface BookRepository extends JpaRepository<Book, Long> {
 
 	List<Book> findByStatus(String status);
 	
-//	String statusQuery = " AND (COALESCE(NULLIF(:booked, ''), 'BOOKED, AVAILABLE')) IN (LOWER(:booked))";
-//	
-//	String statusQuery = " AND (obj.status NOT IN (:booked))";
-//	
-//	@Query("SELECT DISTINCT obj FROM Book obj INNER JOIN obj.categories cats WHERE "
-//			+ "(COALESCE(:categories) IS NULL OR cats IN :categories) AND "
-//			+ "(LOWER(obj.name) LIKE LOWER(CONCAT('%',:name,'%')))" + statusQuery + " OR (LOWER(obj.author.name) LIKE LOWER (CONCAT('%',:name,'%')))")
-//	Page<Book> findPaged(List<Category> categories, String name, String booked, Pageable pageable);
-	
+	//TODO: VERSIONATE!!!
+	@Deprecated
 	@Query("SELECT DISTINCT obj FROM Book obj INNER JOIN obj.categories cats WHERE "
 	        + "(COALESCE(:categories IS NULL OR cats IN :categories) AND "
 	        + "(LOWER(obj.name) LIKE LOWER(CONCAT('%', :name, '%')) "
 	        + "OR LOWER(obj.author.name) LIKE LOWER(CONCAT('%', :name, '%'))) "
 	        + "AND (:booked IS NULL OR obj.status NOT IN (:booked)))")
-	Page<Book> findPaged(
+	Page<Book> oldFindPaged(
 	        @Param("categories") List<Category> categories,
 	        @Param("name") String name,
 	        @Param("booked") String booked,
 	        Pageable pageable
 	);
+	
+	@Query("SELECT DISTINCT obj "
+		 + "FROM Book obj "
+		 + "INNER JOIN obj.categories cats "
+		 + "WHERE (:categoryId IS NULL OR cats.id IN :categoryId) "
+		 + "AND (:name IS NULL OR LOWER(obj.name) LIKE LOWER(CONCAT('%', :name, '%')) "
+		 + "OR LOWER(obj.author.name) LIKE LOWER(CONCAT('%', :name, '%'))) "
+		 + "AND (:status = 'ALL' OR obj.status = :status)")
+		Page<Book> findPaged(
+		        @Param("categoryId") Long categoryId,
+		        @Param("name") String name,
+		        @Param("status") String status,
+		        Pageable pageable
+		);
 
 	
-	@Query(value = "SELECT obj FROM Book obj JOIN FETCH obj.categories WHERE obj IN :products")
+	@Deprecated
+	@Query("SELECT obj FROM Book obj JOIN FETCH obj.categories WHERE obj IN :products")
 	List<Book> findProductsWithCategories(@Param("products")List<Book> products);
 	
 }
