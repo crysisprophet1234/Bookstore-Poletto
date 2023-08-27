@@ -41,7 +41,7 @@ public class AuthorService {
 
 		dtos.stream().forEach(x -> x
 				.add(linkTo(methodOn(AuthorController.class).findById(x.getId())).withSelfRel().withType("GET"))
-				.add(linkTo(methodOn(BookController.class).findAllPaged(0, 12, "asc", "name", 0L, x.getName(), 2)).withRel("BOOKS BY AUTHOR").withType("GET")));
+				.add(linkTo(methodOn(BookController.class).findAllPaged(0, 12, "asc", "name", 0L, x.getName(), "all")).withRel("BOOKS BY AUTHOR").withType("GET")));
 
 		return dtos;
 
@@ -59,7 +59,7 @@ public class AuthorService {
 
 		dtos.stream().forEach(x -> x
 				.add(linkTo(methodOn(AuthorController.class).findById(x.getId())).withSelfRel().withType("GET"))
-				.add(linkTo(methodOn(BookController.class).findAllPaged(0, 12, "asc", "name", 0L, x.getName(), 2)).withRel("BOOKS BY AUTHOR").withType("GET")));
+				.add(linkTo(methodOn(BookController.class).findAllPaged(0, 12, "asc", "name", 0L, x.getName(), "all")).withRel("BOOKS BY AUTHOR").withType("GET")));
 
 		return dtos;
 
@@ -75,7 +75,7 @@ public class AuthorService {
 		logger.info("Resource AUTHOR found: " + entity.toString());
 
 		return DozerMapperConverter.parseObject(entity, AuthorDTOv2.class)
-				.add(linkTo(methodOn(BookController.class).findAllPaged(0, 12, "asc", "name", 0L, entity.getName(), 2)).withRel("BOOKS BY AUTHOR").withType("GET"));
+				.add(linkTo(methodOn(BookController.class).findAllPaged(0, 12, "asc", "name", 0L, entity.getName(), "all")).withRel("BOOKS BY AUTHOR").withType("GET"));
 
 	}
 
