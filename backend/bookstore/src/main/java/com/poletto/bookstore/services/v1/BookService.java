@@ -1,8 +1,5 @@
 package com.poletto.bookstore.services.v1;
 
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
-
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -18,19 +15,17 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.poletto.bookstore.controllers.v1.BookController;
 import com.poletto.bookstore.converter.custom.BookMapper;
-import com.poletto.bookstore.dto.v1.CategoryDTOv1;
-import com.poletto.bookstore.dto.v2.BookDTOv2;
 import com.poletto.bookstore.dto.v1.BookDTOv1;
+import com.poletto.bookstore.dto.v1.CategoryDTOv1;
 import com.poletto.bookstore.entities.Book;
 import com.poletto.bookstore.entities.Category;
 import com.poletto.bookstore.entities.enums.BookStatus;
 import com.poletto.bookstore.exceptions.DatabaseException;
 import com.poletto.bookstore.exceptions.ResourceNotFoundException;
-import com.poletto.bookstore.repositories.AuthorRepository;
-import com.poletto.bookstore.repositories.BookRepository;
-import com.poletto.bookstore.repositories.CategoryRepository;
+import com.poletto.bookstore.repositories.v1.AuthorRepository;
+import com.poletto.bookstore.repositories.v1.BookRepository;
+import com.poletto.bookstore.repositories.v1.CategoryRepository;
 
 import jakarta.persistence.EntityNotFoundException;
 
@@ -87,42 +82,6 @@ public class BookService {
 		logger.info("Resource BOOK page found: " + "PAGE NUMBER [" + bookPage.getNumber() + "] - CONTENT: " + bookPage.getContent());
 
 		return bookPage.map(x -> BookMapper.convertEntityToDto(x));
-
-	}
-	
-	@Transactional(readOnly = true)
-	public Page<BookDTOv2> findAllPagedV2(Pageable pageable, Long categoryId, String name, String booked) {
-
-		List<Category> categories = (categoryId == 0) ? null
-				: Arrays.asList(categoryRepository.getReferenceById(categoryId));
-
-		switch (booked) {
-
-		case "available":
-			booked = "BOOKED";
-			break;
-
-		case "booked":
-			booked = "AVAILABLE";
-			break;
-
-		case "":
-			booked = "";
-			break;
-
-		}
-
-		var bookPage = bookRepository.findPaged(categories, name, booked, pageable);
-
-		bookRepository.findProductsWithCategories(bookPage.getContent());
-		
-		logger.info("Resource BOOK page found: " + "PAGE NUMBER [" + bookPage.getNumber() + "] - CONTENT: " + bookPage.getContent());
-		
-		Page<BookDTOv2> dtos = bookPage.map(x -> BookMapper.convertEntityToDtoV2(x));
-		
-		dtos.stream().forEach(x -> x.add(linkTo(methodOn(BookController.class).findById(x.getId())).withSelfRel()));
-
-		return dtos;
 
 	}
 

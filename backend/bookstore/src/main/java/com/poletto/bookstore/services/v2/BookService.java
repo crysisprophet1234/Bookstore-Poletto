@@ -23,9 +23,9 @@ import com.poletto.bookstore.entities.Category;
 import com.poletto.bookstore.entities.enums.BookStatus;
 import com.poletto.bookstore.exceptions.DatabaseException;
 import com.poletto.bookstore.exceptions.ResourceNotFoundException;
-import com.poletto.bookstore.repositories.AuthorRepository;
-import com.poletto.bookstore.repositories.BookRepository;
-import com.poletto.bookstore.repositories.CategoryRepository;
+import com.poletto.bookstore.repositories.v2.AuthorRepository;
+import com.poletto.bookstore.repositories.v2.BookRepository;
+import com.poletto.bookstore.repositories.v2.CategoryRepository;
 
 import jakarta.persistence.EntityNotFoundException;
 

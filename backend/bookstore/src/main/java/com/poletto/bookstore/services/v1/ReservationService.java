@@ -21,10 +21,10 @@ import com.poletto.bookstore.entities.enums.BookStatus;
 import com.poletto.bookstore.entities.enums.ReservationStatus;
 import com.poletto.bookstore.exceptions.InvalidStatusException;
 import com.poletto.bookstore.exceptions.ResourceNotFoundException;
-import com.poletto.bookstore.repositories.BookRepository;
-import com.poletto.bookstore.repositories.BookReservationRepository;
-import com.poletto.bookstore.repositories.ReservationRepository;
-import com.poletto.bookstore.repositories.UserRepository;
+import com.poletto.bookstore.repositories.v1.BookRepository;
+import com.poletto.bookstore.repositories.v1.BookReservationRepository;
+import com.poletto.bookstore.repositories.v1.ReservationRepository;
+import com.poletto.bookstore.repositories.v1.UserRepository;
 
 import jakarta.persistence.EntityNotFoundException;
 

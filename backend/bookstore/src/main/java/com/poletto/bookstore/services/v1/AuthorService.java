@@ -15,8 +15,8 @@ import org.springframework.transaction.annotation.Transactional;
 import com.poletto.bookstore.converter.DozerMapperConverter;
 import com.poletto.bookstore.dto.v1.AuthorDTOv1;
 import com.poletto.bookstore.entities.Author;
-import com.poletto.bookstore.repositories.AuthorRepository;
 import com.poletto.bookstore.exceptions.ResourceNotFoundException;
+import com.poletto.bookstore.repositories.v1.AuthorRepository;
 
 @Service
 public class AuthorService {

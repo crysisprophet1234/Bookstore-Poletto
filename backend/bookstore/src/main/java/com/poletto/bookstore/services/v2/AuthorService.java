@@ -20,7 +20,7 @@ import com.poletto.bookstore.converter.DozerMapperConverter;
 import com.poletto.bookstore.dto.v2.AuthorDTOv2;
 import com.poletto.bookstore.entities.Author;
 import com.poletto.bookstore.exceptions.ResourceNotFoundException;
-import com.poletto.bookstore.repositories.AuthorRepository;
+import com.poletto.bookstore.repositories.v2.AuthorRepository;
 
 @Service("AuthorServiceV2")
 public class AuthorService {

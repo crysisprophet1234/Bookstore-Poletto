@@ -17,7 +17,7 @@ import com.poletto.bookstore.converter.DozerMapperConverter;
 import com.poletto.bookstore.dto.v1.CategoryDTOv1;
 import com.poletto.bookstore.entities.Category;
 import com.poletto.bookstore.exceptions.ResourceNotFoundException;
-import com.poletto.bookstore.repositories.CategoryRepository;
+import com.poletto.bookstore.repositories.v1.CategoryRepository;
 
 @Service
 public class CategoryService {
