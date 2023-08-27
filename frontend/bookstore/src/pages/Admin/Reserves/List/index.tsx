@@ -1,4 +1,4 @@
-import { AxiosRequestConfig, AxiosRequestHeaders } from 'axios'
+import { AxiosRequestConfig } from 'axios'
 import { useCallback, useEffect, useState } from 'react'
 import { Reservation } from '../../../../types/reservation'
 import { SpringPage } from '../../../../types/vendor/spring'
@@ -7,6 +7,7 @@ import { requestBackend } from '../../../../utils/requests'
 import Pagination from '../../../../components/Pagination'
 import ReservesFilter, { ReserveFilterData } from '../../../../components/ReservesFilter'
 
+import { formatDateApi } from '../../../../utils/formatters'
 import ReservationCard from '../ReservationCard'
 import './styles.css'
 
@@ -24,8 +25,8 @@ const List = () => {
             activePage: 0,
             filterData: {
                 id: '',
-                startingDate: new Date(),
-                devolutionDate: new Date(),
+                startingDate: new Date(new Date().getTime() - 180 * 24 * 60 * 60 * 1000),
+                devolutionDate: new Date(new Date().getTime() + 30 * 24 * 60 * 60 * 1000),
                 clientId: '',
                 bookId: '',
                 status: 'all',
@@ -52,14 +53,13 @@ const List = () => {
             method: 'GET',
             url: `/api/reservations/v2${url}`,
             withCredentials: true,
-            headers: {} as AxiosRequestHeaders,
             params: {
                 page: controlComponentsData.activePage,
                 size: 5,
                 client: controlComponentsData.filterData.clientId,
                 book: controlComponentsData.filterData.bookId,
-                startingDate: controlComponentsData.filterData.startingDate,
-                devolutionDate: controlComponentsData.filterData.devolutionDate,
+                startingDate: formatDateApi(controlComponentsData.filterData.startingDate),
+                devolutionDate: formatDateApi(controlComponentsData.filterData.devolutionDate),
                 status: controlComponentsData.filterData.status,
                 orderBy: controlComponentsData.filterData.orderBy,
                 sort: controlComponentsData.filterData.sort
@@ -114,7 +114,7 @@ const List = () => {
 
                 {page?.content.map((reservation) => (
 
-                    <ReservationCard reservation={reservation} key={reservation.id} />
+                    <ReservationCard reservation={reservation} reservationReload={getReservations} key={reservation.id} />
 
                 ))}
 

@@ -2,9 +2,8 @@ import { Reservation } from '../../../../types/reservation'
 
 import { useState } from 'react'
 import { BiSolidDownArrow } from 'react-icons/bi'
-import { useNavigate } from 'react-router-dom'
+import ProductCrudCard from '../../../../components/ProductCrudCard'
 import { formatDate } from '../../../../utils/formatters'
-import ProductCrudCard from '../../Books/ProductCrudCard'
 import ReservationModal from '../ReservationModal'
 import ReservationStatus from '../ReservationStatus'
 import './styles.css'
@@ -12,12 +11,11 @@ import './styles.css'
 type Props = {
 
     reservation: Reservation
+    reservationReload: () => void
 
 }
 
-const ReservationCard = ({ reservation }: Props) => {
-
-    const navigate = useNavigate()
+const ReservationCard = ({ reservation, reservationReload }: Props) => {
 
     const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -25,7 +23,7 @@ const ReservationCard = ({ reservation }: Props) => {
 
         setIsModalOpen(false)
 
-        navigate(0)
+        reservationReload()
 
     }
 
@@ -175,6 +173,7 @@ const ReservationCard = ({ reservation }: Props) => {
                             type='button'
                             className='btn btn-danger'
                             onClick={() => alert('currently disabled')}
+                            disabled={reservation.status === 'FINISHED'}
                         >
                             CANCELAR
                         </button>

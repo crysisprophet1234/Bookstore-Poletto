@@ -71,6 +71,15 @@ const selectStyles: StylesConfig<any, false> = {
 
 const ReservesFilter = ({ onSubmitFilter }: Props) => {
 
+    const initialDate = new Date(new Date().getTime() - 180 * 24 * 60 * 60 * 1000).toISOString().substring(0, 10)
+
+    const devolutionDate = new Date(new Date().getTime() + 30 * 24 * 60 * 60 * 1000).toISOString().substring(0, 10)
+
+    const [dates, setDates] = useState({
+        initialDate: initialDate,
+        devolutionDate: devolutionDate
+    })
+
     const validationSchema = Yup.object().shape({
 
         id: Yup.string()
@@ -85,10 +94,11 @@ const ReservesFilter = ({ onSubmitFilter }: Props) => {
         startingDate: Yup.date()
             .max(new Date(), 'Data inicial não pode ser maior que hoje'),
 
-        //devolutionDate: Yup.date() //TODO: verificar como limita data de devolução
-        //   .min()
+        //TODO: verificar como limita data de devolução
+        devolutionDate: Yup.date()
+            .min(dates.initialDate, 'Data final deve ser maior que inicial')
 
-    });
+    })
 
     const formOptions = { resolver: yupResolver(validationSchema) };
 
@@ -109,16 +119,22 @@ const ReservesFilter = ({ onSubmitFilter }: Props) => {
     }
 
     const handleFormClear = () => {
+
+        setDates({
+            initialDate: initialDate,
+            devolutionDate: devolutionDate
+        })
+
         setValue('id', '')
         setValue('clientId', '')
-        setValue('startingDate', new Date())
-        setValue('devolutionDate', new Date())
+        setValue('startingDate', new Date(initialDate))
+        setValue('devolutionDate', new Date(devolutionDate))
         setValue('bookId', '')
         setValue('status', 'all')
         setClientName('')
         setBookName('')
-    }
 
+    }
 
     useEffect(() => {
 
@@ -253,6 +269,7 @@ const ReservesFilter = ({ onSubmitFilter }: Props) => {
                         className={`form-control base-input ${errors.id ? 'is-invalid' : ''}`}
                         placeholder='Código da reserva'
                         form='reservations-filter-form'
+                        id='id'
                         name='id'
                     />
                     <div className='invalid-feedback d-block'>
@@ -286,6 +303,7 @@ const ReservesFilter = ({ onSubmitFilter }: Props) => {
                                 getOptionLabel={(status) => String(status?.label)}
                                 getOptionValue={(status) => String(status?.value)}
                                 form='reservations-filter-form'
+                                name='status'
                                 styles={{
                                     control: (provided) => ({
                                         ...provided,
@@ -337,6 +355,7 @@ const ReservesFilter = ({ onSubmitFilter }: Props) => {
                                 placeholder='Código do cliente'
                                 onBlur={(e) => { if (e.target.value !== '') { setClientName('Loading...') } }}
                                 name='clientId'
+                                id='clientId'
                             />
 
                             <div className='entity-name'>
@@ -364,7 +383,9 @@ const ReservesFilter = ({ onSubmitFilter }: Props) => {
                                 type='date'
                                 className={`form-control base-input ${errors.startingDate ? 'is-invalid' : ''}`}
                                 name='startingDate'
-                                defaultValue={(new Date(new Date().getTime() - 14 * 24 * 60 * 60 * 1000)).toISOString().substring(0, 10)}
+                                id='startingDate'
+                                value={dates.initialDate}
+                                onChange={e => setDates({ ...dates, initialDate: e.target.value })}
                             />
                             <div className='invalid-feedback d-block'>
                                 {errors.startingDate?.message}
@@ -383,7 +404,9 @@ const ReservesFilter = ({ onSubmitFilter }: Props) => {
                                 type='date'
                                 className={`form-control base-input ${errors.devolutionDate ? 'is-invalid' : ''}`}
                                 name='devolutionDate'
-                                defaultValue={(new Date(new Date().getTime() + 14 * 24 * 60 * 60 * 1000)).toISOString().substring(0, 10)}
+                                id='devolutionDate'
+                                value={dates.devolutionDate}
+                                onChange={e => setDates({ ...dates, devolutionDate: e.target.value })}
                             />
                             <div className='invalid-feedback d-block'>
                                 {errors.devolutionDate?.message}
@@ -408,6 +431,7 @@ const ReservesFilter = ({ onSubmitFilter }: Props) => {
                                 placeholder='Código do livro'
                                 onBlur={(e) => { if (e.target.value !== '') { setBookName('Loading...') } }}
                                 name='bookId'
+                                id='bookId'
                             />
 
                             <div className='entity-name'>
