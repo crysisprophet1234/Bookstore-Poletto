@@ -1,15 +1,14 @@
 import './styles.css';
-import 'bootstrap/js/src/collapse.js';
 
-import { Link, NavLink, useNavigate } from 'react-router-dom';
-import { getTokenData, isAuthenticated } from '../../utils/auth';
 import { useContext, useEffect } from 'react';
+import { Link, NavLink, useNavigate } from 'react-router-dom';
 import { AuthContext } from '../../AuthContext';
+import { getTokenData, isAuthenticated } from '../../utils/auth';
 import { removeAuthData } from '../../utils/storage';
 
 const Navbar = () => {
 
-  const  { authContextData, setAuthContextData } = useContext(AuthContext);
+  const { authContextData, setAuthContextData } = useContext(AuthContext);
 
   const history = useNavigate()
 
@@ -62,17 +61,17 @@ const Navbar = () => {
         <div className="collapse navbar-collapse" id="dscatalog-navbar">
           <ul className="navbar-nav offset-md-2 main-menu">
             <li>
-              <NavLink to="/" className={({isActive}) => isActive ? 'active' : ''} end>
+              <NavLink to="/" className={({ isActive }) => isActive ? 'active' : ''} end>
                 HOME
               </NavLink>
             </li>
             <li>
-              <NavLink to="/books" className={({isActive}) => isActive ? 'active' : ''} end>
+              <NavLink to="/books" className={({ isActive }) => isActive ? 'active' : ''} end>
                 CATÁLOGO
               </NavLink>
             </li>
             <li>
-              <NavLink to="/admin" className={({isActive}) => isActive ? 'active' : ''} end>
+              <NavLink to="/admin" className={({ isActive }) => isActive ? 'active' : ''} end>
                 ADMIN
               </NavLink>
             </li>
@@ -84,7 +83,7 @@ const Navbar = () => {
             (
               <>
                 <span className="nav-username">{authContextData.tokenData?.sub}</span>
-                <a href="a" onClick={handleLogoutClick}>LOGOUT</a>
+                <a href="logout" onClick={handleLogoutClick}>LOGOUT</a>
               </>
             )
             :
