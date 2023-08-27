@@ -18,3 +18,17 @@ export const formatDateTime = (date: string) => {
     return formattedDate
 
 }
+
+export const formatDateApi = (date: Date) => {
+
+    try {
+
+        return date.toISOString().split('T')[0]
+
+    } catch (error) {
+
+        console.log(error)
+
+    }
+
+}
