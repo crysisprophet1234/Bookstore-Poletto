@@ -2,11 +2,11 @@ import { AxiosRequestConfig } from 'axios';
 import { useCallback, useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import Pagination from '../../../../components/Pagination';
+import ProductCrudCard from '../../../../components/ProductCrudCard';
 import ProductFilter, { ProductFilterData } from '../../../../components/ProductFilter';
 import { Book } from '../../../../types/book';
 import { SpringPage } from '../../../../types/vendor/spring';
 import { requestBackend } from '../../../../utils/requests';
-import ProductCrudCard from '../ProductCrudCard';
 
 import './styles.css';
 
@@ -76,7 +76,7 @@ const List = () => {
           (
             page?.content?.map((book) => (
               <div key={book.id} className="col-sm-6 col-md-12">
-                <ProductCrudCard book={book} onDelete={getBooks} />
+                <ProductCrudCard book={book} showEdit={true} />
               </div>
 
             ))
