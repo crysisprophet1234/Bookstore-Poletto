@@ -1,6 +1,5 @@
 import axios, { AxiosRequestConfig } from 'axios'
 import { getAuthData } from './storage'
-import { createBrowserHistory } from 'history'
 
 export const BASE_URL = 'https://192.168.15.13:8443'
 
@@ -22,7 +21,7 @@ type SignupData = {
 
 export const requestBackend = (config: AxiosRequestConfig) => {
 
-    const headers: any = { ...config.headers}
+    const headers: any = { ...config.headers }
 
     if (config.withCredentials) {
 
@@ -71,34 +70,3 @@ export const requestBackendSignup = (signupData: SignupData) => {
     return axios({ method: 'POST', baseURL: BASE_URL, url: '/api/auth/v2/register', data, headers })
 
 }
-
-//FIXME: reformular os interceptors
-
-axios.interceptors.request.use(function (config) {
-    return config
-}, function (error) {
-    return Promise.reject(error)
-
-})
-
-axios.interceptors.response.use(function (response) {
-    return response
-}, function (error) {
-
-    if (error.code === 'ERR_NETWORK') {
-        return Promise.resolve(error)
-    }
-
-
-    console.log(error)
-    const status = error.response.status
-
-    const history = createBrowserHistory()
-
-    if (status === 401 /* status === 403 --handling do 403 exibido na página */) {
-        history.push('/admin/auth/login')
-    }
-
-    return Promise.reject(error)
-    
-})
