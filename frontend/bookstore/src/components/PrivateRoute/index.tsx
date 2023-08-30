@@ -1,28 +1,49 @@
-import { Redirect, Route } from 'react-router-dom';
-import { isAuthenticated } from '../../utils/auth';
-
+import { ReactNode } from 'react'
+import { Navigate, useLocation } from 'react-router-dom'
+import { Authority, hasAuthority, isAuthenticated } from '../../utils/auth'
+import NotAuthorized from '../NotAuthorized'
 
 type Props = {
-  children: React.ReactNode;
-  path: string;
-};
+  element: ReactNode
+  authority?: Authority
+}
 
+const PrivateRoute = ({ element, authority }: Props) => {
 
-const PrivateRoute = ({ children, path }: Props) => {
+  const location = useLocation()
 
+  function checkAuthority() {
 
-  return (
-    <Route
-      path={path}
-      render={({location}) =>
-        isAuthenticated() ? <>{children}</> : <Redirect to={{
-          pathname: "/auth/login",
-          state: { from: location }
-        }} />
-      }
-    />
-  );
-};
+    if (authority) {
+      return hasAuthority(authority)
+    }
 
+    return true
 
-export default PrivateRoute;
+  }
+
+  if (!isAuthenticated()) {
+
+    return <Navigate to='/auth/login' state={{ from: location }} />
+
+  } else {
+
+    if (checkAuthority()) {
+
+      return <>{element}</>
+
+    }
+
+    if (!checkAuthority() && authority === 'ROLE_ADMIN') {
+
+      return <>{<NotAuthorized />}</>
+
+    }
+
+    return <Navigate to='/auth/login' state={{ from: location }} />
+
+  }
+
+}
+
+export default PrivateRoute

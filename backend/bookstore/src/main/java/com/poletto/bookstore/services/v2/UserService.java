@@ -29,8 +29,8 @@ import com.poletto.bookstore.entities.User;
 import com.poletto.bookstore.exceptions.DatabaseException;
 import com.poletto.bookstore.exceptions.ResourceNotFoundException;
 import com.poletto.bookstore.exceptions.UnauthorizedException;
-import com.poletto.bookstore.repositories.RoleRepository;
-import com.poletto.bookstore.repositories.UserRepository;
+import com.poletto.bookstore.repositories.v2.RoleRepository;
+import com.poletto.bookstore.repositories.v2.UserRepository;
 
 import jakarta.persistence.EntityNotFoundException;
 

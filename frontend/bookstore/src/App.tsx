@@ -1,8 +1,10 @@
-import './assets/styles/custom.scss';
-import './App.css';
-import Routes from './Routes';
-import { AuthContext, AuthContextData } from './AuthContext';
-import { useState } from 'react';
+import './assets/styles/custom.scss'
+
+import 'bootstrap/dist/js/bootstrap.bundle.min.js'
+import { useState } from 'react'
+import './App.css'
+import AppRoutes from './AppRoutes'
+import { AuthContext, AuthContextData } from './AuthContext'
 
 function App() {
 
@@ -10,9 +12,9 @@ function App() {
 
   return (
     <AuthContext.Provider value={{ authContextData, setAuthContextData }}>
-      <Routes />
-  </AuthContext.Provider>
-  );
+      <AppRoutes />
+    </AuthContext.Provider>
+  )
 }
 
-export default App;
+export default App

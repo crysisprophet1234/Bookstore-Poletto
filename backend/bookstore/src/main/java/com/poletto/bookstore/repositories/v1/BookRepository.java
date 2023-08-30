@@ -1,4 +1,4 @@
-package com.poletto.bookstore.repositories;
+package com.poletto.bookstore.repositories.v1;
 
 import java.util.List;
 
@@ -14,16 +14,7 @@ import com.poletto.bookstore.entities.Category;
 public interface BookRepository extends JpaRepository<Book, Long> {
 
 	List<Book> findByStatus(String status);
-	
-//	String statusQuery = " AND (COALESCE(NULLIF(:booked, ''), 'BOOKED, AVAILABLE')) IN (LOWER(:booked))";
-//	
-//	String statusQuery = " AND (obj.status NOT IN (:booked))";
-//	
-//	@Query("SELECT DISTINCT obj FROM Book obj INNER JOIN obj.categories cats WHERE "
-//			+ "(COALESCE(:categories) IS NULL OR cats IN :categories) AND "
-//			+ "(LOWER(obj.name) LIKE LOWER(CONCAT('%',:name,'%')))" + statusQuery + " OR (LOWER(obj.author.name) LIKE LOWER (CONCAT('%',:name,'%')))")
-//	Page<Book> findPaged(List<Category> categories, String name, String booked, Pageable pageable);
-	
+
 	@Query("SELECT DISTINCT obj FROM Book obj INNER JOIN obj.categories cats WHERE "
 	        + "(COALESCE(:categories IS NULL OR cats IN :categories) AND "
 	        + "(LOWER(obj.name) LIKE LOWER(CONCAT('%', :name, '%')) "
@@ -35,9 +26,8 @@ public interface BookRepository extends JpaRepository<Book, Long> {
 	        @Param("booked") String booked,
 	        Pageable pageable
 	);
-
 	
-	@Query(value = "SELECT obj FROM Book obj JOIN FETCH obj.categories WHERE obj IN :products")
+	@Query("SELECT obj FROM Book obj JOIN FETCH obj.categories WHERE obj IN :products")
 	List<Book> findProductsWithCategories(@Param("products")List<Book> products);
 	
 }

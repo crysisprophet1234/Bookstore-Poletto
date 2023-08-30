@@ -1,4 +1,4 @@
-package com.poletto.bookstore.repositories;
+package com.poletto.bookstore.repositories.v2;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 

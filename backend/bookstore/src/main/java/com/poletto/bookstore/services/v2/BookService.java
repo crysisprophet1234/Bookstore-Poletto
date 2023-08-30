@@ -3,10 +3,6 @@ package com.poletto.bookstore.services.v2;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 import org.slf4j.Logger;
@@ -27,9 +23,9 @@ import com.poletto.bookstore.entities.Category;
 import com.poletto.bookstore.entities.enums.BookStatus;
 import com.poletto.bookstore.exceptions.DatabaseException;
 import com.poletto.bookstore.exceptions.ResourceNotFoundException;
-import com.poletto.bookstore.repositories.AuthorRepository;
-import com.poletto.bookstore.repositories.BookRepository;
-import com.poletto.bookstore.repositories.CategoryRepository;
+import com.poletto.bookstore.repositories.v2.AuthorRepository;
+import com.poletto.bookstore.repositories.v2.BookRepository;
+import com.poletto.bookstore.repositories.v2.CategoryRepository;
 
 import jakarta.persistence.EntityNotFoundException;
 
@@ -48,25 +44,16 @@ public class BookService {
 	private AuthorRepository authorRepository;
 
 	@Transactional(readOnly = true)
-	public Page<BookDTOv2> findAllPaged(Pageable pageable, Long categoryId, String name, Integer booked) {
+	public Page<BookDTOv2> findAllPaged(Pageable pageable, Long categoryId, String name, String status) {
 
-		List<Category> categories = null;
+		Page<Book> bookPage = bookRepository.findPaged(
+				categoryId, 
+				name.toLowerCase(), 
+				status.toUpperCase(), 
+				pageable);
 
-		if (categoryId != 0) {
-			Category category = categoryRepository.findById(categoryId)
-					.orElseThrow(() -> new ResourceNotFoundException("Resource CATEGORY not found. ID " + categoryId));
-			categories = Arrays.asList(category);
-		}
-
-		Map<Integer, String> statusMap = new HashMap<>();
-		statusMap.put(1, "AVAILABLE");
-		statusMap.put(0, "BOOKED");
-
-		Page<Book> bookPage = bookRepository.findPaged(categories, name.toLowerCase(),
-				statusMap.getOrDefault(booked, ""), pageable);
-
-		logger.info("Resource BOOK page found: " + "PAGE NUMBER [" + bookPage.getNumber() + "] - CONTENT: "
-				+ bookPage.getContent());
+		logger.info("Resource BOOK page found: PAGE NUMBER [" + bookPage.getNumber() + "] "
+				  + "- CONTENT: " + bookPage.getContent());
 
 		Page<BookDTOv2> dtosPage = bookPage.map(x -> BookMapper.convertEntityToDtoV2(x));
 
@@ -181,7 +168,7 @@ public class BookService {
 
 		} catch (DataIntegrityViolationException e) {
 
-			throw new DatabaseException("Integrity violation");
+			throw new DatabaseException(e.getMessage());
 
 		}
 

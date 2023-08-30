@@ -1,129 +1,122 @@
-import ButtonIcon from '../../../components/ButtonIcon';
-import { Link, useHistory, useLocation } from 'react-router-dom';
-import { useForm } from 'react-hook-form';
-import { requestBackendLogin } from '../../../utils/requests';
-import { useState, useContext } from 'react';
-import { AuthContext } from '../../../AuthContext';
+import ButtonIcon from '../../../components/ButtonIcon'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
+import { useForm } from 'react-hook-form'
+import { requestBackendLogin } from '../../../utils/requests'
+import { useState, useContext } from 'react'
+import { AuthContext } from '../../../AuthContext'
 
-import './styles.css';
-import { saveAuthData } from '../../../utils/storage';
-import { getTokenData } from '../../../utils/auth';
+import './styles.css'
+import { saveAuthData } from '../../../utils/storage'
+import { getTokenData } from '../../../utils/auth'
 
 type FormData = {
 
-    username: string;
-    password: string;
-
-}
-
-type LocationState = {
-
-    from: string;
+    username: string
+    password: string
 
 }
 
 const Login = () => {
 
-    const location = useLocation<LocationState>();
+    const location = useLocation()
 
-    const { from } = location.state || { from: { pathname: '/' } };
+    const from = location.state?.from.pathname || '/'
 
-    const { setAuthContextData } = useContext(AuthContext);
+    const { setAuthContextData } = useContext(AuthContext)
 
-    const [hasError, setHasError] = useState(false);
+    const [hasError, setHasError] = useState(false)
 
-    const { register, handleSubmit, formState: { errors } } = useForm<FormData>();
+    const { register, handleSubmit, formState: { errors } } = useForm<FormData>()
 
-    const history = useHistory();
+    const navigate = useNavigate()
 
     const onSubmit = (formData: FormData) => {
 
         requestBackendLogin(formData)
             .then(response => {
-                saveAuthData(response.data);
+                saveAuthData(response.data)
                 setAuthContextData({
                     authenticated: true,
                     tokenData: getTokenData()
                 })
-                setHasError(false);
-
-                history.replace(from);
+                setHasError(false)
+                navigate(from)
             })
             .catch(err => {
                 console.log(err)
-                setHasError(true);
+                setHasError(true)
             })
 
     }
 
     return (
 
-        <div className="base-card login-card">
+        <div className='base-card login-card'>
 
             <h1>LOGIN</h1>
 
             {hasError &&
 
-                <div className="alert alert-danger" role="alert" style={{ textAlign: 'center' }}>
+                <div className='alert alert-danger' role='alert' style={{ textAlign: 'center' }}>
                     Usuário ou senha incorretos.
                     <br />
-                    <a href="/auth/recover" className="alert-link">Esqueceu sua senha?</a>
+                    <a href='/auth/recover' className='alert-link'>Esqueceu sua senha?</a>
                 </div>
 
             }
 
             <form onSubmit={handleSubmit(onSubmit)}>
 
-                <div className="mb-4">
+                <div className='mb-4'>
 
                     <input
-                        {...register("username", {
+                        {...register('username', {
                             required: 'Campo obrigatório',
                             pattern: {
                                 value: (/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i),
                                 message: 'Email inválido'
                             }
                         })}
-                        type="text"
+                        type='text'
                         className={`form-control base-input ${errors.username ? 'is-invalid' : ''}`}
-                        placeholder="Email"
-                        name="username"
+                        placeholder='Email'
+                        name='username'
                     />
-                    <div className="invalid-feedback d-block">
+                    <div className='invalid-feedback d-block'>
                         {errors.username?.message}
                     </div>
 
                 </div>
 
-                <div className="mb-2">
+                <div className='mb-2'>
 
                     <input
-                        {...register("password", {
+                        {...register('password', {
                             required: 'Campo obrigatório'
                         })}
-                        type="password"
+                        type='password'
                         className={`form-control base-input ${errors.password ? 'is-invalid' : ''}`}
-                        placeholder="Password"
-                        name="password"
+                        placeholder='Password'
+                        name='password'
                     />
-                    <div className="invalid-feedback d-block">
+                    <div className='invalid-feedback d-block'>
                         {errors.password?.message}
                     </div>
 
                 </div>
 
-                <Link to="/auth/recover" className="login-link-recover">
+                <Link to='/auth/recover' className='login-link-recover'>
                     Esqueci a senha
                 </Link>
 
-                <div className="login-submit">
-                    <ButtonIcon text="Fazer login" />
+                <div className='login-submit'>
+                    <ButtonIcon text='Fazer login' />
                 </div>
 
-                <div className="signup-container">
+                <div className='signup-container'>
 
-                    <span className="not-registered">Não tem Cadastro?</span>
-                    <Link to="/auth/signup" className="login-link-register">
+                    <span className='not-registered'>Não tem Cadastro?</span>
+                    <Link to='/auth/signup' className='login-link-register'>
                         CADASTRAR
                     </Link>
 
@@ -133,8 +126,8 @@ const Login = () => {
 
         </div>
 
-    );
-};
+    )
+}
 
 
-export default Login;
+export default Login

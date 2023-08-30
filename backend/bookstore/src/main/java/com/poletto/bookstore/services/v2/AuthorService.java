@@ -20,7 +20,7 @@ import com.poletto.bookstore.converter.DozerMapperConverter;
 import com.poletto.bookstore.dto.v2.AuthorDTOv2;
 import com.poletto.bookstore.entities.Author;
 import com.poletto.bookstore.exceptions.ResourceNotFoundException;
-import com.poletto.bookstore.repositories.AuthorRepository;
+import com.poletto.bookstore.repositories.v2.AuthorRepository;
 
 @Service("AuthorServiceV2")
 public class AuthorService {
@@ -41,7 +41,7 @@ public class AuthorService {
 
 		dtos.stream().forEach(x -> x
 				.add(linkTo(methodOn(AuthorController.class).findById(x.getId())).withSelfRel().withType("GET"))
-				.add(linkTo(methodOn(BookController.class).findAllPaged(0, 12, "asc", "name", 0L, x.getName(), 2)).withRel("BOOKS BY AUTHOR").withType("GET")));
+				.add(linkTo(methodOn(BookController.class).findAllPaged(0, 12, "asc", "name", 0L, x.getName(), "all")).withRel("BOOKS BY AUTHOR").withType("GET")));
 
 		return dtos;
 
@@ -59,7 +59,7 @@ public class AuthorService {
 
 		dtos.stream().forEach(x -> x
 				.add(linkTo(methodOn(AuthorController.class).findById(x.getId())).withSelfRel().withType("GET"))
-				.add(linkTo(methodOn(BookController.class).findAllPaged(0, 12, "asc", "name", 0L, x.getName(), 2)).withRel("BOOKS BY AUTHOR").withType("GET")));
+				.add(linkTo(methodOn(BookController.class).findAllPaged(0, 12, "asc", "name", 0L, x.getName(), "all")).withRel("BOOKS BY AUTHOR").withType("GET")));
 
 		return dtos;
 
@@ -75,7 +75,7 @@ public class AuthorService {
 		logger.info("Resource AUTHOR found: " + entity.toString());
 
 		return DozerMapperConverter.parseObject(entity, AuthorDTOv2.class)
-				.add(linkTo(methodOn(BookController.class).findAllPaged(0, 12, "asc", "name", 0L, entity.getName(), 2)).withRel("BOOKS BY AUTHOR").withType("GET"));
+				.add(linkTo(methodOn(BookController.class).findAllPaged(0, 12, "asc", "name", 0L, entity.getName(), "all")).withRel("BOOKS BY AUTHOR").withType("GET"));
 
 	}
 

@@ -1,0 +1,84 @@
+.filter-container .filter-btn-container {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+}
+.filter-container .filter-btn-container .filter-right-btn {
+  float: right;
+  margin-left: 15px;
+  height: 40px;
+}
+@media (max-width: 768px) {
+  .filter-container .filter-btn-container {
+    justify-content: space-around;
+  }
+  .filter-container .filter-btn-container .filter-right-btn {
+    float: left;
+    margin: 5px;
+    font-size: 14px;
+    line-height: 40px;
+    text-overflow: clip;
+  }
+  .filter-container .filter-btn-container :last-child {
+    line-height: unset;
+  }
+}
+.filter-container label {
+  font-size: 0.95rem;
+  margin-left: 5px;
+  margin-bottom: 5px;
+}
+.filter-container input {
+  height: 45px;
+  border-radius: 8px;
+}
+.filter-container > .double-input-container {
+  margin-top: 30px;
+}
+.filter-container .double-input-container {
+  display: flex;
+  gap: 2rem;
+}
+@media (max-width: 576px) {
+  .filter-container .double-input-container {
+    flex-direction: column;
+    gap: 1rem;
+  }
+}
+@media (max-width: 992px) {
+  .filter-container .buttons-container {
+    display: flex;
+    justify-content: center;
+  }
+}
+.filter-container .buttons-container button {
+  border: 1px solid;
+}
+
+.double-container {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+.double-container .input-container {
+  display: flex;
+  align-items: center;
+}
+.double-container .input-container input {
+  width: 30%;
+  margin-right: 1.5rem;
+}
+.double-container .input-container .entity-name {
+  width: 70%;
+  border-radius: 10px;
+  font-size: 1em;
+  letter-spacing: -0.015em;
+  color: #263238;
+  padding: 0.375rem 0.75rem;
+  background-color: #e5e5e5;
+  background-clip: padding-box;
+  border: 1px solid #ced4da;
+  height: 45px;
+  line-height: 2;
+  font-weight: 400;
+}/*# sourceMappingURL=styles.css.map */

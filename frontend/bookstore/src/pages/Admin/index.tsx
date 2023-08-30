@@ -1,10 +1,10 @@
-import Navbar from "./Navbar";
-import './styles.css';
-import { Switch } from "react-router-dom";
-import Users from "./Users";
+import { Route, Routes } from "react-router-dom";
 import PrivateRoute from "../../components/PrivateRoute";
 import Books from "./Books";
+import Navbar from "./Navbar";
 import Reserves from "./Reserves";
+import Users from "./Users";
+import './styles.css';
 
 const Admin = () => {
 
@@ -16,21 +16,15 @@ const Admin = () => {
 
       <div className="admin-content">
 
-        <Switch>
+        <Routes>
 
-          <PrivateRoute path="/admin/books">
-            <Books />
-          </PrivateRoute>
+          <Route path='/books/*' element={<PrivateRoute element={<Books />} authority="ROLE_OPERATOR" />} />
 
-          <PrivateRoute path="/admin/reserves">
-            <Reserves />
-          </PrivateRoute>
+          <Route path="/reserves/*" element={<PrivateRoute element={<Reserves />} authority="ROLE_OPERATOR" />} />
 
-          <PrivateRoute path="/admin/users">
-            <Users />
-          </PrivateRoute>
+          <Route path="/users/*" element={<PrivateRoute element={<Users />} authority="ROLE_ADMIN" />} />
 
-        </Switch>
+        </Routes>
 
       </div>
 

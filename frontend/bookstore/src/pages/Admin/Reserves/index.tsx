@@ -1,82 +1,23 @@
-import { AxiosRequestConfig, AxiosRequestHeaders } from 'axios';
-import { useEffect, useState } from 'react';
-import { Reservation } from '../../../types/reservation';
-import { SpringPage } from '../../../types/vendor/spring';
-import { formatDate, formatDateTime } from '../../../utils/formatters';
-import { requestBackend } from '../../../utils/requests';
-import { getAuthData } from '../../../utils/storage';
-
-import '../Users/styles.css'
+import { Route, Routes } from "react-router-dom";
+import List from "./List";
 
 const Reserves = () => {
 
-    const [reservations, setReservations] = useState<SpringPage<Reservation>>();
-
-    useEffect(() => {
-
-        const params: AxiosRequestConfig = {
-
-            url: '/api/reservations/v2',
-            withCredentials: true,
-            headers: {} as AxiosRequestHeaders,
-            params: {
-                page: 0,
-                size: 200,
-                client: getAuthData()?.id
-            }
-
-        };
-
-        requestBackend(params)
-            .then((response) => {
-                setReservations(response.data);
-            })
-            .catch((err) => {
-            })
-
-    }, []);
-
     return (
 
-        <div>
+        <div className='container-fluid'>
 
-            {reservations ?
+            <h2 className='mb-3' >Reservas</h2>
 
-                <table>
-                    <tr>
-                        <th>ID</th>
-                        <th>ÍNICIO</th>
-                        <th>SEMANAS</th>
-                        <th>DEVOLUÇÃO</th>
-                        <th>STATUS</th>
-                        <th>LIVROS</th>
-                    </tr>
-                    <tbody>
+            <Routes>
 
-                        {reservations.content.map((reservation) => (
-                            <>
-                                <tr>
-                                    <td>{reservation.id}</td>
-                                    <td>{formatDateTime(reservation.moment)}</td>
-                                    <td>{reservation.weeks}</td>
-                                    <td>{formatDate(reservation.devolution)}</td>
-                                    <td>{reservation.status === 'IN_PROGRESS' ? 'Em andamento' : 'Finalizado'}</td>
-                                    <td>{reservation.books.map(e => e.name + ' | ')}</td>
+                <Route path="/" element={<List />} />
 
-                                </tr>
-                            </>
-                        ))}
-
-                    </tbody>
-                </table>
-
-                : <h1>Usuário deve ser administrador para acessar</h1>
-
-            }
+            </Routes>
 
         </div>
 
-    );
-};
+    )
+}
 
 export default Reserves;

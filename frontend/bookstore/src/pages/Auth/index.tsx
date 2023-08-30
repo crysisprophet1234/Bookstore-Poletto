@@ -1,5 +1,5 @@
 import { ReactComponent as AuthImg } from '../../assets/images/auth-img.svg';
-import { Route, Switch } from 'react-router-dom';
+import { Route, Routes } from 'react-router-dom';
 
 import './styles.css';
 import Login from './Login';
@@ -21,21 +21,15 @@ const Auth = () => {
 
             <div className="auth-form-container">
 
-                <Switch>
+                <Routes>
 
-                    <Route path="/auth/login">
-                        <Login />
-                    </Route>
+                    <Route path="/login" element={<Login />} />
 
-                    <Route path="/auth/signup">
-                        <Signup />
-                    </Route>
+                    <Route path="/signup" element={<Signup />} />
 
-                    <Route path="/auth/recover">
-                        <h1>Card de recover</h1>
-                    </Route>
+                    <Route path="/recover" element={<h2>Recover</h2>} />
 
-                </Switch>
+                </Routes>
 
             </div>
 
