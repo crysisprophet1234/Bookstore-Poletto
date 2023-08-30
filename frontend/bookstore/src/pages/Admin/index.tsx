@@ -1,10 +1,10 @@
-import Navbar from "./Navbar";
-import './styles.css';
-import { Routes, Route } from "react-router-dom";
-import Users from "./Users";
-import Books from "./Books";
-import Reserves from "./Reserves";
+import { Route, Routes } from "react-router-dom";
 import PrivateRoute from "../../components/PrivateRoute";
+import Books from "./Books";
+import Navbar from "./Navbar";
+import Reserves from "./Reserves";
+import Users from "./Users";
+import './styles.css';
 
 const Admin = () => {
 
@@ -18,11 +18,11 @@ const Admin = () => {
 
         <Routes>
 
-          <Route path='/books/*' element={<PrivateRoute element={<Books />} />} />
+          <Route path='/books/*' element={<PrivateRoute element={<Books />} authority="ROLE_OPERATOR" />} />
 
-          <Route path="/reserves/*" element={<PrivateRoute element={<Reserves />} />} />
+          <Route path="/reserves/*" element={<PrivateRoute element={<Reserves />} authority="ROLE_OPERATOR" />} />
 
-          <Route path="/users/*" element={<PrivateRoute element={<Users />} />} />
+          <Route path="/users/*" element={<PrivateRoute element={<Users />} authority="ROLE_ADMIN" />} />
 
         </Routes>
 
