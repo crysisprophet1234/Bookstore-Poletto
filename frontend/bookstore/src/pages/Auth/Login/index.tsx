@@ -1,13 +1,13 @@
-import ButtonIcon from '../../../components/ButtonIcon'
-import { Link, useLocation, useNavigate } from 'react-router-dom'
+import { useContext, useState } from 'react'
 import { useForm } from 'react-hook-form'
-import { requestBackendLogin } from '../../../utils/requests'
-import { useState, useContext } from 'react'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { AuthContext } from '../../../AuthContext'
+import ButtonIcon from '../../../components/ButtonIcon'
+import { requestBackendLogin } from '../../../utils/requests'
 
-import './styles.css'
-import { saveAuthData } from '../../../utils/storage'
 import { getTokenData } from '../../../utils/auth'
+import { saveAuthData } from '../../../utils/storage'
+import './styles.css'
 
 type FormData = {
 
@@ -81,6 +81,7 @@ const Login = () => {
                         className={`form-control base-input ${errors.username ? 'is-invalid' : ''}`}
                         placeholder='Email'
                         name='username'
+                        autoComplete='email'
                     />
                     <div className='invalid-feedback d-block'>
                         {errors.username?.message}
@@ -98,6 +99,7 @@ const Login = () => {
                         className={`form-control base-input ${errors.password ? 'is-invalid' : ''}`}
                         placeholder='Password'
                         name='password'
+                        autoComplete='current-password'
                     />
                     <div className='invalid-feedback d-block'>
                         {errors.password?.message}
