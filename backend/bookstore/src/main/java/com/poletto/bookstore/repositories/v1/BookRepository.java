@@ -7,10 +7,12 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.stereotype.Repository;
 
 import com.poletto.bookstore.entities.Book;
 import com.poletto.bookstore.entities.Category;
 
+@Repository("BookRepositoryV1")
 public interface BookRepository extends JpaRepository<Book, Long> {
 
 	List<Book> findByStatus(String status);
