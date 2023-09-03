@@ -30,9 +30,15 @@
   margin-bottom: 20px;
   padding: 20px;
 }
+.book-details-container .book-details-card .img-container .spinner-container {
+  height: 400px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
 .book-details-container .book-details-card .img-container img {
-  max-height: 600px;
-  width: 80%;
+  height: 400px;
+  image-rendering: -webkit-optimize-contrast;
 }
 .book-details-container .book-details-card .book-desc-container {
   margin-bottom: 20px;
@@ -58,7 +64,7 @@
   font-size: 1.5em;
   margin-bottom: 20px;
 }
-.book-details-container .book-details-card .title-container span {
+.book-details-container .book-details-card .title-container span:not(.badge) {
   display: flex;
   flex-direction: row;
   width: 100%;
@@ -72,11 +78,17 @@
   gap: 15px;
   text-transform: capitalize;
   flex-wrap: wrap;
-  max-width: 300px;
+  font-size: 22px;
+}
+.book-details-container .book-details-card .title-container .categories span {
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 .book-details-container .book-details-card .title-container p {
   font-size: 0.5em;
   margin-bottom: 20px;
+  color: #263238;
 }
 
 @media (min-width: 576px) {
@@ -95,9 +107,6 @@
   }
   .book-details-card {
     padding: 40px !important;
-  }
-  .img-container img {
-    width: 60% !important;
   }
   .description-container {
     padding: 40px;
