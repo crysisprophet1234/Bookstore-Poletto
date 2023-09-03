@@ -3,11 +3,12 @@ import { AxiosRequestConfig } from 'axios'
 import { useEffect, useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import { BiSolidDownArrow } from 'react-icons/bi'
-import Select, { CSSObjectWithLabel, ControlProps, StylesConfig } from 'react-select'
+import Select from 'react-select'
 import { toast } from 'react-toastify'
 import * as Yup from 'yup'
 import { requestBackend } from '../../utils/requests'
 
+import { selectStyles } from '../../utils/selectStyles'
 import './styles.css'
 
 export type ReserveFilterData = {
@@ -28,46 +29,6 @@ type Props = {
     onSubmitFilter: (data: ReserveFilterData) => void
 
 }
-
-const selectStyles: StylesConfig<any, false> = {
-
-    control: (provided: CSSObjectWithLabel, props: ControlProps<any, false>) => ({
-        ...provided,
-        height: '40px',
-        border: '1px solid #407bff',
-        ":hover": {
-            border: '1px solid #407bff'
-        }
-    }),
-
-    valueContainer: (provided) => ({
-        ...provided,
-        height: '40px',
-        padding: '0px 8px'
-    }),
-
-    input: (provided) => ({
-        ...provided,
-        margin: '0px',
-    }),
-
-    singleValue: (provided) => ({
-        ...provided,
-        marginBottom: '8px',
-        textOverflow: 'initial',
-        overflow: 'visible'
-    }),
-
-    indicatorsContainer: (provided) => ({
-        ...provided,
-        height: '40px'
-    }),
-
-    indicatorSeparator: (provided) => ({
-        ...provided
-    })
-}
-
 
 const ReservesFilter = ({ onSubmitFilter }: Props) => {
 
@@ -243,11 +204,13 @@ const ReservesFilter = ({ onSubmitFilter }: Props) => {
 
                 <button
                     className='btn btn-outline-primary filter-right-btn'
+                    name='expand-filter-button'
                     type='button'
                     data-bs-toggle='collapse'
                     data-bs-target='#full-filter'
                     aria-expanded='false'
                     aria-controls='full-filter'
+                    aria-label='expand-filter-button'
                     onClick={handleArrowClick}
                 >
                     {window.innerWidth < 768 ? <BiSolidDownArrow /> : 'Expandir filtros'}
@@ -304,11 +267,12 @@ const ReservesFilter = ({ onSubmitFilter }: Props) => {
                                 getOptionValue={(status) => String(status?.value)}
                                 form='reservations-filter-form'
                                 name='status'
+                                id='status'
                                 styles={{
                                     control: (provided) => ({
                                         ...provided,
                                         height: '45px',
-                                        minWidth: '200px',
+                                        minWidth: '200px'
                                     }),
                                     valueContainer: (provided) => ({
                                         ...provided,
