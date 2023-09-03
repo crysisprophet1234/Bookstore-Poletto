@@ -22,9 +22,13 @@ const Navbar = () => {
       })
 
     } else {
+
       setAuthContextData({
         authenticated: false,
       })
+
+      removeAuthData()
+
     }
 
   }, [setAuthContextData])
