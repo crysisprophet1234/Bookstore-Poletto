@@ -1,16 +1,16 @@
+import { Link } from 'react-router-dom';
 import Pagination from '../../components/Pagination';
 import CardLoader from './cardLoader/index';
-import { Link } from 'react-router-dom';
 
 import { AxiosRequestConfig } from 'axios';
 import { useCallback, useEffect, useState } from 'react';
-import { requestBackend } from '../../utils/requests';
-import { SpringPage } from '../../types/vendor/spring';
-import { Book } from '../../types/book';
 import BookCard from '../../components/BookCard';
+import { Book } from '../../types/book';
+import { SpringPage } from '../../types/vendor/spring';
+import { requestBackend } from '../../utils/requests';
 
-import './styles.css';
 import ProductFilter, { ProductFilterData } from '../../components/ProductFilter';
+import './styles.css';
 
 type ControlComponentsData = {
   activePage: number;
@@ -41,7 +41,7 @@ const Catalog = () => {
       url: '/api/books/v2',
       params: {
         page: controlComponentsData.activePage,
-        size: 12,
+        size: window.innerWidth > 768 ? 12 : 6,
         name: controlComponentsData.filterData.name,
         categoryId: controlComponentsData.filterData.category?.id
       },
@@ -82,16 +82,18 @@ const Catalog = () => {
             page.content.map(book => {
 
               return (
+
                 <div className="col-sm-6 col-lg-4 col-xl-3" key={book.id}>
                   <Link to={`/books/${book.id}`}>
                     <BookCard book={book} />
                   </Link>
                 </div>
+
               )
 
             })
           )
-          
+
         }
 
       </div>
