@@ -16,35 +16,35 @@ li {
 }
 
 .pagination-item {
-  width: 40px;
-  height: 40px;
+  width: 48px;
+  height: 48px;
   border-radius: 50%;
-  background-color: #e1e1e1;
+  background-color: #a8a8a8;
   font-size: 18px;
   font-weight: bold;
   letter-spacing: -0.015em;
-  color: #fff;
+  color: #263238;
   display: flex;
   justify-content: center;
   align-items: center;
-  margin-left: 10px;
+  margin-left: 20px;
+  margin-right: 20px;
 }
 .pagination-item.active {
-  background-color: #407bff;
+  background-color: #0044E0;
 }
 
 .pagination-link-active {
-  background-color: #407bff;
+  background-color: #0044E0;
 }
 
 .arrow-previous {
   transform: rotate(-180deg);
-  color: #407bff;
+  color: #0044E0;
 }
 
 .arrow-next {
-  margin-left: 10px;
-  color: #407bff;
+  color: #0044E0;
 }
 
 .arrow-inactive {
@@ -52,7 +52,7 @@ li {
 }
 
 .arrow-active {
-  color: #407bff;
+  color: #0044E0;
 }
 
 .pagination-arrow-container {
