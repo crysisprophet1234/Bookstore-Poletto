@@ -102,7 +102,7 @@ const Catalog = () => {
         <Pagination
           forcePage={page?.number}
           pageCount={page ? page.totalPages : 0}
-          range={3}
+          range={window.innerWidth > 768 ? 3 : 1}
           onChange={handlePageChange}
         />
       </div>
