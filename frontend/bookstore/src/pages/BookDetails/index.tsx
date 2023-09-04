@@ -91,12 +91,6 @@ const BookDetails = () => {
                             (
                                 <>
 
-                                    {window.innerWidth > 1200 ? '' :
-
-                                        <h1 style={{ textAlign: 'center' }}><u>{book?.name}</u></h1>
-
-                                    }
-
                                     <div className='img-container'>
 
                                         {isImageLoading ?
