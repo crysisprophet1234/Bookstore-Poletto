@@ -1,9 +1,9 @@
 import './styles.css'
 
-import { useContext, useEffect } from 'react'
+import { useContext } from 'react'
 import { Link, NavLink, useLocation, useNavigate } from 'react-router-dom'
 import { AuthContext } from '../../AuthContext'
-import { getTokenData, hasAuthority, isAuthenticated } from '../../utils/auth'
+import { hasAuthority } from '../../utils/auth'
 import { removeAuthData } from '../../utils/storage'
 
 const Navbar = () => {
@@ -13,27 +13,6 @@ const Navbar = () => {
   const history = useNavigate()
 
   const location = useLocation()
-
-  useEffect(() => {
-
-    if (isAuthenticated()) {
-
-      setAuthContextData({
-        authenticated: true,
-        tokenData: getTokenData()
-      })
-
-    } else {
-
-      setAuthContextData({
-        authenticated: false,
-      })
-
-      removeAuthData()
-
-    }
-
-  }, [setAuthContextData])
 
   const handleLogoutClick = (event: React.MouseEvent<HTMLAnchorElement>) => {
 
@@ -105,19 +84,24 @@ const Navbar = () => {
 
         <div className='nav-login-logout'>
 
+
           {authContextData.authenticated ?
+
             (
               <>
                 <span className='nav-username'>{authContextData.tokenData?.sub}</span>
                 <a href='logout' onClick={handleLogoutClick}>LOGOUT</a>
               </>
             )
+
             :
+
             (
               <Link to='/auth'>
                 LOGIN
               </Link>
             )
+
           }
 
         </div>
