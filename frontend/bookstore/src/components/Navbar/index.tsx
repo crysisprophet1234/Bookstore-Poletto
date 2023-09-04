@@ -1,7 +1,7 @@
 import './styles.css'
 
 import { useContext, useEffect } from 'react'
-import { Link, NavLink, useNavigate } from 'react-router-dom'
+import { Link, NavLink, useLocation, useNavigate } from 'react-router-dom'
 import { AuthContext } from '../../AuthContext'
 import { getTokenData, hasAuthority, isAuthenticated } from '../../utils/auth'
 import { removeAuthData } from '../../utils/storage'
@@ -11,6 +11,8 @@ const Navbar = () => {
   const { authContextData, setAuthContextData } = useContext(AuthContext)
 
   const history = useNavigate()
+
+  const location = useLocation()
 
   useEffect(() => {
 
@@ -43,6 +45,10 @@ const Navbar = () => {
 
     history('/')
 
+  }
+
+  function matchesPath(path: string): boolean {
+    return location.pathname.startsWith(path)
   }
 
   return (
@@ -78,7 +84,7 @@ const Navbar = () => {
             </li>
 
             <li>
-              <NavLink to='/books' className={({ isActive }) => isActive ? 'active' : ''} end>
+              <NavLink to='/books' className={({ isActive }) => isActive || matchesPath('/books') ? 'active' : ''} end>
                 CATÁLOGO
               </NavLink>
             </li>
@@ -86,7 +92,7 @@ const Navbar = () => {
             {hasAuthority('ROLE_OPERATOR') &&
 
               <li>
-                <NavLink to='/admin' className={({ isActive }) => isActive ? 'active' : ''} end>
+                <NavLink to='/admin' className={({ isActive }) => isActive || matchesPath('/admin') ? 'active' : ''} end>
                   ADMIN
                 </NavLink>
               </li>
