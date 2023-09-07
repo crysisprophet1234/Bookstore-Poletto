@@ -10,11 +10,18 @@
   color: #fff;
 }
 
+.options {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+}
+
 .main-menu {
   display: flex;
   font-size: 18px;
   width: 380px;
   justify-content: space-between;
+  margin-left: 0;
 }
 .main-menu a {
   font-style: normal;
