@@ -31,7 +31,6 @@
   .admin-nav-container {
     padding: 0px;
     width: 300px;
-    height: calc(100vh - 70px);
   }
   .admin-nav-container ul {
     justify-content: unset;

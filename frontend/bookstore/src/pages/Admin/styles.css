@@ -10,6 +10,7 @@
 @media (min-width: 1200px) {
   .admin-container {
     flex-direction: row;
+    min-height: calc(100% - 70px);
   }
   .admin-content {
     flex: 1;
