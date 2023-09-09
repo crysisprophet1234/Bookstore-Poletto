@@ -1,6 +1,8 @@
+import { Suspense, lazy } from 'react'
 import { Route, Routes } from 'react-router-dom'
-import Form from './Form'
+import Loading from '../../Loading'
 import List from './List'
+const Form = lazy(() => import('./Form'))
 
 const Products = () => {
 
@@ -10,9 +12,13 @@ const Products = () => {
 
             <Route path='/' element={<List />} />
 
-            <Route path='/:bookId' element={<Form />} />
+            <Route path='/:bookId' element={
+                <Suspense fallback={<Loading />}>
+                    <Form />
+                </Suspense>
+            } />
 
-        </Routes>
+        </Routes >
 
     )
 }
