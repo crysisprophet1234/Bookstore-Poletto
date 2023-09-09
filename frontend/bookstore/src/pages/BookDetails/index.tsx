@@ -3,7 +3,7 @@ import './styles.css'
 import { ReactComponent as ArrowIcon } from '../../assets/images/arrow.svg'
 
 import { AxiosRequestHeaders } from 'axios'
-import { useEffect, useState } from 'react'
+import { Suspense, useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { MoonLoader } from 'react-spinners'
 import BookStatus from '../../components/BookStatus'
@@ -51,22 +51,6 @@ const BookDetails = () => {
 
     }, [bookId])
 
-    useEffect(() => {
-
-        if (book) {
-
-            fetch(book.imgUrl)
-                .then((response) => {
-                    setIsImageLoading(false)
-                })
-                .catch((error) => {
-                    setIsImageLoading(true)
-                })
-
-        }
-
-    }, [book])
-
     return (
 
         <div className='book-details-container'>
@@ -93,23 +77,14 @@ const BookDetails = () => {
 
                                     <div className='img-container'>
 
-                                        {isImageLoading ?
-
-                                            (
-
-                                                <div className='spinner-container'>
-                                                    <MoonLoader loading={isImageLoading} color='#0044E0' speedMultiplier={0.65} />
-                                                </div>
-                                            )
-                                            :
-                                            (
-                                                <img
-                                                    src={book?.imgUrl}
-                                                    alt={book?.name}
-                                                    loading='lazy'
-                                                />
-                                            )
-                                        }
+                                        <Suspense fallback={<MoonLoader loading={isImageLoading} />}>
+                                            <img
+                                                src={book?.imgUrl}
+                                                alt={book?.name}
+                                                loading='lazy'
+                                                onLoad={e => setIsImageLoading(false)}
+                                            />
+                                        </Suspense>
 
                                     </div>
 
