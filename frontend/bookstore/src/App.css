@@ -44,3 +44,18 @@ a:hover {
 .base-input::placeholder {
   color: #9E9E9E;
 }
+
+.base-card.loader {
+
+  padding: 45px 0px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+}
+
+.base-card.loader span {
+
+  margin: auto;
+
+}
