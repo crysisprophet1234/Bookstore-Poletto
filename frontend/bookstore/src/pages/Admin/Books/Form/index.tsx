@@ -5,6 +5,7 @@ import { Controller, useForm } from 'react-hook-form'
 import { useNavigate, useParams } from 'react-router-dom'
 
 import Select from 'react-select'
+import AsyncSelect from 'react-select/async'
 
 import { Author } from '../../../../types/author'
 import { Book } from '../../../../types/book'
@@ -14,6 +15,7 @@ import { requestBackend } from '../../../../utils/requests'
 
 import { toast } from 'react-toastify'
 
+import { debounce } from '../../../../utils/debounce'
 import './styles.css'
 
 type UrlParams = {
@@ -32,8 +34,6 @@ const Form = () => {
 
   const [selectCategories, setSelectCategories] = useState<Category[]>([])
 
-  const [selectAuthors, setSelectAuthors] = useState<Author[]>([])
-
   const {
     register,
     handleSubmit,
@@ -51,14 +51,17 @@ const Form = () => {
 
   }, [])
 
-  useEffect(() => {
+  const selectAuthorsAsync = debounce((searchValue: string, callback: any) => {
 
     requestBackend({ url: '/api/authors/v2/all' })
       .then((response) => {
-        setSelectAuthors(response.data)
+        callback(response.data.filter((author: Author) => author.name.toLowerCase().includes(searchValue.toLowerCase())))
+      })
+      .catch((error) => {
+        console.log(error)
       })
 
-  }, [])
+  }, 500)
 
   useEffect(() => {
 
@@ -191,9 +194,11 @@ const Form = () => {
                   rules={{ required: true }}
                   control={control}
                   render={({ field }) => (
-                    <Select
+                    <AsyncSelect
                       {...field}
-                      options={selectAuthors}
+                      loadOptions={selectAuthorsAsync}
+                      isClearable
+                      isSearchable
                       classNamePrefix='product-crud-select'
                       onChange={(value) => setValue('author', value as Author)}
                       getOptionLabel={(author: Author) => author.name}
