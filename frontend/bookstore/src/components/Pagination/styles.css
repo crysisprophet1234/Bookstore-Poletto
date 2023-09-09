@@ -19,16 +19,16 @@ li {
   width: 48px;
   height: 48px;
   border-radius: 50%;
-  background-color: #a8a8a8;
+  background-color: #6d6d6d;
   font-size: 18px;
   font-weight: bold;
   letter-spacing: -0.015em;
-  color: #263238;
+  color: #ffffff;
   display: flex;
   justify-content: center;
   align-items: center;
-  margin-left: 20px;
-  margin-right: 20px;
+  margin-left: 12px;
+  margin-right: 12px;
 }
 .pagination-item.active {
   background-color: #0044E0;

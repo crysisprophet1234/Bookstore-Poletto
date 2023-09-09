@@ -8,7 +8,7 @@
 
 .btn h2 {
   color: #fff;
-  font-size: 12px;
+  font-size: 14px;
   text-transform: uppercase;
 }
 
@@ -29,6 +29,6 @@
     height: 70px;
   }
   .btn h2 {
-    font-size: 22px;
+    font-size: 18px;
   }
 }/*# sourceMappingURL=styles.css.map */
