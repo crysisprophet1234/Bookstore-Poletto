@@ -1,12 +1,14 @@
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
-import Navbar from './components/Navbar';
-import Catalog from './pages/Catalog';
-import Admin from './pages/Admin';
-import Auth from './pages/Auth';
-import BookDetails from './pages/BookDetails';
-import Home from './pages/Home';
-import NotFound from './pages/NotFound';
-import ToastMessage from './components/ToastMessage';
+import { Suspense, lazy } from 'react'
+import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom'
+import Navbar from './components/Navbar'
+import ToastMessage from './components/ToastMessage'
+import Home from './pages/Home'
+import Loading from './pages/Loading'
+const Catalog = lazy(() => import('./pages/Catalog'))
+const BookDetails = lazy(() => import('./pages/BookDetails'))
+const Auth = lazy(() => import('./pages/Auth'))
+const Admin = lazy(() => import('./pages/Admin'))
+const ErrorFallback = lazy(() => import('./components/ErrorFallback'))
 
 const AppRoutes = () => (
 
@@ -18,26 +20,46 @@ const AppRoutes = () => (
 
         <Routes>
 
-            <Route path="/" element={<Home />} />
+            <Route path='/' element={<Home />} />
 
-            <Route path="/books" element={<Catalog />} />
+            <Route path='/books' element={
+                <Suspense fallback={<Loading />}>
+                    <Catalog />
+                </Suspense>
+            } />
 
-            <Route path="/books/:bookId/*" element={<BookDetails />} />
+            <Route path='/books/:bookId/*' element={
+                <Suspense fallback={<Loading />}>
+                    <BookDetails />
+                </Suspense>
+            } />
 
-            <Route path="/auth/*" element={<Auth />} />
+            <Route path='/auth/*' element={
+                <Suspense fallback={<Loading />}>
+                    <Auth />
+                </Suspense>
+            } />
 
-            <Route path="/auth" element={<Navigate to="/auth/login" />} />
+            <Route path='/auth' element={<Navigate to='/auth/login' />} />
 
-            <Route path="/admin/*" element={<Admin />} />
+            <Route path='/admin/*' element={
+                <Suspense fallback={<Loading />}>
+                    <Admin />
+                </Suspense>
+            } />
 
-            <Route path="/admin" element={<Navigate to="/admin/books" />} />
+            <Route path='/admin' element={<Navigate to='/admin/books' />} />
 
-            <Route path="*" element={<NotFound />} />
+            <Route path='*' element={
+                <Suspense fallback={<Loading />}>
+                    <ErrorFallback errorCode={404} />
+                </Suspense>
+            } />
 
         </Routes>
 
     </BrowserRouter>
 
-);
+)
 
-export default AppRoutes;
+export default AppRoutes

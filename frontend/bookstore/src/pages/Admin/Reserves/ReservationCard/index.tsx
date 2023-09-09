@@ -123,11 +123,13 @@ const ReservationCard = ({ reservation, reservationReload }: Props) => {
 
                     <button
                         className='expand-btn text-primary'
+                        name='expand-reservation-card-button'
                         type='button'
                         data-bs-toggle='collapse'
                         data-bs-target={`#reservation-card-collapse${reservation.id}`}
                         aria-expanded='false'
                         aria-controls='collapseExample'
+                        aria-label='expand-reservation-card-button'
                     >
                         {window.innerWidth < 768 ? <BiSolidDownArrow /> : <span>Expandir <BiSolidDownArrow /></span>}
                     </button>

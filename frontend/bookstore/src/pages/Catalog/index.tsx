@@ -1,80 +1,83 @@
-import Pagination from '../../components/Pagination';
-import CardLoader from './cardLoader/index';
-import { Link } from 'react-router-dom';
+import { Link } from 'react-router-dom'
+import Pagination from '../../components/Pagination'
+import CardLoader from './cardLoader/index'
 
-import { AxiosRequestConfig } from 'axios';
-import { useCallback, useEffect, useState } from 'react';
-import { requestBackend } from '../../utils/requests';
-import { SpringPage } from '../../types/vendor/spring';
-import { Book } from '../../types/book';
-import BookCard from '../../components/BookCard';
+import { AxiosRequestConfig } from 'axios'
+import { useCallback, useEffect, useState } from 'react'
+import BookCard from '../../components/BookCard'
+import { Book } from '../../types/book'
+import { SpringPage } from '../../types/vendor/spring'
+import { requestBackend } from '../../utils/requests'
 
-import './styles.css';
-import ProductFilter, { ProductFilterData } from '../../components/ProductFilter';
+import ProductFilter, { ProductFilterData } from '../../components/ProductFilter'
+import { debounce } from '../../utils/debounce'
+import './styles.css'
 
 type ControlComponentsData = {
-  activePage: number;
-  filterData: ProductFilterData;
-};
+  activePage: number
+  filterData: ProductFilterData
+}
 
 const Catalog = () => {
 
-  const [page, setPage] = useState<SpringPage<Book>>();
+  const [page, setPage] = useState<SpringPage<Book>>()
 
   const [controlComponentsData, setControlComponentsData] =
     useState<ControlComponentsData>({
       activePage: 0,
       filterData: { name: '', category: null },
-    });
+    })
 
   const handlePageChange = (pageNumber: number) => {
-    setControlComponentsData({ activePage: pageNumber, filterData: controlComponentsData.filterData });
-  };
+    setControlComponentsData({ activePage: pageNumber, filterData: controlComponentsData.filterData })
+  }
 
-  const handleSubmitFilter = (data: ProductFilterData) => {
-    setControlComponentsData({ activePage: 0, filterData: data });
-  };
+  const handleSubmitFilter = debounce((data: ProductFilterData) => {
+    setControlComponentsData({ activePage: 0, filterData: data })
+  }, 500)
 
   const getBooks = useCallback(() => {
+
     const config: AxiosRequestConfig = {
       method: 'GET',
       url: '/api/books/v2',
       params: {
         page: controlComponentsData.activePage,
-        size: 12,
+        size: window.innerWidth > 768 ? 12 : 6,
         name: controlComponentsData.filterData.name,
         categoryId: controlComponentsData.filterData.category?.id
       },
-    };
+    }
 
     requestBackend(config)
       .then((response) => {
-        setPage(response.data);
+        setPage(response.data)
       })
       .catch((err) => {
         console.log(err.response.data)
       })
-  }, [controlComponentsData]);
+
+  }, [controlComponentsData])
 
   useEffect(() => {
-    getBooks();
-  }, [getBooks]);
+    getBooks()
+  }, [getBooks])
 
   return (
 
-    <div className="container my-4 catalog-container">
+    <div className='container my-4 catalog-container'>
 
-      <div className="row catalog-title-container">
+      <div className='row catalog-title-container'>
         <h1>Catálogo de Produtos</h1>
       </div>
 
-      <div className="product-crud-bar-container">
+      <div className='product-crud-bar-container'>
 
         <ProductFilter onSubmitFilter={handleSubmitFilter} />
 
       </div>
 
-      <div className="row">
+      <div className='row'>
 
         {!page ? <CardLoader /> :
 
@@ -82,33 +85,35 @@ const Catalog = () => {
             page.content.map(book => {
 
               return (
-                <div className="col-sm-6 col-lg-4 col-xl-3" key={book.id}>
+
+                <div className='col-sm-6 col-lg-4 col-xl-3' key={book.id}>
                   <Link to={`/books/${book.id}`}>
                     <BookCard book={book} />
                   </Link>
                 </div>
+
               )
 
             })
           )
-          
+
         }
 
       </div>
 
-      <div className="row">
+      <div className='row'>
         <Pagination
           forcePage={page?.number}
           pageCount={page ? page.totalPages : 0}
-          range={3}
+          range={window.innerWidth > 768 ? 3 : 1}
           onChange={handlePageChange}
         />
       </div>
 
     </div>
 
-  );
+  )
 
-};
+}
 
-export default Catalog;
+export default Catalog

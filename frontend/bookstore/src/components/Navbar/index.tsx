@@ -1,9 +1,9 @@
 import './styles.css'
 
-import { useContext, useEffect } from 'react'
-import { Link, NavLink, useNavigate } from 'react-router-dom'
+import { useContext } from 'react'
+import { Link, NavLink, useLocation, useNavigate } from 'react-router-dom'
 import { AuthContext } from '../../AuthContext'
-import { getTokenData, hasAuthority, isAuthenticated } from '../../utils/auth'
+import { hasAuthority } from '../../utils/auth'
 import { removeAuthData } from '../../utils/storage'
 
 const Navbar = () => {
@@ -12,22 +12,7 @@ const Navbar = () => {
 
   const history = useNavigate()
 
-  useEffect(() => {
-
-    if (isAuthenticated()) {
-
-      setAuthContextData({
-        authenticated: true,
-        tokenData: getTokenData()
-      })
-
-    } else {
-      setAuthContextData({
-        authenticated: false,
-      })
-    }
-
-  }, [setAuthContextData])
+  const location = useLocation()
 
   const handleLogoutClick = (event: React.MouseEvent<HTMLAnchorElement>) => {
 
@@ -39,6 +24,10 @@ const Navbar = () => {
 
     history('/')
 
+  }
+
+  function matchesPath(path: string): boolean {
+    return location.pathname.startsWith(path)
   }
 
   return (
@@ -63,7 +52,7 @@ const Navbar = () => {
           <span className='navbar-toggler-icon'></span>
         </button>
 
-        <div className='collapse navbar-collapse' id='dscatalog-navbar'>
+        <div className='collapse navbar-collapse options' id='dscatalog-navbar'>
 
           <ul className='navbar-nav offset-md-2 main-menu'>
 
@@ -74,7 +63,7 @@ const Navbar = () => {
             </li>
 
             <li>
-              <NavLink to='/books' className={({ isActive }) => isActive ? 'active' : ''} end>
+              <NavLink to='/books' className={({ isActive }) => isActive || matchesPath('/books') ? 'active' : ''} end>
                 CATÁLOGO
               </NavLink>
             </li>
@@ -82,7 +71,7 @@ const Navbar = () => {
             {hasAuthority('ROLE_OPERATOR') &&
 
               <li>
-                <NavLink to='/admin' className={({ isActive }) => isActive ? 'active' : ''} end>
+                <NavLink to='/admin' className={({ isActive }) => isActive || matchesPath('/admin') ? 'active' : ''} end>
                   ADMIN
                 </NavLink>
               </li>
@@ -95,19 +84,24 @@ const Navbar = () => {
 
         <div className='nav-login-logout'>
 
+
           {authContextData.authenticated ?
+
             (
               <>
                 <span className='nav-username'>{authContextData.tokenData?.sub}</span>
                 <a href='logout' onClick={handleLogoutClick}>LOGOUT</a>
               </>
             )
+
             :
+
             (
               <Link to='/auth'>
                 LOGIN
               </Link>
             )
+
           }
 
         </div>

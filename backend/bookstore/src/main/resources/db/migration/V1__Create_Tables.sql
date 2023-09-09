@@ -34,7 +34,7 @@ CREATE TABLE public.author (
 );
 
 
-ALTER TABLE public.author OWNER TO postgres;
+ALTER TABLE public.author OWNER TO crysisprophet1234;
 
 --
 -- TOC entry 201 (class 1259 OID 237596)
@@ -49,7 +49,7 @@ CREATE SEQUENCE public.author_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.author_id_seq OWNER TO postgres;
+ALTER TABLE public.author_id_seq OWNER TO crysisprophet1234;
 
 --
 -- TOC entry 3092 (class 0 OID 0)
@@ -76,7 +76,7 @@ CREATE TABLE public.book (
 );
 
 
-ALTER TABLE public.book OWNER TO postgres;
+ALTER TABLE public.book OWNER TO crysisprophet1234;
 
 --
 -- TOC entry 212 (class 1259 OID 237681)
@@ -89,7 +89,7 @@ CREATE TABLE public.book_category (
 );
 
 
-ALTER TABLE public.book_category OWNER TO postgres;
+ALTER TABLE public.book_category OWNER TO crysisprophet1234;
 
 --
 -- TOC entry 203 (class 1259 OID 237607)
@@ -104,7 +104,7 @@ CREATE SEQUENCE public.book_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.book_id_seq OWNER TO postgres;
+ALTER TABLE public.book_id_seq OWNER TO crysisprophet1234;
 
 --
 -- TOC entry 3093 (class 0 OID 0)
@@ -126,7 +126,7 @@ CREATE TABLE public.book_reservation (
 );
 
 
-ALTER TABLE public.book_reservation OWNER TO postgres;
+ALTER TABLE public.book_reservation OWNER TO crysisprophet1234;
 
 --
 -- TOC entry 215 (class 1259 OID 237708)
@@ -142,7 +142,7 @@ CREATE TABLE public.bookstore_user (
 );
 
 
-ALTER TABLE public.bookstore_user OWNER TO postgres;
+ALTER TABLE public.bookstore_user OWNER TO crysisprophet1234;
 
 --
 -- TOC entry 214 (class 1259 OID 237706)
@@ -157,7 +157,7 @@ CREATE SEQUENCE public.bookstore_user_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.bookstore_user_id_seq OWNER TO postgres;
+ALTER TABLE public.bookstore_user_id_seq OWNER TO crysisprophet1234;
 
 --
 -- TOC entry 3094 (class 0 OID 0)
@@ -179,7 +179,7 @@ CREATE TABLE public.category (
 );
 
 
-ALTER TABLE public.category OWNER TO postgres;
+ALTER TABLE public.category OWNER TO crysisprophet1234;
 
 --
 -- TOC entry 206 (class 1259 OID 237624)
@@ -194,7 +194,7 @@ CREATE SEQUENCE public.category_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.category_id_seq OWNER TO postgres;
+ALTER TABLE public.category_id_seq OWNER TO crysisprophet1234;
 
 --
 -- TOC entry 3095 (class 0 OID 0)
@@ -203,28 +203,6 @@ ALTER TABLE public.category_id_seq OWNER TO postgres;
 --
 
 ALTER SEQUENCE public.category_id_seq OWNED BY public.category.id;
-
-
---
--- TOC entry 200 (class 1259 OID 126668)
--- Name: flyway_schema_history; Type: TABLE; Schema: public; Owner: postgres
---
-
-CREATE TABLE public.flyway_schema_history (
-    installed_rank integer NOT NULL,
-    version character varying(50),
-    description character varying(200) NOT NULL,
-    type character varying(20) NOT NULL,
-    script character varying(1000) NOT NULL,
-    checksum integer,
-    installed_by character varying(100) NOT NULL,
-    installed_on timestamp without time zone DEFAULT now() NOT NULL,
-    execution_time integer NOT NULL,
-    success boolean NOT NULL
-);
-
-
-ALTER TABLE public.flyway_schema_history OWNER TO postgres;
 
 --
 -- TOC entry 209 (class 1259 OID 237634)
@@ -242,7 +220,7 @@ CREATE TABLE public.reservation (
 );
 
 
-ALTER TABLE public.reservation OWNER TO postgres;
+ALTER TABLE public.reservation OWNER TO crysisprophet1234;
 
 --
 -- TOC entry 208 (class 1259 OID 237632)
@@ -257,7 +235,7 @@ CREATE SEQUENCE public.reservation_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.reservation_id_seq OWNER TO postgres;
+ALTER TABLE public.reservation_id_seq OWNER TO crysisprophet1234;
 
 --
 -- TOC entry 3096 (class 0 OID 0)
@@ -279,7 +257,7 @@ CREATE TABLE public.role (
 );
 
 
-ALTER TABLE public.role OWNER TO postgres;
+ALTER TABLE public.role OWNER TO crysisprophet1234;
 
 --
 -- TOC entry 210 (class 1259 OID 237642)
@@ -294,7 +272,7 @@ CREATE SEQUENCE public.role_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.role_id_seq OWNER TO postgres;
+ALTER TABLE public.role_id_seq OWNER TO crysisprophet1234;
 
 --
 -- TOC entry 3097 (class 0 OID 0)
@@ -316,7 +294,7 @@ CREATE TABLE public.user_role (
 );
 
 
-ALTER TABLE public.user_role OWNER TO postgres;
+ALTER TABLE public.user_role OWNER TO crysisprophet1234;
 
 --
 -- TOC entry 2901 (class 2604 OID 237601)
@@ -560,18 +538,6 @@ COPY public.category (id, name) FROM stdin;
 50	historical romance
 \.
 
-
---
--- TOC entry 3071 (class 0 OID 126668)
--- Dependencies: 200
--- Data for Name: flyway_schema_history; Type: TABLE DATA; Schema: public; Owner: postgres
---
-
-COPY public.flyway_schema_history (installed_rank, version, description, type, script, checksum, installed_by, installed_on, execution_time, success) FROM stdin;
-1	1	<< Flyway Baseline >>	BASELINE	<< Flyway Baseline >>	\N	postgres	2023-03-19 20:17:33.930798	0	t
-\.
-
-
 --
 -- TOC entry 3080 (class 0 OID 237634)
 -- Dependencies: 209
@@ -718,16 +684,6 @@ ALTER TABLE ONLY public.bookstore_user
 ALTER TABLE ONLY public.category
     ADD CONSTRAINT category_pkey PRIMARY KEY (id);
 
-
---
--- TOC entry 2911 (class 2606 OID 126676)
--- Name: flyway_schema_history flyway_schema_history_pk; Type: CONSTRAINT; Schema: public; Owner: postgres
---
-
-ALTER TABLE ONLY public.flyway_schema_history
-    ADD CONSTRAINT flyway_schema_history_pk PRIMARY KEY (installed_rank);
-
-
 --
 -- TOC entry 2922 (class 2606 OID 237641)
 -- Name: reservation reservation_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
@@ -762,15 +718,6 @@ ALTER TABLE ONLY public.bookstore_user
 
 ALTER TABLE ONLY public.user_role
     ADD CONSTRAINT user_role_pkey PRIMARY KEY (user_id, role_id);
-
-
---
--- TOC entry 2912 (class 1259 OID 126677)
--- Name: flyway_schema_history_s_idx; Type: INDEX; Schema: public; Owner: postgres
---
-
-CREATE INDEX flyway_schema_history_s_idx ON public.flyway_schema_history USING btree (success);
-
 
 --
 -- TOC entry 2934 (class 2606 OID 237655)

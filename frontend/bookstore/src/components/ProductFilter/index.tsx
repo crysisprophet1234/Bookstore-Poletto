@@ -1,100 +1,114 @@
-import { ReactComponent as SearchIcon } from '../../assets/images/search-icon.svg';
-import { useEffect, useState } from 'react';
-import { Controller, useForm } from 'react-hook-form';
-import Select from 'react-select';
-import { Category } from '../../types/category';
-import { requestBackend } from '../../utils/requests';
+import { useEffect, useState } from 'react'
+import { Controller, useForm } from 'react-hook-form'
+import Select from 'react-select'
+import { Category } from '../../types/category'
+import { requestBackend } from '../../utils/requests'
 
-import './styles.css';
+import { selectStyles } from '../../utils/selectStyles'
+import './styles.css'
 
 export type ProductFilterData = {
-  name: string;
-  category: Category | null;
-};
+  name: string
+  category: Category | null
+}
 
 type Props = {
-  onSubmitFilter: (data: ProductFilterData) => void;
-};
+  onSubmitFilter: (data: ProductFilterData) => void
+}
 
 const ProductFilter = ({ onSubmitFilter }: Props) => {
 
-  const [selectCategories, setSelectCategories] = useState<Category[]>([]);
+  const [selectCategories, setSelectCategories] = useState<Category[]>([])
 
-  const { register, handleSubmit, setValue, getValues, control } = useForm<ProductFilterData>();
+  const { register, handleSubmit, setValue, getValues, control } = useForm<ProductFilterData>()
 
   const onSubmit = (formData: ProductFilterData) => {
-    onSubmitFilter(formData);
-  };
+    onSubmitFilter(formData)
+  }
 
   const handleFormClear = () => {
-    setValue('name', '');
-    setValue('category', null);
-  };
+    setValue('name', '')
+    setValue('category', null)
+  }
 
   const handleChangeCategory = (value: Category) => {
-    setValue('category', value);
+    setValue('category', value)
 
     const obj: ProductFilterData = {
       name: getValues('name'),
       category: getValues('category')
-    };
+    }
 
-    onSubmitFilter(obj);
-  };
+    onSubmitFilter(obj)
+  }
 
   useEffect(() => {
     requestBackend({ url: '/api/categories/v2' })
       .then((response) => {
-        setSelectCategories(response.data);
-    });
-  }, []);
+        setSelectCategories(response.data)
+      })
+  }, [])
 
   return (
-    <div className="base-card product-filter-container">
-      <form onSubmit={handleSubmit(onSubmit)} onKeyUp={handleSubmit(onSubmit)} className="product-filter-form">
-        <div className="product-filter-name-container">
+
+    <div className='base-card product-filter-container'>
+
+      <form onSubmit={handleSubmit(onSubmit)} onChange={handleSubmit(onSubmit)} className='product-filter-form'>
+
+        <div className='product-filter-name-container'>
+
           <input
             {...register('name')}
-            type="text"
-            className="form-control"
-            placeholder="Nome do livro ou autor"
-            name="name"
+            type='text'
+            className='form-control base-input'
+            placeholder='Nome do livro ou autor'
+            name='name'
+            aria-label='book-input-search'
+            autoComplete='off'
           />
-          <button className="product-filter-search-icon">
-            <SearchIcon />
-          </button>
+
         </div>
-        <div className="product-filter-bottom-container">
-          <div className="product-filter-category-container">
+
+        <div className='product-filter-bottom-container'>
+
+          <div className='product-filter-category-container'>
+
             <Controller
-              name="category"
+              name='category'
               control={control}
               render={({ field }) => (
                 <Select
                   {...field}
                   options={selectCategories}
                   isClearable
-                  placeholder="Categoria"
-                  className="product-filter-select"
-                  classNamePrefix="product-filter-select"
+                  placeholder='Categoria'
+                  className='product-filter-select'
+                  classNamePrefix='product-filter-select'
                   onChange={(value) => handleChangeCategory(value as Category)}
                   getOptionLabel={(category: Category) => category.name}
                   getOptionValue={(category: Category) => String(category.id)}
+                  styles={selectStyles}
                 />
               )}
             />
+
           </div>
 
           <button
             onClick={handleFormClear}
-            className="btn btn-outline-secondary btn-product-filter-clear"
+            className='btn btn-dark btn-product-filter'
           >
-            LIMPAR<span className="btn-product-filter-word"> FILTRO</span>
+            LIMPAR FILTRO
           </button>
-        </div>
-      </form>
-    </div>
-  );
-};
 
-export default ProductFilter;
+        </div>
+
+      </form>
+
+    </div>
+
+  )
+
+}
+
+export default ProductFilter

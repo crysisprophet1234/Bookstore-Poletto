@@ -1,20 +1,20 @@
-import ButtonIcon from '../../../components/ButtonIcon';
-import { Link } from 'react-router-dom';
-import { useForm } from 'react-hook-form';
-import { yupResolver } from '@hookform/resolvers/yup';
-import { requestBackendSignup } from '../../../utils/requests';
-import { useState } from 'react';
-import * as Yup from 'yup';
+import { yupResolver } from '@hookform/resolvers/yup'
+import { useState } from 'react'
+import { useForm } from 'react-hook-form'
+import { Link } from 'react-router-dom'
+import * as Yup from 'yup'
+import ButtonIcon from '../../../components/ButtonIcon'
+import { requestBackendSignup } from '../../../utils/requests'
 
-import './styles.css';
+import './styles.css'
 
 type FormData = {
 
-    username: string;
-    password: string;
-    passwordConfirm: string;
-    firstname: string;
-    lastname: string;
+    username: string
+    password: string
+    passwordConfirm: string
+    firstname: string
+    lastname: string
 
 }
 
@@ -34,27 +34,29 @@ const Login = () => {
         lastname: Yup.string()
             .required('Segundo nome é obrigatório')
             .min(2, 'Segundo nome deve ser válido')
-            .matches(/^([A-Za-z]*)$/gi, 'Segundo nome deve ser válido'),
+            .matches(/^([A-Za-z\s]*)$/gi, 'Segundo nome deve ser válido'),
 
         password: Yup.string()
-            .required('Password is required')
-            .min(4, 'Password must be at least 4 characters'),
+            .required('Senha é obrigatório')
+            .min(6, 'Senha deve conter entre 6 e 8 carácteres')
+            .max(8, 'Senha deve conter entre 6 e 8 carácteres')
+            .matches(/^(?=.*[0-9])(?=.*[a-zA-Z]).+$/, 'Senha deve conter 1 letra e 1 número'),
 
         passwordConfirm: Yup.string()
-            .required('Confirm Password is required')
-            .oneOf([Yup.ref('password')], 'Passwords must match')
+            .required('Confirmar senha é obrigatório')
+            .oneOf([Yup.ref('password')], 'Senhas devem ser iguais')
 
-    });
+    })
 
-    const [hasError, setHasError] = useState(false);
+    const [hasError, setHasError] = useState(false)
 
-    const [isSubmitSuccessful, setIsSubmitSuccessful] = useState(false);
+    const [isSubmitSuccessful, setIsSubmitSuccessful] = useState(false)
 
-    const formOptions = { resolver: yupResolver(validationSchema) };
+    const formOptions = { resolver: yupResolver(validationSchema) }
 
-    const { register, handleSubmit, reset, formState } = useForm<FormData>(formOptions);
+    const { register, handleSubmit, reset, formState } = useForm<FormData>(formOptions)
 
-    const { errors } = formState;
+    const { errors } = formState
 
     const onSubmit = (formData: FormData) => {
 
@@ -63,8 +65,8 @@ const Login = () => {
             .then(response => {
 
 
-                setHasError(false);
-                setIsSubmitSuccessful(true);
+                setHasError(false)
+                setIsSubmitSuccessful(true)
 
                 reset({
                     username: '',
@@ -78,8 +80,8 @@ const Login = () => {
 
             .catch(err => {
 
-                setHasError(true);
-                setIsSubmitSuccessful(false);
+                setHasError(true)
+                setIsSubmitSuccessful(false)
 
             })
 
@@ -87,23 +89,23 @@ const Login = () => {
 
     return (
 
-        <div className="base-card login-card">
+        <div className='base-card login-card'>
 
             <h1>SIGN UP</h1>
 
             {isSubmitSuccessful &&
 
-                <div className="alert alert-success" style={{ textAlign: 'center' }}>
+                <div className='alert alert-success' style={{ textAlign: 'center' }}>
                     Usuário cadastrado com sucesso!
                     <br />
-                    <Link to="/auth/login" className="link-primary">Fazer login</Link>
+                    <Link to='/auth/login' className='link-primary'>Fazer login</Link>
                 </div>
 
             }
 
             {hasError &&
 
-                <div className="alert alert-danger" role="alert" style={{ textAlign: 'center' }}>
+                <div className='alert alert-danger' role='alert' style={{ textAlign: 'center' }}>
                     Falha no cadastro, por favor tente novamente.
                 </div>
 
@@ -111,89 +113,94 @@ const Login = () => {
 
             <form onSubmit={handleSubmit(onSubmit)}>
 
-                <div className="mb-3">
+                <div className='mb-3'>
 
                     <input
-                        {...register("username")}
-                        type="text"
+                        {...register('username')}
+                        type='text'
                         className={`form-control base-input ${errors.username ? 'is-invalid' : ''}`}
-                        placeholder="Email"
-                        name="username"
+                        placeholder='Email'
+                        name='username'
+                        autoComplete='email'
                     />
-                    <div className="invalid-feedback d-block">
+                    <div className='invalid-feedback d-block'>
                         {errors.username?.message as React.ReactNode}
                     </div>
 
                 </div>
 
-                <div className="mb-3">
+                <div className='mb-3'>
 
                     <input
-                        {...register("firstname")}
-                        type="text"
+                        {...register('firstname')}
+                        type='text'
                         className={`form-control base-input ${errors.firstname ? 'is-invalid' : ''}`}
-                        placeholder="Primeiro nome"
-                        name="firstname"
+                        placeholder='Primeiro nome'
+                        name='firstname'
+                        autoComplete='given-name'
                     />
-                    <div className="invalid-feedback d-block">
+                    <div className='invalid-feedback d-block'>
                         {errors.firstname?.message as React.ReactNode}
                     </div>
 
                 </div>
 
-                <div className="mb-3">
+                <div className='mb-3'>
 
                     <input
-                        {...register("lastname")}
-                        type="text"
+                        {...register('lastname')}
+                        type='text'
                         className={`form-control base-input ${errors.lastname ? 'is-invalid' : ''}`}
-                        placeholder="Segundo nome"
-                        name="lastname"
+                        placeholder='Segundo nome'
+                        name='lastname'
+                        autoComplete='family-name'
                     />
-                    <div className="invalid-feedback d-block">
+                    <div className='invalid-feedback d-block'>
                         {errors.lastname?.message as React.ReactNode}
                     </div>
 
                 </div>
 
-                <div className="mb-3">
+                <div className='mb-3'>
 
                     <input
-                        {...register("password")}
-                        type="password"
+                        {...register('password')}
+                        type='password'
                         className={`form-control base-input ${errors.password ? 'is-invalid' : ''}`}
-                        placeholder="Senha"
-                        name="password"
+                        placeholder='Senha'
+                        name='password'
+                        autoComplete='new-password'
                     />
-                    <div className="invalid-feedback d-block">
+                    <div className='invalid-feedback d-block'>
                         {errors.password?.message as React.ReactNode}
                     </div>
 
                 </div>
 
-                <div className="mb-5">
+                <div className='mb-5'>
 
                     <input
-                        {...register("passwordConfirm")}
-                        type="password"
+                        {...register('passwordConfirm')}
+                        type='password'
                         className={`form-control base-input ${errors.passwordConfirm ? 'is-invalid' : ''}`}
-                        placeholder="Confirmar senha"
-                        name="passwordConfirm"
+                        placeholder='Confirmar senha'
+                        name='passwordConfirm'
+                        autoComplete='new-password'
                     />
-                    <div className="invalid-feedback d-block">
+                    <div className='invalid-feedback d-block'>
                         {errors.passwordConfirm?.message as React.ReactNode}
                     </div>
 
                 </div>
 
-                <div className="login-submit">
-                    <ButtonIcon text="Salvar" />
+                <div className='login-submit'>
+                    <ButtonIcon text='Salvar' />
                 </div>
 
-                <div className="signup-container">
+                <div className='signup-container'>
 
-                    <span className="not-registered">Já possui conta?</span>
-                    <Link to="/auth/login" className="login-link-register">
+                    <span className='not-registered'>Já possui conta?</span>
+                    <Link to='/auth/login' className='login-link-register'>
                         FAZER LOGIN
                     </Link>
 
@@ -203,7 +210,7 @@ const Login = () => {
 
         </div>
 
-    );
-};
+    )
+}
 
-export default Login;
+export default Login

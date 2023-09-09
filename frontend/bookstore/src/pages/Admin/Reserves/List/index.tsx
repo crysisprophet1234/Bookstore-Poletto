@@ -1,5 +1,5 @@
 import { AxiosRequestConfig } from 'axios'
-import { useCallback, useEffect, useState } from 'react'
+import { Suspense, lazy, useCallback, useEffect, useState } from 'react'
 import { Reservation } from '../../../../types/reservation'
 import { SpringPage } from '../../../../types/vendor/spring'
 import { requestBackend } from '../../../../utils/requests'
@@ -8,8 +8,11 @@ import Pagination from '../../../../components/Pagination'
 import ReservesFilter, { ReserveFilterData } from '../../../../components/ReservesFilter'
 
 import { formatDateApi } from '../../../../utils/formatters'
-import ReservationCard from '../ReservationCard'
+
+import { PulseLoader } from 'react-spinners'
 import './styles.css'
+
+const LazyReservationCard = lazy(() => import('../ReservationCard'))
 
 type ControlComponentsData = {
     activePage: number
@@ -104,7 +107,7 @@ const List = () => {
             <div className='mt-3'>
                 <Pagination
                     forcePage={page?.number}
-                    pageCount={page ? page.totalPages : 0}
+                    pageCount={page ? (page.totalPages > 0 ? page.totalPages : 1) : 0}
                     range={1}
                     onChange={handlePageChange}
                 />
@@ -112,11 +115,19 @@ const List = () => {
 
             <div className='reservation-cards-container'>
 
-                {page?.content.map((reservation) => (
+                {
 
-                    <ReservationCard reservation={reservation} reservationReload={getReservations} key={reservation.id} />
+                    page?.content.map((reservation) => (
 
-                ))}
+                        <Suspense
+                            fallback={<div className='base-card loader'><PulseLoader speedMultiplier={0.65} color='#0044E0' size={20} margin={15} /></div>}
+                            key={reservation.id}>
+                            <LazyReservationCard reservation={reservation} reservationReload={getReservations} />
+                        </Suspense>
+
+                    ))
+
+                }
 
             </div>
 

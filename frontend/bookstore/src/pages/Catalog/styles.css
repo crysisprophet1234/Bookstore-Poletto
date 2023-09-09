@@ -1,8 +1,8 @@
 .catalog-container {
-  font-size: 18px;
-}
-.catalog-container .catalog-title-container {
-  margin-bottom: 20px;
+  font-size: 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
 }
 .catalog-container .catalog-title-container h1 {
   font-size: 1em;

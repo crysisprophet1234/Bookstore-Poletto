@@ -15,7 +15,7 @@
   align-items: center;
   height: 50px;
   background-color: #F2F2F2;
-  color: #9E9E9E;
+  color: #4D4D4D;
   border-radius: 100px;
   padding: 0px 10px;
   font-size: 16px;
@@ -24,14 +24,13 @@
   width: 110px;
 }
 .admin-nav-container ul .admin-nav-item.active {
-  color: #263238;
+  color: #ffffff;
 }
 
 @media (min-width: 1200px) {
   .admin-nav-container {
     padding: 0px;
     width: 300px;
-    height: calc(100vh - 70px);
   }
   .admin-nav-container ul {
     justify-content: unset;
@@ -42,7 +41,7 @@
     width: auto;
     font-size: 18px;
     height: 80px;
-    background-color: #fff;
+    background-color: #ffffff;
     border-bottom: 1px solid #E1E1E1;
     justify-content: flex-start;
     padding: 0px 0px 0px 40px;

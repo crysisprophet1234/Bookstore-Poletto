@@ -9,14 +9,19 @@
   border-bottom: 1px solid #e1e1e1;
 }
 .card-top-container img {
-  width: 158px;
-  height: 158px;
+  height: 225px;
+}
+.card-top-container .spinner-container {
+  height: 225px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .card-bottom-container {
   padding: 15px 20px 30px 20px;
 }
-.card-bottom-container h6 {
+.card-bottom-container h2 {
   display: -webkit-box;
   min-height: 44px;
   -webkit-box-orient: vertical;
