@@ -34,7 +34,7 @@ const Login = () => {
         lastname: Yup.string()
             .required('Segundo nome é obrigatório')
             .min(2, 'Segundo nome deve ser válido')
-            .matches(/^([A-Za-z]*)$/gi, 'Segundo nome deve ser válido'),
+            .matches(/^([A-Za-z\s]*)$/gi, 'Segundo nome deve ser válido'),
 
         password: Yup.string()
             .required('Senha é obrigatório')
