@@ -8,12 +8,9 @@ ADD config/default.conf /etc/nginx/http.d/default.conf
 
 COPY . /var/www/localhost/htdocs
 
-RUN apk add nginx && \
-    apk add nodejs && \
-    apk add python3 && \
-    apk add npm && \
+RUN apk add --no-cache nginx nodejs python3 npm && \
     cd /var/www/localhost/htdocs && \
-    npm install && \
+    npm install --no-cache && \
     npm run build && \
     apk del nodejs && \
     apk del npm && \
