@@ -182,7 +182,7 @@ const UsersFilter = ({ onSubmitFilter }: Props) => {
                             form='users-filter-form'
                             id='name'
                             name='name'
-                            autoComplete='username'
+                            autoComplete='off'
                         />
                         <div className='invalid-feedback d-block'>
                             {errors.name?.message}
