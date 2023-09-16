@@ -9,7 +9,7 @@
 	</parent>
 	<groupId>com.poletto</groupId>
 	<artifactId>bookstore</artifactId>
-	<version>2.6.1</version>
+	<version>2.7.0</version>
 	<name>bookstore</name>
 	<description>bookstore-poletto project</description>
 	<properties>
@@ -140,9 +140,9 @@
 				<groupId>org.flywaydb</groupId>
 				<artifactId>flyway-maven-plugin</artifactId>
 				<configuration>
-					<url>jdbc:postgresql://localhost:5432/bookstore?useTimezone=true&amp;serverTimezone=UTC&amp;useSSL=false</url>
-					<user>postgres</user>
-					<password>123456</password>
+					<url>jdbc:postgresql://ep-super-sun-61629120.us-east-2.aws.neon.tech/bookstore?user=crysisprophet1234&amp;password={wFaljFI2/0EHRjSPi7+PiNtzpiZbUXoU1VVHE5hyhjM=}&amp;useTimezone=true&amp;serverTimezone=UTC&amp;useSSL=true</url>
+					<user>crysisprophet1234</user>
+					<password>{wFaljFI2/0EHRjSPi7+PiNtzpiZbUXoU1VVHE5hyhjM=}</password>
 				</configuration>
 				<dependencies>
 					<dependency>
