@@ -1,5 +1,5 @@
-import { Route, Routes } from "react-router-dom";
-import List from "./List";
+import { Route, Routes } from "react-router-dom"
+import List from "./List"
 
 const Reserves = () => {
 
@@ -20,4 +20,4 @@ const Reserves = () => {
     )
 }
 
-export default Reserves;
+export default Reserves
