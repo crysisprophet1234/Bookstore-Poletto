@@ -62,7 +62,7 @@ const ReservesFilter = ({ onSubmitFilter }: Props) => {
 
     })
 
-    const formOptions = { resolver: yupResolver(validationSchema) };
+    const formOptions = { resolver: yupResolver(validationSchema) }
 
     const { register, handleSubmit, setValue, control, formState: { errors } } = useForm<ReserveFilterData>(formOptions)
 
@@ -420,8 +420,6 @@ const ReservesFilter = ({ onSubmitFilter }: Props) => {
                         </div>
 
                     </div>
-
-
 
                 </form>
 
