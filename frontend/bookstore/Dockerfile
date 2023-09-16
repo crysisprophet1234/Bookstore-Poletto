@@ -4,7 +4,7 @@ EXPOSE 88
 
 ENV PATH="$PATH:/usr/bin/python3"
 
-COPY config/default.conf /etc/nginx/http.d/default.conf
+ADD config/default.conf /etc/nginx/http.d/default.conf
 
 COPY . /var/www/localhost/htdocs
 
