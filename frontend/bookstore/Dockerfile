@@ -6,6 +6,8 @@ ENV PATH="$PATH:/usr/bin/python3"
 
 ADD config/default.conf /etc/nginx/http.d/default.conf
 
+COPY config/default.conf /etc/nginx/http.d/default.conf
+
 COPY . /var/www/localhost/htdocs
 
 RUN apk add --no-cache nginx nodejs python3 npm && \
