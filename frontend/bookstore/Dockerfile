@@ -4,8 +4,6 @@ EXPOSE 88
 
 ENV PATH="$PATH:/usr/bin/python3"
 
-ADD frontend/bookstore/config/default.conf /etc/nginx/http.d/default.conf
-
 COPY . /var/www/localhost/htdocs
 
 RUN apk add --no-cache nginx nodejs python3 npm && \
@@ -18,6 +16,8 @@ RUN apk add --no-cache nginx nodejs python3 npm && \
     cd /var/www/localhost/htdocs && \
     rm -rf * && \
     mv /var/www/localhost/build /var/www/localhost/htdocs;
+
+ADD config/default.conf /etc/nginx/http.d/default.conf
 
 CMD ["/bin/sh", "-c", "exec nginx -g 'daemon off;';"]
 
