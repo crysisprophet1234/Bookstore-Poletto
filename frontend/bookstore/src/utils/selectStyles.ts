@@ -1,19 +1,19 @@
-import { CSSObjectWithLabel, ControlProps, StylesConfig } from "react-select";
+import { CSSObjectWithLabel, ControlProps, GroupBase, StylesConfig } from "react-select"
 
-export const selectStyles: StylesConfig<any, false> = {
+export const selectStyles: StylesConfig<any, boolean> = {
 
-    control: (provided: CSSObjectWithLabel, props: ControlProps<any, false>) => ({
+    control: (provided: CSSObjectWithLabel, props: ControlProps<any, boolean, GroupBase<any>>) => ({
         ...provided,
-        height: '40px',
+        height: '45px',
         border: '1px solid #407bff',
         ":hover": {
             border: '1px solid #407bff'
-        }
+        },
     }),
 
     valueContainer: (provided) => ({
         ...provided,
-        height: '40px',
+        height: '45px',
         padding: '0px 8px'
     }),
 
@@ -24,7 +24,7 @@ export const selectStyles: StylesConfig<any, false> = {
 
     singleValue: (provided) => ({
         ...provided,
-        marginBottom: '8px',
+        marginBottom: '5px',
         textOverflow: 'initial',
         overflow: 'visible'
     }),
@@ -36,5 +36,19 @@ export const selectStyles: StylesConfig<any, false> = {
 
     indicatorSeparator: (provided) => ({
         ...provided
+    }),
+
+    multiValue: (provided) => ({
+        ...provided,
+        marginBottom: '5px',
+        marginRight: '5px',
+        textOverflow: 'initial',
+        overflow: 'visible'
+    }),
+
+    placeholder: (provided) => ({
+        ...provided,
+        marginBottom: '5px'
     })
+
 }

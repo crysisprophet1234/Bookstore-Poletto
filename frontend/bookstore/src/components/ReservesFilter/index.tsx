@@ -1,6 +1,6 @@
 import { yupResolver } from '@hookform/resolvers/yup'
 import { AxiosRequestConfig } from 'axios'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import { BiSolidDownArrow } from 'react-icons/bi'
 import Select from 'react-select'
@@ -8,6 +8,7 @@ import { toast } from 'react-toastify'
 import * as Yup from 'yup'
 import { requestBackend } from '../../utils/requests'
 
+import { debounce } from '../../utils/debounce'
 import { selectStyles } from '../../utils/selectStyles'
 import './styles.css'
 
@@ -61,9 +62,9 @@ const ReservesFilter = ({ onSubmitFilter }: Props) => {
 
     })
 
-    const formOptions = { resolver: yupResolver(validationSchema) };
+    const formOptions = { resolver: yupResolver(validationSchema) }
 
-    const { register, handleSubmit, setValue, getValues, control, formState: { errors } } = useForm<ReserveFilterData>(formOptions)
+    const { register, handleSubmit, setValue, control, formState: { errors } } = useForm<ReserveFilterData>(formOptions)
 
     const [clientName, setClientName] = useState<string>('')
 
@@ -97,13 +98,15 @@ const ReservesFilter = ({ onSubmitFilter }: Props) => {
 
     }
 
-    useEffect(() => {
+    const handleClientChange = debounce((clientId: string) => {
 
-        if (getValues('clientId')) {
+        if (clientId !== '') {
+
+            setClientName('Carregando...')
 
             const config: AxiosRequestConfig = {
                 method: 'GET',
-                url: `/api/users/v2/${getValues('clientId')}`,
+                url: `/api/users/v2/${clientId}`,
                 withCredentials: true
             }
 
@@ -113,20 +116,26 @@ const ReservesFilter = ({ onSubmitFilter }: Props) => {
                 })
                 .catch((error) => {
                     setClientName('')
-                    toast.error(error.response.data.message)
+                    toast.error(error.response.data.message, { autoClose: 3000 })
                 })
+
+        } else {
+
+            setClientName('')
 
         }
 
-    }, [clientName, getValues])
+    }, 500)
 
-    useEffect(() => {
+    const handleBookChange = debounce((bookId: string) => {
 
-        if (getValues('bookId')) {
+        if (bookId !== '') {
+
+            setBookName('Carregando...')
 
             const config: AxiosRequestConfig = {
                 method: 'GET',
-                url: `/api/books/v2/${getValues('bookId')}`,
+                url: `/api/books/v2/${bookId}`,
                 withCredentials: true
             }
 
@@ -135,15 +144,17 @@ const ReservesFilter = ({ onSubmitFilter }: Props) => {
                     setBookName(response.data.name + ', ' + response.data.author.name)
                 })
                 .catch((error) => {
-                    //FIXME: ADICIONAR O TRIGGER DE ERRO DO INPUT
-                    //FIXME: EM CASOS DE USER OU BOOK N ENCONTRADO, NOTIFICAÇÃO SERÁ VIA TOAST. FALTA CONFIGURAR TOAST PARAMETERS IGUAL EM admin/books/form
                     setBookName('')
-                    toast.error(error.response.data.message)
+                    toast.error(error.response.data.message, { autoClose: 3000 })
                 })
+
+        } else {
+
+            setBookName('')
 
         }
 
-    }, [bookName, getValues])
+    }, 500)
 
     return (
 
@@ -317,7 +328,7 @@ const ReservesFilter = ({ onSubmitFilter }: Props) => {
                                 type='number'
                                 className={`form-control base-input ${errors.clientId ? 'is-invalid' : ''}`}
                                 placeholder='Código do cliente'
-                                onBlur={(e) => { if (e.target.value !== '') { setClientName('Loading...') } }}
+                                onChange={e => handleClientChange(e.target.value)}
                                 name='clientId'
                                 id='clientId'
                             />
@@ -393,7 +404,7 @@ const ReservesFilter = ({ onSubmitFilter }: Props) => {
                                 type='number'
                                 className={`form-control base-input ${errors.bookId ? 'is-invalid' : ''}`}
                                 placeholder='Código do livro'
-                                onBlur={(e) => { if (e.target.value !== '') { setBookName('Loading...') } }}
+                                onChange={e => handleBookChange(e.target.value)}
                                 name='bookId'
                                 id='bookId'
                             />
@@ -409,8 +420,6 @@ const ReservesFilter = ({ onSubmitFilter }: Props) => {
                         </div>
 
                     </div>
-
-
 
                 </form>
 

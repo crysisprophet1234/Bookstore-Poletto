@@ -1,13 +1,13 @@
-import ReactPaginate from 'react-paginate';
-import { ReactComponent as ArrowIcon } from '../../assets/images/arrow.svg';
-import './styles.css';
+import ReactPaginate from 'react-paginate'
+import { ReactComponent as ArrowIcon } from '../../assets/images/arrow.svg'
+import './styles.css'
 
 type Props = {
 
-    forcePage?: number;
-    pageCount: number;
-    range: number;
-    onChange?: (pageNumber : number) => void;
+    forcePage?: number
+    pageCount: number
+    range: number
+    onChange?: (pageNumber: number) => void
 
 }
 
@@ -36,4 +36,4 @@ const Pagination = ({ forcePage, pageCount, range, onChange }: Props) => {
 
 }
 
-export default Pagination;
+export default Pagination

@@ -173,8 +173,8 @@ const Form = () => {
                       classNamePrefix='product-crud-select'
                       isMulti
                       onChange={(value) => setValue('categories', [...value])}
-                      getOptionLabel={(category: Category) => category.name}
-                      getOptionValue={(category: Category) => String(category.id)}
+                      getOptionLabel={(category) => category.name}
+                      getOptionValue={(category) => String(category.id)}
                       placeholder='Categoria'
                     />
                   )}

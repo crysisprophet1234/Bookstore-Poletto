@@ -10,7 +10,6 @@ import { SpringPage } from '../../types/vendor/spring'
 import { requestBackend } from '../../utils/requests'
 
 import ProductFilter, { ProductFilterData } from '../../components/ProductFilter'
-import { debounce } from '../../utils/debounce'
 import './styles.css'
 
 type ControlComponentsData = {
@@ -32,9 +31,9 @@ const Catalog = () => {
     setControlComponentsData({ activePage: pageNumber, filterData: controlComponentsData.filterData })
   }
 
-  const handleSubmitFilter = debounce((data: ProductFilterData) => {
+  const handleSubmitFilter = (data: ProductFilterData) => {
     setControlComponentsData({ activePage: 0, filterData: data })
-  }, 500)
+  }
 
   const getBooks = useCallback(() => {
 

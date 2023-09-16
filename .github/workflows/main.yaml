@@ -1,0 +1,32 @@
+name: CI
+
+on:
+
+  push:
+    branches: [ main ]
+    
+  pull_request:
+
+  workflow_dispatch:
+
+jobs:
+
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v2
+
+    - name: Login to Docker Hub
+      uses: docker/login-action@v3
+      with:
+        username: ${{ secrets.DOCKERHUB_USERNAME }}
+        password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+    - name: Build and Push
+      run: |
+        docker build -t crysisprophet1234/polettobookstorereactapp:${{ github.sha }} -f frontend/bookstore/Dockerfile frontend/bookstore
+        docker tag crysisprophet1234/polettobookstorereactapp:${{ github.sha }} crysisprophet1234/polettobookstorereactapp:latest
+        docker push crysisprophet1234/polettobookstorereactapp:${{ github.sha }}
+        docker push crysisprophet1234/polettobookstorereactapp:latest

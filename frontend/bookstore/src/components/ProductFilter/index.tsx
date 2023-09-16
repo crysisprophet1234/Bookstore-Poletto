@@ -4,6 +4,7 @@ import Select from 'react-select'
 import { Category } from '../../types/category'
 import { requestBackend } from '../../utils/requests'
 
+import { debounce } from '../../utils/debounce'
 import { selectStyles } from '../../utils/selectStyles'
 import './styles.css'
 
@@ -53,7 +54,7 @@ const ProductFilter = ({ onSubmitFilter }: Props) => {
 
     <div className='base-card product-filter-container'>
 
-      <form onSubmit={handleSubmit(onSubmit)} onChange={handleSubmit(onSubmit)} className='product-filter-form'>
+      <form onSubmit={handleSubmit(onSubmit)} onChange={debounce((handleSubmit(onSubmit)), 500)} className='product-filter-form'>
 
         <div className='product-filter-name-container'>
 

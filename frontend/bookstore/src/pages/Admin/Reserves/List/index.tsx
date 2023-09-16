@@ -108,7 +108,7 @@ const List = () => {
                 <Pagination
                     forcePage={page?.number}
                     pageCount={page ? (page.totalPages > 0 ? page.totalPages : 1) : 0}
-                    range={1}
+                    range={window.innerWidth > 768 ? 3 : 1}
                     onChange={handlePageChange}
                 />
             </div>
