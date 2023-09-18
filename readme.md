@@ -1,3 +1,6 @@
+[![CI](https://github.com/crysisprophet1234/Bookstore-Poletto/actions/workflows/main.yaml/badge.svg?branch=main)](https://github.com/crysisprophet1234/Bookstore-Poletto/actions/workflows/main.yaml)
+
+
 <h1 align="center">
 📚<br>Bookstore Poletto
 </h1>
