@@ -1,7 +1,10 @@
 import axios, { AxiosRequestConfig } from 'axios'
 import { getAuthData } from './storage'
 
-export const BASE_URL = 'https://192.168.15.13:8443'
+const API_URL = import.meta.env.VITE_API_URL
+const API_PORT = import.meta.env.VITE_API_PORT
+
+export const BASE_URL = API_URL + ':' + API_PORT
 
 type LoginData = {
 
