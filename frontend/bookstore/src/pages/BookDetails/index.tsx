@@ -1,6 +1,6 @@
 import './styles.css'
 
-import { ReactComponent as ArrowIcon } from '../../assets/images/arrow.svg'
+import ArrowIcon from '../../assets/images/arrow.svg?react'
 
 import { AxiosRequestHeaders } from 'axios'
 import { Suspense, useEffect, useState } from 'react'

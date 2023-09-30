@@ -1,5 +1,5 @@
 import ReactPaginate from 'react-paginate'
-import { ReactComponent as ArrowIcon } from '../../assets/images/arrow.svg'
+import ArrowIcon from '../../assets/images/arrow.svg?react'
 import './styles.css'
 
 type Props = {
