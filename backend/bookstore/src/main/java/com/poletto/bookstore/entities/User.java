@@ -1,6 +1,5 @@
 package com.poletto.bookstore.entities;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
@@ -26,34 +25,32 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
 @Entity
-@Table (name = "bookstore_user")
-public class User implements UserDetails, Serializable  {
-	
+@Table(name = "bookstore_user")
+public class User implements UserDetails {
+
 	private static final long serialVersionUID = 1L;
-	
+
 	@Id
-	@GeneratedValue (strategy = GenerationType.IDENTITY)
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
-	
+
 	@Column(unique = true)
 	private String email;
 	private String password;
-	
+
 	private String firstname;
 	private String lastname;
-	
+
 	@OneToMany(mappedBy = "client")
 	private List<Reservation> orders = new ArrayList<>();
-	
+
 	@ManyToMany(fetch = FetchType.EAGER)
-	@JoinTable(name = "user_role",
-	joinColumns = @JoinColumn(name = "user_id"),
-	inverseJoinColumns = @JoinColumn(name = "role_id"))
+	@JoinTable(name = "user_role", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "role_id"))
 	private Set<Role> roles = new HashSet<>();
-	
+
 	public User() {
 	}
-	
+
 	public User(Long id, String email, String password, String firstname, String lastname) {
 		super();
 		this.id = id;
@@ -116,7 +113,7 @@ public class User implements UserDetails, Serializable  {
 		return roles.stream().map(role -> new SimpleGrantedAuthority(role.getAuthority()))
 				.collect(Collectors.toList());
 	}
-	
+
 	@Override
 	public String getUsername() {
 		return email;
