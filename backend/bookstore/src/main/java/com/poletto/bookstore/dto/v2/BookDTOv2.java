@@ -45,8 +45,9 @@ public class BookDTOv2 extends RepresentationModel<BookDTOv2> implements Seriali
 	@NotEmpty
 	private String imgUrl;
 	
+	//TODO check on enum
 	@Pattern (regexp = "AVAILABLE|BOOKED")
-	private String status;
+	private BookStatus status;
 	
 	@Valid
 	@NotNull
@@ -66,7 +67,7 @@ public class BookDTOv2 extends RepresentationModel<BookDTOv2> implements Seriali
 		this.name = name;
 		this.releaseDate = releaseDate;
 		this.imgUrl = imgUrl;
-		this.status = status.name();
+		this.status = status;
 		this.author = author;
 	}
 
@@ -102,12 +103,12 @@ public class BookDTOv2 extends RepresentationModel<BookDTOv2> implements Seriali
 		this.imgUrl = imgUrl;
 	}
 
-	public String getStatus() {
+	public BookStatus getStatus() {
 		return status;
 	}
 
 	public void setStatus(BookStatus status) {
-		this.status = status.name();
+		this.status = status;
 	}
 
 	public Author getAuthor() {
@@ -121,6 +122,16 @@ public class BookDTOv2 extends RepresentationModel<BookDTOv2> implements Seriali
 	public Set<CategoryDTOv2> getCategories() {
 		return categories;
 	}
+	
+	//TODO could have potential
+//	@Override
+//	@JsonProperty("links")
+//	@JsonInclude(Include.NON_EMPTY)
+//	@JsonSerialize(using = Jackson2HalModule.HalLinkListSerializer.class)
+//	@JsonDeserialize(using = Jackson2HalModule.HalLinkListDeserializer.class)
+//	public Links getLinks() {
+//	  return super.getLinks();
+//	}
 
 	@Override
 	public String toString() {

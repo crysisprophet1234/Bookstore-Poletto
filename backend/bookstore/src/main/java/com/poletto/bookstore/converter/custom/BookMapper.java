@@ -83,7 +83,7 @@ public class BookMapper {
 		book.setName(dto.getName());
 		book.setImgUrl(dto.getImgUrl());
 		book.setReleaseDate(dto.getReleaseDate());
-		book.setStatus(BookStatus.valueOf(dto.getStatus()));
+		book.setStatus(dto.getStatus());
 		book.setAuthor(dto.getAuthor());
 		
 		book.getCategories().clear();
