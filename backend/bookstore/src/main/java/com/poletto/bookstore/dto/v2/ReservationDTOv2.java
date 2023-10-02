@@ -17,6 +17,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.github.dozermapper.core.Mapping;
 import com.poletto.bookstore.converter.custom.UserMapper;
 import com.poletto.bookstore.entities.User;
+import com.poletto.bookstore.entities.enums.ReservationStatus;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Future;
@@ -46,8 +47,9 @@ public class ReservationDTOv2 extends RepresentationModel<ReservationDTOv2> impl
 	@Min(value = 1)
 	private Integer weeks;
 
+	//TODO should be string here? check entity too
 	@Pattern(regexp = "IN_PROGRESS|FINISHED")
-	private String status;
+	private ReservationStatus status;
 
 	@Valid
 	@NotNull
@@ -61,7 +63,7 @@ public class ReservationDTOv2 extends RepresentationModel<ReservationDTOv2> impl
 
 	}
 
-	public ReservationDTOv2(Long id, Instant moment, String status, LocalDate devolution, Integer weeks, User client) {
+	public ReservationDTOv2(Long id, Instant moment, ReservationStatus status, LocalDate devolution, Integer weeks, User client) {
 		this.key = id;
 		this.moment = moment;
 		this.weeks = weeks;
@@ -102,11 +104,11 @@ public class ReservationDTOv2 extends RepresentationModel<ReservationDTOv2> impl
 		this.weeks = weeks;
 	}
 
-	public String getStatus() {
+	public ReservationStatus getStatus() {
 		return status;
 	}
 
-	public void setStatus(String status) {
+	public void setStatus(ReservationStatus status) {
 		this.status = status;
 	}
 
