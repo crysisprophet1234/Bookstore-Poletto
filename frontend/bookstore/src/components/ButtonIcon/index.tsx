@@ -1,6 +1,6 @@
 import './styles.css'
 
-import ArrowIcon from '@images/arrow.svg?react'
+import ArrowIcon from '../../assets/images/arrow.svg?react'
 
 type Props = {
 
