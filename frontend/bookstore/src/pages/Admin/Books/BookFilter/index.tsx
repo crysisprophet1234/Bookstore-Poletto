@@ -1,41 +1,41 @@
 import { useEffect, useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import Select from 'react-select'
-import { Category } from '../../types/category'
-import { requestBackend } from '../../utils/requests'
 
-import { debounce } from '../../utils/debounce'
-import { selectStyles } from '../../utils/selectStyles'
+import { Category } from '../../../../types/category'
+import { debounce } from '../../../../utils/debounce'
+import { requestBackend } from '../../../../utils/requests'
+import { selectStyles } from '../../../../utils/selectStyles'
 import './styles.css'
 
-export type ProductFilterData = {
+export type BookFilterData = {
   name: string
-  category: Category | null
+  category: Category | undefined
 }
 
 type Props = {
-  onSubmitFilter: (data: ProductFilterData) => void
+  onSubmitFilter: (data: BookFilterData) => void
 }
 
-const ProductFilter = ({ onSubmitFilter }: Props) => {
+const BookFilter = ({ onSubmitFilter }: Props) => {
 
   const [selectCategories, setSelectCategories] = useState<Category[]>([])
 
-  const { register, handleSubmit, setValue, getValues, control } = useForm<ProductFilterData>()
+  const { register, handleSubmit, setValue, getValues, control } = useForm <BookFilterData>()
 
-  const onSubmit = (formData: ProductFilterData) => {
+  const onSubmit = (formData: BookFilterData) => {
     onSubmitFilter(formData)
   }
 
   const handleFormClear = () => {
     setValue('name', '')
-    setValue('category', null)
+    setValue('category', undefined)
   }
 
   const handleChangeCategory = (value: Category) => {
     setValue('category', value)
 
-    const obj: ProductFilterData = {
+    const obj: BookFilterData = {
       name: getValues('name'),
       category: getValues('category')
     }
@@ -112,4 +112,4 @@ const ProductFilter = ({ onSubmitFilter }: Props) => {
 
 }
 
-export default ProductFilter
+export default BookFilter

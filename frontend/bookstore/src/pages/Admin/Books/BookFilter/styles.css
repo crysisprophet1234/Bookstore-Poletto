@@ -47,6 +47,11 @@
   margin: auto;
 }
 
+.product-filter-select__placeholder {
+  margin-top: auto !important;
+  margin-bottom: auto !important;
+}
+
 .product-filter-select__single-value {
   margin-top: auto !important;
   margin-bottom: auto !important;
