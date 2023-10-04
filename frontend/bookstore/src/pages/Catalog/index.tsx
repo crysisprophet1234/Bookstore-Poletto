@@ -9,12 +9,12 @@ import { Book } from '../../types/book'
 import { SpringPage } from '../../types/vendor/spring'
 import { requestBackend } from '../../utils/requests'
 
-import ProductFilter, { ProductFilterData } from '../../components/ProductFilter'
+import BookFilter, { BookFilterData } from '../Admin/Books/BookFilter'
 import './styles.css'
 
 type ControlComponentsData = {
   activePage: number
-  filterData: ProductFilterData
+  filterData: BookFilterData
 }
 
 const Catalog = () => {
@@ -24,14 +24,14 @@ const Catalog = () => {
   const [controlComponentsData, setControlComponentsData] =
     useState<ControlComponentsData>({
       activePage: 0,
-      filterData: { name: '', category: null },
+      filterData: { name: '', category: undefined },
     })
 
   const handlePageChange = (pageNumber: number) => {
     setControlComponentsData({ activePage: pageNumber, filterData: controlComponentsData.filterData })
   }
 
-  const handleSubmitFilter = (data: ProductFilterData) => {
+  const handleSubmitFilter = (data: BookFilterData) => {
     setControlComponentsData({ activePage: 0, filterData: data })
   }
 
@@ -72,7 +72,7 @@ const Catalog = () => {
 
       <div className='product-crud-bar-container'>
 
-        <ProductFilter onSubmitFilter={handleSubmitFilter} />
+        <BookFilter onSubmitFilter={handleSubmitFilter} />
 
       </div>
 
