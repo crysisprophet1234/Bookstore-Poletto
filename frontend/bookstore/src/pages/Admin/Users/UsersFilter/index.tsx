@@ -2,11 +2,11 @@ import { yupResolver } from '@hookform/resolvers/yup'
 import { Controller, useForm } from 'react-hook-form'
 import Select from 'react-select'
 import * as Yup from 'yup'
-import { Sort } from '../../types/vendor/spring'
-import { selectStyles } from '../../utils/selectStyles'
+import { Sort } from '../../../../types/vendor/spring'
+import { selectStyles } from '../../../../utils/selectStyles'
 
-import { Authority } from '../../utils/auth'
-import '../ReservesFilter/styles.css'
+import { Authority } from '../../../../utils/auth'
+import '../../Reserves/ReservesFilter/styles.css'
 
 export type UserFilterData = Sort & {
 
@@ -19,10 +19,11 @@ export type UserFilterData = Sort & {
 type Props = {
 
     onSubmitFilter: (data: UserFilterData) => void
+    isSubmiting: boolean
 
 }
 
-const UsersFilter = ({ onSubmitFilter }: Props) => {
+const UsersFilter = ({ onSubmitFilter, isSubmiting }: Props) => {
 
     const validationSchema = Yup.object().shape({
 
@@ -33,11 +34,7 @@ const UsersFilter = ({ onSubmitFilter }: Props) => {
 
         name: Yup.string()
             .notRequired()
-            .matches(/^(?=.*[a-zA-Z]).*|^\s*$/, 'Nome ou e-mail deve ser válido'),
-
-
-        orderBy: Yup.string()
-            .notRequired()
+            .matches(/^(?=.*[a-zA-Z]).*|^\s*$/, 'Nome ou e-mail deve ser válido')
 
     })
 
@@ -46,7 +43,6 @@ const UsersFilter = ({ onSubmitFilter }: Props) => {
     const { register, handleSubmit, setValue, control, reset, formState: { errors } } = useForm<UserFilterData>(formOptions)
 
     const onSubmit = (formData: UserFilterData) => {
-        console.log(formData)
         onSubmitFilter(formData)
     }
 
@@ -114,9 +110,7 @@ const UsersFilter = ({ onSubmitFilter }: Props) => {
                         <label htmlFor='id'>Código</label>
 
                         <input
-                            {...register('id', {
-                                required: false
-                            })}
+                            {...register('id')}
                             type='number'
                             className={`form-control base-input ${errors.id ? 'is-invalid' : ''}`}
                             placeholder='Código do usuário'
@@ -138,7 +132,6 @@ const UsersFilter = ({ onSubmitFilter }: Props) => {
                         <Controller
                             name='role'
                             control={control}
-                            rules={{ required: false }}
                             render={({ field }) => (
                                 <Select
                                     {...field}
@@ -147,16 +140,15 @@ const UsersFilter = ({ onSubmitFilter }: Props) => {
                                         { label: 'Operador', value: 'ROLE_OPERATOR' }
                                     ]}
                                     isClearable
-                                    value={control._defaultValues.role}
+                                    value={undefined}
                                     onChange={(role) => setValue('role', role?.value)}
                                     getOptionLabel={(role) => role?.label}
                                     getOptionValue={(role) => role?.value}
                                     className='filter-select'
                                     classNamePrefix='filter-select'
                                     form='users-filter-form'
-                                    name='role'
                                     placeholder='Nível de acesso'
-                                    id='role'
+                                    inputId='role'
                                     styles={selectStyles}
                                 />
                             )}
@@ -211,6 +203,7 @@ const UsersFilter = ({ onSubmitFilter }: Props) => {
                     type='submit'
                     className='btn btn-outline-primary btn-product-filter mx-4'
                     form='users-filter-form'
+                    disabled={isSubmiting}
                 >
                     PESQUISAR
                 </button>
