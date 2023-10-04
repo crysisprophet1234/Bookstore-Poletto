@@ -10,8 +10,7 @@ export default defineConfig({
     },
     resolve: {
         alias: {
-            '~bootstrap': path.resolve(__dirname, 'node_modules/bootstrap'),
-            '@images': path.resolve(__dirname, 'src/assets/images')
+            '~bootstrap': path.resolve(__dirname, 'node_modules/bootstrap')
         }
     },
     server: {
