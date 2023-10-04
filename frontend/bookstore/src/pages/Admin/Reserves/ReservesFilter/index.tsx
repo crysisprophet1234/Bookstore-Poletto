@@ -6,10 +6,10 @@ import { BiSolidDownArrow } from 'react-icons/bi'
 import Select from 'react-select'
 import { toast } from 'react-toastify'
 import * as Yup from 'yup'
-import { requestBackend } from '../../utils/requests'
+import { requestBackend } from '../../../../utils/requests'
 
-import { debounce } from '../../utils/debounce'
-import { selectStyles } from '../../utils/selectStyles'
+import { debounce } from '../../../../utils/debounce'
+import { selectStyles } from '../../../../utils/selectStyles'
 import './styles.css'
 
 export type ReserveFilterData = {
@@ -56,7 +56,6 @@ const ReservesFilter = ({ onSubmitFilter }: Props) => {
         startingDate: Yup.date()
             .max(new Date(), 'Data inicial não pode ser maior que hoje'),
 
-        //TODO: verificar como limita data de devolução
         devolutionDate: Yup.date()
             .min(dates.initialDate, 'Data final deve ser maior que inicial')
 
@@ -277,8 +276,7 @@ const ReservesFilter = ({ onSubmitFilter }: Props) => {
                                 getOptionLabel={(status) => String(status?.label)}
                                 getOptionValue={(status) => String(status?.value)}
                                 form='reservations-filter-form'
-                                name='status'
-                                id='status'
+                                inputId='status'
                                 styles={{
                                     control: (provided) => ({
                                         ...provided,
