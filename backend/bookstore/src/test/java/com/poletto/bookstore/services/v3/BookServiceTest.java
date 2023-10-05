@@ -20,6 +20,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.SpyBean;
+import org.springframework.data.redis.core.RedisCallback;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
@@ -38,10 +39,10 @@ import redis.embedded.RedisServer;
 public class BookServiceTest {
 
 	private static final Logger logger = LoggerFactory.getLogger(BookServiceTest.class);
-	
+
 	@Autowired
 	private RedisTemplate<String, Object> redisTemplate;
-	
+
 	private static RedisServer redisServer;
 
 	@SpyBean
@@ -53,17 +54,17 @@ public class BookServiceTest {
 
 	BookDTOv2 dto;
 	BookDTOv2 insertDto;
-	
+
 	@BeforeAll
 	public void startRedis() {
-		
+
 		try {
 			redisServer = RedisServer.builder().port(6370).setting("maxmemory 128M").build();
 			redisServer.start();
 		} catch (Exception e) {
 			logger.error(e.getMessage());
 		}
-		
+
 	}
 
 	@BeforeEach
@@ -75,16 +76,18 @@ public class BookServiceTest {
 
 	}
 
-	@SuppressWarnings("deprecation")
 	@AfterEach
 	public void tearDown() {
-
+		
 		dto = insertDto = null;
 		
-		redisTemplate.getConnectionFactory().getConnection().flushAll();
-
+		redisTemplate.execute((RedisCallback<Object>) connection -> {
+			connection.serverCommands().flushAll();
+			return null;
+		});
+		
 	}
-	
+
 	@AfterAll
 	public void cleanUp() {
 		redisServer.stop();
@@ -92,7 +95,7 @@ public class BookServiceTest {
 
 	@Test
 	void isCacheBeingSavedAfterQueryById() {
-		
+
 		logger.info("\n\n<=========  STARTING TEST isCacheBeingSavedAfterQueryById()  =========>\n");
 
 		logger.info("querying book with id 1 from the repository");
