@@ -59,7 +59,10 @@ public class BookServiceTest {
 	public void startRedis() {
 
 		try {
-			redisServer = RedisServer.builder().port(6370).setting("maxmemory 128M").build();
+			redisServer = RedisServer.builder()
+					.port(6370)
+					.setting("maxmemory 128M")
+					.build();
 			redisServer.start();
 		} catch (Exception e) {
 			logger.error(e.getMessage());

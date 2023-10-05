@@ -9,6 +9,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 import java.time.LocalDate;
+import java.util.List;
 
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
@@ -28,6 +29,7 @@ import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.redis.core.RedisCallback;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
@@ -69,7 +71,10 @@ public class ReservationServiceTest {
 	public void startRedis() {
 		
 		try {
-			redisServer = RedisServer.builder().port(6370).setting("maxmemory 128M").build();
+			redisServer = RedisServer.builder()
+					.port(6370)
+					.setting("maxmemory 128M")
+					.build();
 			redisServer.start();
 		} catch (Exception e) {
 			logger.error(e.getMessage());
@@ -88,11 +93,16 @@ public class ReservationServiceTest {
 		
 	}
 
-	@SuppressWarnings("deprecation")
 	@AfterEach
 	public void tearDown() {
+		
 		insertDto = null;
-		redisTemplate.getConnectionFactory().getConnection().flushAll();
+		
+		redisTemplate.execute((RedisCallback<Object>) connection -> {
+			connection.serverCommands().flushAll();
+			return null;
+		});
+		
 	}
 	
 	@AfterAll
@@ -142,7 +152,6 @@ public class ReservationServiceTest {
 
 	}
 
-	@SuppressWarnings("unchecked")
 	@Test
 	public void isPageCacheBeingEvictedAfterNewReservationsAndReturns() {
 		
@@ -150,7 +159,7 @@ public class ReservationServiceTest {
 
 		Pageable pageable = PageRequest.of(0, 12);
 
-		LocalDate startingDate = LocalDate.now();
+		LocalDate startingDate = LocalDate.now().minusMonths(1);
 
 		LocalDate devolutionDate = startingDate.plusMonths(3);
 		
@@ -160,15 +169,19 @@ public class ReservationServiceTest {
 
 		Page<ReservationDTOv2> dtoPage = service.findAllPaged(pageable, startingDate, devolutionDate, null, null, "all");
 		
-		assertNotNull(dtoPage, "dtoPage with not found on repository");
+		assertNotNull(dtoPage, "dtoPage not found on repository");
+
+		assertNotEquals(List.of().size(), dtoPage.getContent().size(), "dtoPage found but with 0 elements");
 		
 		logger.info("dtoPage retrieved from db: {}", dtoPage.getContent());
 		
 		logger.info("querying dtoPage again to assert that the cache will get hit");
 
-		Page<ReservationDTOv2> cachedDtoPage = (Page<ReservationDTOv2>) redisTemplate.opsForValue().get(expectedCacheKey);
+		Page<ReservationDTOv2> cachedDtoPage = ((Page<?>) redisTemplate.opsForValue().get(expectedCacheKey)).map(x -> (ReservationDTOv2) x);
 		
 		assertNotNull(cachedDtoPage, "dtoPage with not found on cache");
+		
+		assertNotEquals(List.of().size(), cachedDtoPage.getContent().size(), "cacheDtoPage found but with 0 elements");
 		
 		logger.info("dtoPage retrieved from cache: {}", cachedDtoPage.getContent());
 
