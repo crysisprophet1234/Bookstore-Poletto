@@ -29,6 +29,7 @@ local.properties
 .settings/
 .loadpath
 .recommenders
+.vscode/
 
 src/main/resources/*.properties
 
