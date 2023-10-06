@@ -4,7 +4,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
@@ -111,7 +110,7 @@ public class ReservationServiceTest {
 	}
 
 	@Test
-	public void isCacheBeingSavedAfterQueryReservationById() {
+	void isCacheBeingSavedAfterQueryReservationById() {
 		
 		logger.info("\n\n<=========  STARTING TEST isCacheBeingSavedAfterQueryReservationById()  =========>\n");
 
@@ -128,7 +127,7 @@ public class ReservationServiceTest {
 	}
 
 	@Test
-	public void isCacheBeingUpdatedAfterReturnReservation() {
+	void isCacheBeingUpdatedAfterReturnReservation() {
 		
 		logger.info("\n\n<=========  STARTING TEST isCacheBeingUpdatedAfterReturnReservation()  =========>\n");
 
@@ -153,21 +152,13 @@ public class ReservationServiceTest {
 	}
 
 	@Test
-	public void isPageCacheBeingEvictedAfterNewReservationsAndReturns() {
+	void isPageCacheBeingEvictedAfterNewReservationsAndReturns() {
 		
 		logger.info("\n\n<=========  STARTING TEST isPageCacheBeingEvictedAfterNewReservationsAndReturns()  =========>\n");
-
-		Pageable pageable = PageRequest.of(0, 12);
-
-		LocalDate startingDate = LocalDate.now().minusMonths(1);
-
-		LocalDate devolutionDate = startingDate.plusMonths(3);
 		
-		String expectedCacheKey = "reservations::SimpleKey [Page request [number: 0, size 12, sort: UNSORTED]," + startingDate + "," + devolutionDate +",null,null,all]";
-		
-		logger.info("querying reservation page with parameters {} from the repository", expectedCacheKey);
+		logger.info("querying page of books on the repository");
 
-		Page<ReservationDTOv2> dtoPage = service.findAllPaged(pageable, startingDate, devolutionDate, null, null, "all");
+		Page<ReservationDTOv2> dtoPage = findPageOfReservationsFromService();
 		
 		assertNotNull(dtoPage, "dtoPage not found on repository");
 
@@ -177,7 +168,7 @@ public class ReservationServiceTest {
 		
 		logger.info("querying dtoPage again to assert that the cache will get hit");
 
-		Page<ReservationDTOv2> cachedDtoPage = ((Page<?>) redisTemplate.opsForValue().get(expectedCacheKey)).map(x -> (ReservationDTOv2) x);
+		Page<ReservationDTOv2> cachedDtoPage = findPageOfReservationsFromCache();
 		
 		assertNotNull(cachedDtoPage, "dtoPage with not found on cache");
 		
@@ -193,11 +184,11 @@ public class ReservationServiceTest {
 		
 		logger.info("querying dtoPage from repo again to assert that the cache will get hit");
 
-		service.findAllPaged(pageable, startingDate, devolutionDate, null, null, "all");
+		findPageOfReservationsFromService();
 		
 		logger.info("asserting that the repository will not get a call");
 
-		verify(repository, times(1)).findPaged(any(), any(), any(), any(), any(), eq(pageable));
+		verify(repository, times(1)).findPaged(any(), any(), any(), any(), any(), any());
 		
 		logger.info("returning reservation with id 1 to check if the cache gets updated");
 
@@ -205,9 +196,9 @@ public class ReservationServiceTest {
 		
 		logger.info("querying dtoPage again to assert that the repo will get called");
 
-		dtoPage = service.findAllPaged(pageable, startingDate, devolutionDate, null, null, "all");
+		dtoPage = findPageOfReservationsFromService();
 		
-		verify(repository, times(2)).findPaged(any(), any(), any(), any(), any(), eq(pageable));
+		verify(repository, times(2)).findPaged(any(), any(), any(), any(), any(), any());
 		
 		logger.info("asserting that the new dtoPage is not equal to the old dtoPage from cache");
 		
@@ -223,13 +214,37 @@ public class ReservationServiceTest {
 
 		service.reserveBooks(insertDto);
 		
-		logger.info("querying dtoPage again to assert that the repo will get called");
+		logger.info("querying dtoPage again to assert that the repo will get called one more time");
 
-		dtoPage = service.findAllPaged(pageable, startingDate, devolutionDate, null, null, "all");
+		dtoPage = findPageOfReservationsFromService();
 
-		verify(repository, times(3)).findPaged(any(), any(), any(), any(), any(), eq(pageable));
+		verify(repository, times(3)).findPaged(any(), any(), any(), any(), any(), any());
 		
 		logger.info("test sucess, service called 6 times and repository only 3");
+
+	}
+	
+	private Page<ReservationDTOv2> findPageOfReservationsFromService() {
+
+		Pageable pageable = PageRequest.of(0, 12);
+		
+		LocalDate startingDate = LocalDate.now().minusMonths(1);
+
+		LocalDate devolutionDate = startingDate.plusMonths(3);
+
+		return service.findAllPaged(pageable, startingDate, devolutionDate, null, null, "all");
+
+	}
+
+	private Page<ReservationDTOv2> findPageOfReservationsFromCache() {
+		
+		LocalDate startingDate = LocalDate.now().minusMonths(1);
+
+		LocalDate devolutionDate = startingDate.plusMonths(3);
+
+		String expectedCacheKey = "reservations::SimpleKey [Page request [number: 0, size 12, sort: UNSORTED]," + startingDate + "," + devolutionDate +",null,null,all]";
+
+		return ((Page<?>) redisTemplate.opsForValue().get(expectedCacheKey)).map(x -> (ReservationDTOv2) x);
 
 	}
 
