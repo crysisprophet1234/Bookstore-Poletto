@@ -3,6 +3,7 @@ package com.poletto.bookstore.dto.v2;
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 
 import org.hibernate.validator.constraints.URL;
@@ -13,7 +14,6 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.github.dozermapper.core.Mapping;
-import com.poletto.bookstore.entities.Author;
 import com.poletto.bookstore.entities.enums.BookStatus;
 
 import jakarta.validation.Valid;
@@ -45,14 +45,11 @@ public class BookDTOv2 extends RepresentationModel<BookDTOv2> implements Seriali
 	@NotEmpty
 	private String imgUrl;
 	
-	//TODO check on enum
-	@Pattern (regexp = "AVAILABLE|BOOKED")
 	private BookStatus status;
 	
 	@Valid
 	@NotNull
-	@JsonIgnoreProperties(value = {"nacionality", "books"})
-	private Author author;
+	private AuthorDTOv2 author;
 
 	@Valid
 	@JsonIgnoreProperties(value = {"links"})
@@ -62,7 +59,7 @@ public class BookDTOv2 extends RepresentationModel<BookDTOv2> implements Seriali
 		
 	}
 
-	public BookDTOv2(Long id, String name, LocalDate releaseDate, String imgUrl, BookStatus status, Author author) {
+	public BookDTOv2(Long id, String name, LocalDate releaseDate, String imgUrl, BookStatus status, AuthorDTOv2 author) {
 		this.key = id;
 		this.name = name;
 		this.releaseDate = releaseDate;
@@ -111,11 +108,11 @@ public class BookDTOv2 extends RepresentationModel<BookDTOv2> implements Seriali
 		this.status = status;
 	}
 
-	public Author getAuthor() {
+	public AuthorDTOv2 getAuthor() {
 		return author;
 	}
 
-	public void setAuthor(Author author) {
+	public void setAuthor(AuthorDTOv2 author) {
 		this.author = author;
 	}
 
@@ -132,6 +129,23 @@ public class BookDTOv2 extends RepresentationModel<BookDTOv2> implements Seriali
 //	public Links getLinks() {
 //	  return super.getLinks();
 //	}
+	
+	@Override
+	public int hashCode() {
+		return Objects.hash(key);
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		BookDTOv2 other = (BookDTOv2) obj;
+		return Objects.equals(key, other.key);
+	}
 
 	@Override
 	public String toString() {
