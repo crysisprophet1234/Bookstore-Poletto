@@ -3,6 +3,7 @@ package com.poletto.bookstore.services.v3;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -28,15 +29,15 @@ import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.redis.core.RedisCallback;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 
 import com.poletto.bookstore.dto.v2.ReservationDTOv2;
+import com.poletto.bookstore.entities.enums.ReservationStatus;
 import com.poletto.bookstore.repositories.v2.ReservationRepository;
 import com.poletto.bookstore.services.v3.mocks.BookMocks;
 import com.poletto.bookstore.services.v3.mocks.ReservationMocks;
+import com.poletto.bookstore.util.CustomRedisClient;
 
 import redis.embedded.RedisServer;
 
@@ -50,7 +51,7 @@ public class ReservationServiceTest {
 	private static final Logger logger = LoggerFactory.getLogger(ReservationServiceTest.class);
 
 	@Autowired
-	private RedisTemplate<String, Object> redisTemplate;
+	private CustomRedisClient<String, ReservationDTOv2> client;
 	
 	private static RedisServer redisServer;
 
@@ -64,7 +65,7 @@ public class ReservationServiceTest {
 	@Autowired
 	private BookService bookService;
 
-	private ReservationDTOv2 insertDto;
+	private ReservationDTOv2 insertDto, dto;
 	
 	@BeforeAll
 	public void startRedis() {
@@ -84,9 +85,11 @@ public class ReservationServiceTest {
 	@BeforeEach
 	public void setUp() {
 		
-		bookService.insert(BookMocks.insertBookMock());
+		bookService.insert(BookMocks.insertBookMockDto());
 		
-		insertDto = ReservationMocks.insertReservationDto();
+		dto = ReservationMocks.reservationMockDto(1L);
+		
+		insertDto = ReservationMocks.insertReservationMockDto();
 
 		service.reserveBooks(insertDto);
 		
@@ -97,10 +100,7 @@ public class ReservationServiceTest {
 		
 		insertDto = null;
 		
-		redisTemplate.execute((RedisCallback<Object>) connection -> {
-			connection.serverCommands().flushAll();
-			return null;
-		});
+		client.flushDb();
 		
 	}
 	
@@ -116,7 +116,7 @@ public class ReservationServiceTest {
 
 		ReservationDTOv2 dto1 = service.findById(1L);
 
-		ReservationDTOv2 cachedDto1 = (ReservationDTOv2) redisTemplate.opsForValue().get("reservation::1");
+		ReservationDTOv2 cachedDto1 = client.get("reservation::1");
 
 		assertEquals(dto1.toString(), cachedDto1.toString());
 
@@ -133,7 +133,7 @@ public class ReservationServiceTest {
 
 		ReservationDTOv2 dto1 = service.findById(1L);
 
-		ReservationDTOv2 cachedDto1 = (ReservationDTOv2) redisTemplate.opsForValue().get("reservation::1");
+		ReservationDTOv2 cachedDto1 = client.get("reservation::1");
 
 		assertEquals(dto1.toString(), cachedDto1.toString());
 
@@ -143,7 +143,7 @@ public class ReservationServiceTest {
 
 		assertNotEquals(dto1.toString(), cachedDto1.toString());
 
-		cachedDto1 = (ReservationDTOv2) redisTemplate.opsForValue().get("reservation::1");
+		cachedDto1 = client.get("reservation::1");
 
 		assertEquals(dto1.toString(), cachedDto1.toString());
 
@@ -224,6 +224,39 @@ public class ReservationServiceTest {
 
 	}
 	
+	@Test
+	void isCacheGettingProperlySettedUsingClient() {
+		
+		logger.info("\n\n<=========  STARTING TEST isCacheGettingProperlySettedUsingClient()  =========>\n");
+		
+		String reservationKey = "reservation#1";
+		
+		logger.info("setting on the cache value [{}] with key [{}]", dto, reservationKey);
+		
+		assertTrue(client.set(reservationKey, dto), "cache didnt got setted");
+		
+		logger.info("asserting that the cache value is not null");
+		
+		assertNotNull(client.get(reservationKey));
+		
+		logger.info("asserting that the cache value is equals to bookDto");
+		
+		assertEquals(dto, client.get(reservationKey), "cache value didnt get setted properly");
+		
+		logger.info("updating value on the cache");
+		
+		dto.setStatus(ReservationStatus.FINISHED);
+		
+		assertTrue(client.put(reservationKey, dto), "cache value didnt get updated");
+		
+		logger.info("asserting that the value got updated");
+		
+		assertEquals(dto.getStatus(), client.get(reservationKey).getStatus());
+		
+		logger.info("test success, cache got setted, retrieved and updated properly");
+		
+	}
+	
 	private Page<ReservationDTOv2> findPageOfReservationsFromService() {
 
 		Pageable pageable = PageRequest.of(0, 12);
@@ -244,7 +277,7 @@ public class ReservationServiceTest {
 
 		String expectedCacheKey = "reservations::SimpleKey [Page request [number: 0, size 12, sort: UNSORTED]," + startingDate + "," + devolutionDate +",null,null,all]";
 
-		return ((Page<?>) redisTemplate.opsForValue().get(expectedCacheKey)).map(x -> (ReservationDTOv2) x);
+		return ((Page<?>) client.get(expectedCacheKey)).map(x -> (ReservationDTOv2) x);
 
 	}
 
