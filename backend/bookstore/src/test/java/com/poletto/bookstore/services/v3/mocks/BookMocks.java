@@ -5,11 +5,12 @@ import java.time.LocalDate;
 import com.poletto.bookstore.dto.v2.BookDTOv2;
 import com.poletto.bookstore.dto.v2.CategoryDTOv2;
 import com.poletto.bookstore.entities.Author;
+import com.poletto.bookstore.entities.Book;
 import com.poletto.bookstore.entities.enums.BookStatus;
 
 public class BookMocks {
 
-	public static BookDTOv2 bookMock(Long id) {
+	public static BookDTOv2 bookMockDto(Long id) {
 		
 		return new BookDTOv2(
 				id,
@@ -22,7 +23,7 @@ public class BookMocks {
 		
 	}
 
-	public static BookDTOv2 bookMock() {
+	public static BookDTOv2 bookMockDto() {
 		
 		return new BookDTOv2(
 				1L,
@@ -35,7 +36,34 @@ public class BookMocks {
 		
 	}
 	
-	public static BookDTOv2 insertBookMock() {
+	public static Book bookMockEntity() {
+		
+		return new Book(
+				1L,
+				"book",
+				BookStatus.AVAILABLE,
+				new Author(1L, "Author Author", "Earth"),
+				LocalDate.of(2023,  1, 1),
+				"http://imageurl"
+		);
+		
+	}
+	
+	public static Book bookMockEntity(Long id) {
+		
+		return new Book(
+				id,
+				"book" + id,
+				BookStatus.AVAILABLE,
+				new Author(1L, "Author Author", "Earth"),
+				LocalDate.of(2023,  1, 1),
+				"http://imageurl" + id
+		);
+		
+	}
+	
+	
+	public static BookDTOv2 insertBookMockDto() {
 		BookDTOv2 bookDTOv2 = new BookDTOv2();
 		bookDTOv2.setName("Book name");
 		bookDTOv2.setReleaseDate(LocalDate.of(2023, 1, 1));
