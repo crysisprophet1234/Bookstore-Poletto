@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -29,8 +30,6 @@ import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.redis.core.RedisCallback;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 
@@ -38,6 +37,7 @@ import com.poletto.bookstore.dto.v2.BookDTOv2;
 import com.poletto.bookstore.exceptions.ResourceNotFoundException;
 import com.poletto.bookstore.repositories.v2.BookRepository;
 import com.poletto.bookstore.services.v3.mocks.BookMocks;
+import com.poletto.bookstore.util.CustomRedisClient;
 
 import redis.embedded.RedisServer;
 
@@ -51,7 +51,7 @@ public class BookServiceTest {
 	private static final Logger logger = LoggerFactory.getLogger(BookServiceTest.class);
 
 	@Autowired
-	private RedisTemplate<String, Object> redisTemplate;
+	private CustomRedisClient<String , BookDTOv2> client;
 
 	private static RedisServer redisServer;
 
@@ -81,6 +81,8 @@ public class BookServiceTest {
 	public void setUp() {
 
 		insertDto = BookMocks.insertBookMock();
+		
+		dto = BookMocks.bookMock(1L);
 
 		service.insert(insertDto);
 
@@ -91,10 +93,7 @@ public class BookServiceTest {
 
 		dto = insertDto = null;
 
-		redisTemplate.execute((RedisCallback<Object>) connection -> {
-			connection.serverCommands().flushAll();
-			return null;
-		});
+		client.flushDb();
 
 	}
 
@@ -118,7 +117,7 @@ public class BookServiceTest {
 
 		logger.info("querying book by id 1 again to assert that the cache will get hit");
 
-		BookDTOv2 cachedDto1 = (BookDTOv2) redisTemplate.opsForValue().get("book::1");
+		BookDTOv2 cachedDto1 = (BookDTOv2) client.get("book::1");
 
 		assertNotNull(cachedDto1, "book with id 1 not found on cache");
 
@@ -155,7 +154,7 @@ public class BookServiceTest {
 
 		logger.info("querying book by id 1 again to assert that the cache will get hit");
 
-		BookDTOv2 cachedDto1 = (BookDTOv2) redisTemplate.opsForValue().get("book::1");
+		BookDTOv2 cachedDto1 = (BookDTOv2) client.get("book::1");
 
 		assertNotNull(cachedDto1, "book with id 1 not found on cache");
 
@@ -171,7 +170,7 @@ public class BookServiceTest {
 
 		dto1 = service.update(1L, dto1);
 
-		cachedDto1 = (BookDTOv2) redisTemplate.opsForValue().get("book::1");
+		cachedDto1 = (BookDTOv2) client.get("book::1");
 
 		assertNotNull(cachedDto1, "book with id 1 not found on cache");
 
@@ -185,7 +184,7 @@ public class BookServiceTest {
 
 		logger.info("asserting that the book 1 cache got evicted");
 
-		cachedDto1 = (BookDTOv2) redisTemplate.opsForValue().get("book::1");
+		cachedDto1 = (BookDTOv2) client.get("book::1");
 
 		assertNull(cachedDto1, "cache of book 1 didnt got evicted");
 
@@ -305,6 +304,39 @@ public class BookServiceTest {
 
 	}
 
+	@Test
+	void isCacheGettingProperlySettedUsingClient() {
+		
+		logger.info("\n\n<=========  STARTING TEST isCacheGettingProperlySettedUsingClient()  =========>\n");
+		
+		String bookKey = "book#1";
+		
+		logger.info("setting on the cache value [{}] with key [{}]", dto, bookKey);
+		
+		assertTrue(client.set(bookKey, dto), "cache didnt got setted");
+		
+		logger.info("asserting that the cache value is not null");
+		
+		assertNotNull(client.get(bookKey));
+		
+		logger.info("asserting that the cache value is equals to bookDto");
+		
+		assertEquals(dto, client.get(bookKey), "cache value didnt get setted properly");
+		
+		logger.info("updating value on the cache");
+		
+		dto.setName("new book name");
+		
+		assertTrue(client.put(bookKey, dto), "cache value didnt get updated");
+		
+		logger.info("asserting that the value got updated");
+		
+		assertEquals(dto.getName(), client.get(bookKey).getName());
+		
+		logger.info("test success, cache got setted, retrieved and updated properly");
+		
+	}
+	
 	private Page<BookDTOv2> findPageOfBooksFromService() {
 
 		Pageable pageable = PageRequest.of(0, 12);
@@ -317,7 +349,7 @@ public class BookServiceTest {
 
 		String expectedCacheKey = "books::SimpleKey [Page request [number: 0, size 12, sort: UNSORTED],null,,all]";
 
-		return ((Page<?>) redisTemplate.opsForValue().get(expectedCacheKey)).map(x -> (BookDTOv2) x);
+		return ((Page<?>) client.get(expectedCacheKey)).map(x -> (BookDTOv2) x);
 
 	}
 
