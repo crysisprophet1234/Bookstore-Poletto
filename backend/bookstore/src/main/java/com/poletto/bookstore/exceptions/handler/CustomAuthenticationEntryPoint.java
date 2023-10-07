@@ -8,7 +8,7 @@ import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.stereotype.Component;
 
 import com.poletto.bookstore.converter.CustomObjectMapper;
-import com.poletto.bookstore.exceptions.ExceptionResponse.ExceptionResponse;
+import com.poletto.bookstore.exceptions.exceptionresponse.ExceptionResponse;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;

@@ -31,7 +31,7 @@ import com.poletto.bookstore.exceptions.InvalidStatusException;
 import com.poletto.bookstore.exceptions.ObjectNotValidException;
 import com.poletto.bookstore.exceptions.ResourceNotFoundException;
 import com.poletto.bookstore.exceptions.UnauthorizedException;
-import com.poletto.bookstore.exceptions.ExceptionResponse.ExceptionResponse;
+import com.poletto.bookstore.exceptions.exceptionresponse.ExceptionResponse;
 
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.ConstraintViolationException;
@@ -40,6 +40,8 @@ import jakarta.validation.ConstraintViolationException;
 @ControllerAdvice
 @RestController
 public class CustomizedResponseEntityExceptionHandler extends ResponseEntityExceptionHandler {
+	
+	//TODO refactor this...
 
 	private static final Logger logger = LoggerFactory.getLogger(ResponseEntityExceptionHandler.class);
 

@@ -1,4 +1,4 @@
-package com.poletto.bookstore.exceptions.ExceptionResponse;
+package com.poletto.bookstore.exceptions.exceptionresponse;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
