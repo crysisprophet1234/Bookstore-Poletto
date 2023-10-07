@@ -84,16 +84,18 @@ public class BookService {
 		return dto;
 
 	}
+	
+	//testar
 
 	@Transactional
 	public BookDTOv2 insert(BookDTOv2 dto) {
-
+		
 		dto.setStatus(BookStatus.AVAILABLE);
 
-		dto.setAuthor(authorRepository.findById(dto.getAuthor().getId()).orElseThrow(
-				() -> new ResourceNotFoundException("Resource AUTHOR not found. ID " + dto.getAuthor().getId())));
-
 		Book entity = BookMapper.convertDtoToEntityV2(dto);
+		
+		entity.setAuthor(authorRepository.findById(dto.getAuthor().getId()).orElseThrow(
+				() -> new ResourceNotFoundException("Resource AUTHOR not found. ID " + dto.getAuthor().getId())));
 
 		entity.getCategories().clear();
 
@@ -127,18 +129,16 @@ public class BookService {
 		try {
 
 			Book entity = bookRepository.getReferenceById(id);
-
+			
 			dto.setStatus(entity.getStatus());
-
-			dto.setId(entity.getId());
 
 			entity = BookMapper.convertDtoToEntityV2(dto);
 
 			entity = bookRepository.save(entity);
 
-			logger.info("Resource BOOK updated: " + entity.toString());
-
 			dto = BookMapper.convertEntityToDtoV2(entity);
+			
+			logger.info("Resource BOOK updated: " + dto.toString());
 
 			dto.add(linkTo(methodOn(BookController.class).findById(dto.getId())).withSelfRel().withType("GET"));
 			dto.add(linkTo(methodOn(BookController.class).delete(dto.getId())).withRel("delete").withType("DELETE"));

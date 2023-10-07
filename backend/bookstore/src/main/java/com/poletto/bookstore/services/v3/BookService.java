@@ -96,14 +96,14 @@ public class BookService {
 	@CacheEvict(value = "books", allEntries = true)
 	@Transactional
 	public BookDTOv2 insert(BookDTOv2 dto) {
-
+		
 		dto.setStatus(BookStatus.AVAILABLE);
+		
+		Book entity = BookMapper.convertDtoToEntityV2(dto);
 
-		dto.setAuthor(authorRepository.findById(dto.getAuthor().getId())
+		entity.setAuthor(authorRepository.findById(dto.getAuthor().getId())
 				.orElseThrow(() -> new ResourceNotFoundException(
 						"Resource AUTHOR not found. ID " + dto.getAuthor().getId())));
-
-		Book entity = BookMapper.convertDtoToEntityV2(dto);
 
 		entity.getCategories().clear();
 
@@ -125,8 +125,7 @@ public class BookService {
 
 		newDto.add(linkTo(methodOn(BookController.class).findById(newDto.getId())).withSelfRel().withType("GET"));
 		newDto.add(linkTo(methodOn(BookController.class).delete(newDto.getId())).withRel("delete").withType("DELETE"));
-		newDto.add(linkTo(methodOn(BookController.class).update(newDto.getId(), newDto)).withRel("update")
-				.withType("PUT"));
+		newDto.add(linkTo(methodOn(BookController.class).update(newDto.getId(), newDto)).withRel("update").withType("PUT"));
 
 		return newDto;
 
@@ -140,10 +139,8 @@ public class BookService {
 		try {
 
 			Book entity = bookRepository.getReferenceById(id);
-
+			
 			dto.setStatus(entity.getStatus());
-
-			dto.setId(entity.getId());
 
 			entity = BookMapper.convertDtoToEntityV2(dto);
 
