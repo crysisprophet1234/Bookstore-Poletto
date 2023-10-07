@@ -16,7 +16,6 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.annotation.Caching;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -38,6 +37,7 @@ import com.poletto.bookstore.repositories.v2.BookRepository;
 import com.poletto.bookstore.repositories.v2.BookReservationRepository;
 import com.poletto.bookstore.repositories.v2.ReservationRepository;
 import com.poletto.bookstore.repositories.v2.UserRepository;
+import com.poletto.bookstore.util.CustomRedisClient;
 
 import jakarta.persistence.EntityNotFoundException;
 
@@ -49,7 +49,7 @@ public class ReservationService {
 	private static final Logger logger = LoggerFactory.getLogger(ReservationService.class);
 
 	@Autowired
-	private RedisTemplate<String, Object> redisTemplate;
+	private CustomRedisClient<String, Object> redisClient;
 
 	@Autowired
 	private ReservationRepository reservationRepository;
@@ -178,7 +178,7 @@ public class ReservationService {
 			bookEntity.setStatus(BookStatus.BOOKED);
 			entity.getBooks().add(new BookReservation(entity, bookEntity));
 
-			if (redisTemplate.opsForValue().setIfPresent("book::" + bookEntity.getId(), BookMapper.convertEntityToDtoV2(bookEntity))) {
+			if (redisClient.put("book::" + bookEntity.getId(), BookMapper.convertEntityToDtoV2(bookEntity))) {
 				logger.info("Cache book::{} status changed to BOOKED", bookDTO.getId());
 			}
 
@@ -208,11 +208,12 @@ public class ReservationService {
 
 	}
 
+	// TODO getReferenceById bugando sem o @transactional, vale a pena checar resto do programa onde isso poderia ter sido usado, criar issue no remote
 	@Caching(evict = { 	
 			@CacheEvict(value = "reservations", allEntries = true),
 			@CacheEvict(value = "books", allEntries = true) 
 	})
-	@Transactional // TODO getReferenceById bugando sem o @transactional, vale a pena checar resto do programa onde isso poderia ter sido usado, criar issue no remote
+	@Transactional 
 	public void returnReservation(Long reservationId) {
 
 		try {
@@ -234,7 +235,7 @@ public class ReservationService {
 			
 			logger.info("Resource RESERVATION status changed to FINISHED: {}", reservation);
 
-			if (redisTemplate.opsForValue().setIfPresent("reservation::" + reservationId, ReservationMapper.convertEntityToDtoV2(reservation))) {
+			if (redisClient.put("reservation::" + reservationId, ReservationMapper.convertEntityToDtoV2(reservation))) {
 
 				logger.info("Cache reservation::{} status changed to FINISHED", reservationId);
 			
@@ -255,7 +256,7 @@ public class ReservationService {
 
 		logger.info("Resource BOOK status changed to AVAILABLE: {}", book);
 
-		if (redisTemplate.opsForValue().setIfPresent("book::" + book.getId(), BookMapper.convertEntityToDtoV2(book))) {
+		if (redisClient.put("book::" + book.getId(), BookMapper.convertEntityToDtoV2(book))) {
 
 			logger.info("Cache book::{} status changed to AVAILABLE", book.getId());
 

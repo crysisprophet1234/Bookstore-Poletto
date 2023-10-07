@@ -37,8 +37,6 @@ import jakarta.persistence.EntityNotFoundException;
 public class BookService {
 
 	// TODO fazer classes de teste para cache
-	
-	// TODO serializando categorias de livros em ordem diferente, criar issue dps
 
 	private static final Logger logger = LoggerFactory.getLogger(BookService.class);
 
@@ -82,10 +80,10 @@ public class BookService {
 		Optional<Book> obj = bookRepository.findById(id);
 
 		Book book = obj.orElseThrow(() -> new ResourceNotFoundException("Resource BOOK not found. ID " + id));
-
-		logger.info("Resource BOOK found: " + book.toString());
-
+		
 		BookDTOv2 dto = BookMapper.convertEntityToDtoV2(book);
+		
+		logger.info("Resource BOOK found: " + dto.toString());
 
 		dto.add(linkTo(methodOn(BookController.class).findById(dto.getId())).withSelfRel().withType("GET"));
 		dto.add(linkTo(methodOn(BookController.class).delete(dto.getId())).withRel("delete").withType("DELETE"));
@@ -121,9 +119,9 @@ public class BookService {
 
 		entity = bookRepository.save(entity);
 
-		logger.info("Resource BOOK saved: " + entity.toString());
-
 		BookDTOv2 newDto = BookMapper.convertEntityToDtoV2(entity);
+		
+		logger.info("Resource BOOK saved: " + newDto.toString());
 
 		newDto.add(linkTo(methodOn(BookController.class).findById(newDto.getId())).withSelfRel().withType("GET"));
 		newDto.add(linkTo(methodOn(BookController.class).delete(newDto.getId())).withRel("delete").withType("DELETE"));
@@ -151,9 +149,9 @@ public class BookService {
 
 			entity = bookRepository.save(entity);
 
-			logger.info("Resource BOOK updated: " + entity.toString());
-
 			dto = BookMapper.convertEntityToDtoV2(entity);
+			
+			logger.info("Resource BOOK updated: " + dto.toString());
 
 			dto.add(linkTo(methodOn(BookController.class).findById(dto.getId())).withSelfRel().withType("GET"));
 			dto.add(linkTo(methodOn(BookController.class).delete(dto.getId())).withRel("delete").withType("DELETE"));
