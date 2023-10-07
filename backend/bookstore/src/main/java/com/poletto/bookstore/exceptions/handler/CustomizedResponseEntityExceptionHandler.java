@@ -32,6 +32,7 @@ import com.poletto.bookstore.exceptions.ObjectNotValidException;
 import com.poletto.bookstore.exceptions.ResourceNotFoundException;
 import com.poletto.bookstore.exceptions.UnauthorizedException;
 import com.poletto.bookstore.exceptions.exceptionresponse.ExceptionResponse;
+import com.poletto.bookstore.util.StackTraceFormatter;
 
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.ConstraintViolationException;
@@ -52,6 +53,7 @@ public class CustomizedResponseEntityExceptionHandler extends ResponseEntityExce
 				ex.getLocalizedMessage(), request.getDescription(false));
 
 		logger.warn(exceptionResponse.toString() + clientInfo(request));
+		logger.error(StackTraceFormatter.stackTraceFormatter(ex));
 		return new ResponseEntity<>(exceptionResponse, HttpStatus.INTERNAL_SERVER_ERROR);
 	}
 
@@ -62,6 +64,7 @@ public class CustomizedResponseEntityExceptionHandler extends ResponseEntityExce
 				ex.getLocalizedMessage(), request.getDescription(false));
 
 		logger.warn(exceptionResponse.toString() + clientInfo(request));
+		logger.error(StackTraceFormatter.stackTraceFormatter(ex));
 		return new ResponseEntity<>(exceptionResponse, HttpStatus.INTERNAL_SERVER_ERROR);
 
 	}
@@ -73,7 +76,7 @@ public class CustomizedResponseEntityExceptionHandler extends ResponseEntityExce
 				ex.getLocalizedMessage(), request.getDescription(false));
 
 		logger.warn(exceptionResponse.toString() + clientInfo(request));
-
+		logger.error(StackTraceFormatter.stackTraceFormatter(ex));
 		return new ResponseEntity<>(exceptionResponse, HttpStatus.UNAUTHORIZED);
 
 	}
@@ -85,7 +88,7 @@ public class CustomizedResponseEntityExceptionHandler extends ResponseEntityExce
 				ex.getLocalizedMessage(), request.getDescription(false));
 
 		logger.warn(exceptionResponse.toString() + clientInfo(request));
-
+		logger.error(StackTraceFormatter.stackTraceFormatter(ex));
 		return new ResponseEntity<>(exceptionResponse, HttpStatus.NOT_FOUND);
 
 	}
@@ -97,6 +100,7 @@ public class CustomizedResponseEntityExceptionHandler extends ResponseEntityExce
 				ex.getLocalizedMessage(), request.getDescription(false));
 
 		logger.warn(exceptionResponse.toString() + clientInfo(request));
+		logger.error(StackTraceFormatter.stackTraceFormatter(ex));
 		return new ResponseEntity<>(exceptionResponse, HttpStatus.UNPROCESSABLE_ENTITY);
 
 	}
@@ -108,6 +112,7 @@ public class CustomizedResponseEntityExceptionHandler extends ResponseEntityExce
 				ex.getLocalizedMessage(), request.getDescription(false));
 
 		logger.warn(exceptionResponse.toString() + clientInfo(request));
+		logger.error(StackTraceFormatter.stackTraceFormatter(ex));
 		return new ResponseEntity<>(exceptionResponse, HttpStatus.NOT_FOUND);
 
 	}
@@ -119,6 +124,7 @@ public class CustomizedResponseEntityExceptionHandler extends ResponseEntityExce
 				ex.getLocalizedMessage(), request.getDescription(false));
 
 		logger.warn(exceptionResponse.toString() + clientInfo(request));
+		logger.error(StackTraceFormatter.stackTraceFormatter(ex));
 		return new ResponseEntity<>(exceptionResponse, HttpStatus.BAD_REQUEST);
 
 	}
@@ -130,6 +136,7 @@ public class CustomizedResponseEntityExceptionHandler extends ResponseEntityExce
 				ex.getLocalizedMessage(), request.getDescription(false));
 
 		logger.warn(exceptionResponse.toString() + clientInfo(request));
+		logger.error(StackTraceFormatter.stackTraceFormatter(ex));
 		return new ResponseEntity<>(exceptionResponse, HttpStatus.BAD_REQUEST);
 
 	}
@@ -159,7 +166,7 @@ public class CustomizedResponseEntityExceptionHandler extends ResponseEntityExce
 				ex.getLocalizedMessage(), request.getDescription(false));
 
 		logger.warn(exceptionResponse.toString() + clientInfo(request));
-
+		logger.error(StackTraceFormatter.stackTraceFormatter(ex));
 		return new ResponseEntity<>(exceptionResponse, HttpStatus.UNPROCESSABLE_ENTITY);
 
 	}
