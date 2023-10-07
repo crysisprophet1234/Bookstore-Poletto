@@ -2,6 +2,7 @@ package com.poletto.bookstore.services.v3.mocks;
 
 import java.time.LocalDate;
 
+import com.poletto.bookstore.dto.v2.AuthorDTOv2;
 import com.poletto.bookstore.dto.v2.BookDTOv2;
 import com.poletto.bookstore.dto.v2.CategoryDTOv2;
 import com.poletto.bookstore.entities.Author;
@@ -18,7 +19,7 @@ public class BookMocks {
 				LocalDate.of(2023, 1, 1),
 				"http://imageurl" + id,
 				BookStatus.AVAILABLE,
-				new Author(1L, "Author Author", "Earth")
+				new AuthorDTOv2(1L, "Author Author")
 		);
 		
 	}
@@ -31,7 +32,7 @@ public class BookMocks {
 				LocalDate.of(2023, 1, 1),
 				"http://imageurl",
 				BookStatus.AVAILABLE,
-				new Author(1L, "Author Author", "Earth")
+				new AuthorDTOv2(1L, "Author Author")
 		);
 		
 	}
@@ -68,7 +69,7 @@ public class BookMocks {
 		bookDTOv2.setName("Book name");
 		bookDTOv2.setReleaseDate(LocalDate.of(2023, 1, 1));
 		bookDTOv2.setImgUrl("http://imageurl");
-		bookDTOv2.setAuthor(new Author(1L, "Author Author", "Earth"));
+		bookDTOv2.setAuthor(new AuthorDTOv2(1L, "Author Author"));
 		bookDTOv2.getCategories().add(new CategoryDTOv2(1L, "Category1"));
 		bookDTOv2.getCategories().add(new CategoryDTOv2(2L, "Category2"));
 		bookDTOv2.getCategories().add(new CategoryDTOv2(3L, "Category3"));
