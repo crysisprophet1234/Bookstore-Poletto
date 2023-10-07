@@ -80,9 +80,9 @@ public class BookServiceTest {
 	@BeforeEach
 	public void setUp() {
 
-		insertDto = BookMocks.insertBookMock();
+		insertDto = BookMocks.insertBookMockDto();
 		
-		dto = BookMocks.bookMock(1L);
+		dto = BookMocks.bookMockDto(1L);
 
 		service.insert(insertDto);
 
