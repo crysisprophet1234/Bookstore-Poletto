@@ -1,4 +1,4 @@
-package com.poletto.bookstore.util.v3;
+package com.poletto.bookstore.v3.util;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertEquals;

@@ -1,4 +1,4 @@
-package com.poletto.bookstore.services.v3;
+package com.poletto.bookstore.v3.services;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
@@ -35,9 +35,11 @@ import org.springframework.test.context.ActiveProfiles;
 import com.poletto.bookstore.dto.v2.ReservationDTOv2;
 import com.poletto.bookstore.entities.enums.ReservationStatus;
 import com.poletto.bookstore.repositories.v2.ReservationRepository;
-import com.poletto.bookstore.services.v3.mocks.BookMocks;
-import com.poletto.bookstore.services.v3.mocks.ReservationMocks;
+import com.poletto.bookstore.services.v3.BookService;
+import com.poletto.bookstore.services.v3.ReservationService;
 import com.poletto.bookstore.util.CustomRedisClient;
+import com.poletto.bookstore.v3.mocks.BookMocks;
+import com.poletto.bookstore.v3.mocks.ReservationMocks;
 
 import redis.embedded.RedisServer;
 

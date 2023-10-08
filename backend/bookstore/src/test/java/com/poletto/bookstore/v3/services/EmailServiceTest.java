@@ -1,4 +1,4 @@
-package com.poletto.bookstore.services;
+package com.poletto.bookstore.v3.services;
 
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;

@@ -1,4 +1,4 @@
-package com.poletto.bookstore.services.v3.mocks;
+package com.poletto.bookstore.v3.mocks;
 
 import com.poletto.bookstore.dto.v2.UserDTOv2;
 import com.poletto.bookstore.entities.User;
