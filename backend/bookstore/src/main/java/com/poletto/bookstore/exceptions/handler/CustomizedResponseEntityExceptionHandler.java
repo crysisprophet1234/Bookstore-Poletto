@@ -44,7 +44,7 @@ public class CustomizedResponseEntityExceptionHandler extends ResponseEntityExce
 	
 	//TODO refactor this...
 
-	private static final Logger logger = LoggerFactory.getLogger(ResponseEntityExceptionHandler.class);
+	private static final Logger logger = LoggerFactory.getLogger(CustomizedResponseEntityExceptionHandler.class);
 
 	@ExceptionHandler(Exception.class)
 	public final ResponseEntity<ExceptionResponse> handleAllExceptions(Exception ex, WebRequest request) {
