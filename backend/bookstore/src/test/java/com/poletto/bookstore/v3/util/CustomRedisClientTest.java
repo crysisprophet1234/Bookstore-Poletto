@@ -62,7 +62,7 @@ class CustomRedisClientTest {
 	@AfterEach
 	void tearDown() throws Exception {
 		keyMockString = valueMockString = null;
-		client.flushDb();
+		client.clear();
 	}
 	
 	@AfterAll

@@ -94,7 +94,7 @@ public class BookServiceTest {
 
 		dto = insertDto = null;
 
-		client.flushDb();
+		client.clear();
 
 	}
 
@@ -306,9 +306,9 @@ public class BookServiceTest {
 	}
 
 	@Test
-	void isCacheGettingProperlySettedUsingClient() {
+	void isCacheGettingProperlySettedUsingCustomClient() {
 		
-		logger.info("\n\n<=========  STARTING TEST isCacheGettingProperlySettedUsingClient()  =========>\n");
+		logger.info("\n\n<=========  STARTING TEST isCacheGettingProperlySettedCustomUsingClient()  =========>\n");
 		
 		String bookKey = "book#1";
 		

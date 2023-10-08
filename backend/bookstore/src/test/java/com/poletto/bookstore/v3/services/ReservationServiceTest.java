@@ -102,7 +102,7 @@ public class ReservationServiceTest {
 		
 		insertDto = null;
 		
-		client.flushDb();
+		client.clear();
 		
 	}
 	
