@@ -1,6 +1,7 @@
 package com.poletto.bookstore.v3.util;
 
 import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -18,7 +19,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.data.redis.RedisConnectionFailureException;
 import org.springframework.test.context.ActiveProfiles;
 
 import com.poletto.bookstore.util.CustomRedisClient;
@@ -204,11 +204,11 @@ class CustomRedisClientTest {
 		
 		assertThrows(IllegalArgumentException.class, () -> client.set(null, "value"), "client set com key nulo e value preenchido nao lancou execao");
 		
-		logger.info("stopping redis server to check redis connection failure exception");
+		logger.info("stopping redis server to check if Redis Connection failure gets properly handled");
 		
 		redisServer.stop();
 		
-		assertThrows(RedisConnectionFailureException.class, () -> client.get("key"), "exception didnt get caught");
+		assertDoesNotThrow(() -> client.get("key"), "exception didnt get caught and stopped the client execution");
 		
 		redisServer.start();
 		

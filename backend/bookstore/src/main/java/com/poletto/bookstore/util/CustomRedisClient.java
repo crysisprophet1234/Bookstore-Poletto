@@ -9,62 +9,74 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class CustomRedisClient<K, V> {
-	
+
 	private static final Logger logger = LoggerFactory.getLogger(CustomRedisClient.class);
 
 	@Autowired
 	RedisTemplate<K, V> redisTemplate;
 
-    public CustomRedisClient() {
-    	super();
-    }
+	public CustomRedisClient() {
+		super();
+	}
 
 	public V get(K key) {
-		
+
 		checkInput(key);
-		
-		var value = redisTemplate.opsForValue().get(key);
-		
-		logger.info("Resource found on cache with key [{}] and value [{}]", key, value);
-		
-		return value;
-		
+
+		try {
+
+			return redisTemplate.opsForValue().get(key);
+
+		} catch (Exception ex) {
+			logger.warn("cache failure trying to get cache: {}", ex.getLocalizedMessage());
+			return null;
+		}
+
 	}
 
 	public boolean set(K key, V value) {
-		
+
 		checkInput(key, value);
-		
-		var isUpdated = redisTemplate.opsForValue().setIfAbsent(key, value);
-		
-		logger.info("Resource stored on cache with key [{}] and value [{}]", key, value);
-		
-		return isUpdated;
-		
+
+		try {
+
+			return redisTemplate.opsForValue().setIfAbsent(key, value);
+
+		} catch (Exception ex) {
+			logger.warn("cache failure trying to set cache: {}", ex.getLocalizedMessage());
+			return false;
+		}
+
 	}
 
 	public boolean put(K key, V value) {
-		
+
 		checkInput(key, value);
-		
-		var isSetted = redisTemplate.opsForValue().setIfPresent(key, value);
-		
-		logger.info("Resource updated on cache with key [{}] and value [{}]", key, value);
-		
-		return isSetted;
-		
+
+		try {
+
+			return redisTemplate.opsForValue().setIfPresent(key, value);
+
+		} catch (Exception ex) {
+			logger.warn("cache failure trying to put cache: {}", ex.getLocalizedMessage());
+			return false;
+		}
+
 	}
 
 	public boolean del(K key) {
-		
+
 		checkInput(key);
 		
-		var isDeleted =  redisTemplate.delete(key);
-		
-		logger.info("Resource deleted on cache with key [{}]", key);
-		
-		return isDeleted;
-		
+		try {
+
+			return redisTemplate.delete(key);
+			
+		} catch (Exception ex) {
+			logger.warn("cache failure trying to delete cache: {}", ex.getLocalizedMessage());
+			return false;
+		}
+
 	}
 
 	public void clear() {
@@ -76,22 +88,22 @@ public class CustomRedisClient<K, V> {
 
 	private <T> void checkInput(T input) {
 		if (
-			input == null ||
-			input.toString().isBlank()
-		) {
+				input == null ||
+				input.toString().isBlank()
+			) {
 			throw new IllegalArgumentException("Key or value should not be empty or null");
 		}
 	}
 
 	private <T, U> void checkInput(T firstInput, U secondInput) {
-	    if (
-	        firstInput == null ||
-	        firstInput.toString().isBlank() ||
-	        secondInput == null || 
-	        secondInput.toString().isBlank()
-	    ) {
-	        throw new IllegalArgumentException("Key or value should not be empty or null");
-	    }
+		if (
+				firstInput == null ||
+				firstInput.toString().isBlank() ||
+				secondInput == null ||
+				secondInput.toString().isBlank()
+			) {
+			throw new IllegalArgumentException("Key or value should not be empty or null");
+		}
 	}
 
 }
