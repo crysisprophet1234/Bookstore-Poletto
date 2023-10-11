@@ -1,29 +1,13 @@
+[![CI](https://github.com/crysisprophet1234/Bookstore-Poletto/actions/workflows/main.yaml/badge.svg?branch=main)](https://github.com/crysisprophet1234/Bookstore-Poletto/actions/workflows/main.yaml)
+
+
 <h1 align="center">
-📚<br>Bookstore Poletto
+📚<br>Poletto Bookstore 
 </h1>
 
 ## 📦 Projeto
 
  Este repositório é um projeto que contempla um sistema de livraria, sendo possível cadastrar e admnistrar livros e usuários assim como disponibilizar a reserva de livros. A intenção do projeto é dispor o conhecimento em recursos necessário para criação de aplicações Web que se comunicam com bases de dados, o mesmo é divido em duas partes, backend e frontend, no qual ambos funcionam de maneira independente apesar do backend popular o frontend. O sistema foi pensando de maneira que o usuário cliente ou operador apenas controle os livros e pessoas, sendo assim outras entidades estáticas como autores, categorias de livro e roles de usuário serão inicializadas no boot do projeto ou no banco de dados.
-
- <details>
-    <summary><u>Rotas da API (restante das requisições na pasta /postman collections)</u></summary>
-
-| Verbo HTTP 	|                  CRUD                  	|                         URL                        	|                                   Valor                                   	|
-|:----------:	|:--------------------------------------:	|:--------------------------------------------------:	|:-------------------------------------------------------------------------:	|
-|     GET    	|              Read all books            	|             localhost:8080/api/v1/books            	|                                    -/-                                    	|
-|     GET    	|             Read book by id            	|        localhost:8080/api/v1/books/${valor}        	|                                ID do livro                                	|
-|     GET    	|           Read book by status          	|     localhost:8080/api/v1books?booked=${valor}     	|                        0 = disponível 1 = reservado                       	|
-|    POST    	|               Create book              	|             localhost:8080/api/v1/books            	| raw/JSON: { name, releaseDate, imgUrl, author { id }, categories { id } } 	|
-|     PUT    	|               Update book              	|        localhost:8080/api/v1/books/${valor}        	|                 ID do livro  raw/JSON: { dados de insert }                	|
-|    POST    	| Create reservation, update book status 	|         localhost:8080/api/v1/reservations         	|              raw/JSON:  { weeks, cliente { id }, books { id }             	|
-|     PUT    	| Update reservation, update book status 	| localhost:8080/api/v1/reservations/return/${valor} 	|                        ID do livro a ser devolvido                        	| 
-|	 POST		|			Authenticate user				|		localhost:8080/api/v1/authenticate				|						raw/JSON: { email, password }							|
-|	 POST		|			   Create user					|		   localhost:8080/api/v1/register				| 		raw/JSON: { firstname, lastname, email, password, roles { id } }		| 
-
- </details>
-
- <br>
 
  <h3 align="center">Modelo relacional</h3>
 
@@ -32,9 +16,6 @@
 </p>
 
  <br>
-
-[![Top Langs](https://github-readme-stats-crysisprophet1234.vercel.app/api/top-langs/?username=crysisprophet1234&exclude_repo=DSCatalog,springboot3-jpa-demo,springboot3-security6-JWT-demo,cv-poletto,DSViaCEP,github-readme-stats&custom_title=Tecnologias%20utilizadas&langs_count=10&layout=compact)](https://github.com/anuraghazra/github-readme-stats)
-
 
 ---
 
@@ -57,13 +38,35 @@
 <p>
 <img src="https://img.shields.io/badge/Spring-6DB33F?style=for-the-badge&logo=spring&logoColor=white" />
 
+<img src="https://img.shields.io/badge/JWT-323330?style=for-the-badge&logo=jsonwebtokens&logoColor=rede" />
+
+<img src="https://img.shields.io/badge/JUnit5-355E3B?style=for-the-badge&logo=junit5&logoColor=red" />
+
+<img src="https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white" />
+
 <img src="https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB" />
 
 <img src="https://img.shields.io/badge/Sass-CC6699?style=for-the-badge&logo=sass&logoColor=white" />
 
-<img src="https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white" />
-
 <img src="https://img.shields.io/badge/Bootstrap-563D7C?style=for-the-badge&logo=bootstrap&logoColor=white" />
+
+</p>
+
+<p>
+
+
+ 
+</p>
+
+**Build e depêndencias**
+
+<p>
+<img src="https://img.shields.io/badge/Maven-563D7C?style=for-the-badge&logo=apachemaven&logoColor=white" />
+
+<img src="https://img.shields.io/badge/Vite-6DB33F?style=for-the-badge&logo=vite&logoColor=vite" />
+
+<img src="https://img.shields.io/badge/SWC-6DB33F?style=for-the-badge&logo=swc&logoColor=vite" />
+	
 </p>
 
 **Banco de dados**
@@ -71,7 +74,7 @@
 <p>
 <img src="https://img.shields.io/badge/PostgreSQL-316192?style=for-the-badge&logo=postgresql&logoColor=white" />
 
-<img height="28px" width="60px" src="http://h2database.com/html/images/h2-logo-2.png" />
+<img src="https://img.shields.io/badge/Redis-grey?style=for-the-badge&logo=redis&logoColor=red" />
 </p>
 
 **DevOps**
@@ -80,6 +83,10 @@
 <img src="https://img.shields.io/badge/Git-E34F26?style=for-the-badge&logo=git&logoColor=white" />
 
 <img src="https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white" />
+
+<img src="https://img.shields.io/badge/Docker-blue?style=for-the-badge&logo=docker&logoColor=white" />
+
+<img src="https://img.shields.io/badge/GitHub Actions-white?style=for-the-badge&logo=githubactions&logoColor=blue" />
 </p>
 
 **Ferramentas de desenvolvimento**
