@@ -44,8 +44,6 @@ import jakarta.persistence.EntityNotFoundException;
 @Service("ReservationServiceV3")
 public class ReservationService {
 
-	// TODO fazer classes de teste para cache
-
 	private static final Logger logger = LoggerFactory.getLogger(ReservationService.class);
 
 	@Autowired
@@ -63,43 +61,30 @@ public class ReservationService {
 	@Autowired
 	private BookRepository bookRepository;
 
-	@Deprecated
-	@Transactional(readOnly = true)
-	public Page<ReservationDTOv2> findAll(Pageable pageable, Long userId) {
-
-		Page<Reservation> reservationPage = reservationRepository.findAll(pageable);
-
-		logger.info("Resource RESERVATION page found: " + "PAGE NUMBER [" + reservationPage.getNumber()
-				+ "] - CONTENT: " + reservationPage.getContent());
-
-		Page<ReservationDTOv2> dtos = reservationPage.map(x -> ReservationMapper.convertEntityToDtoV2(x));
-
-		dtos.stream().forEach(dto -> {
-			dto.add(linkTo(methodOn(ReservationController.class).findById(dto.getId())).withSelfRel().withType("GET"))
-					.add(linkTo(methodOn(ReservationController.class).returnReservation(dto.getId())).withRel("return")
-							.withType("PUT"));
-			dto.getBooks().forEach(book -> book
-					.add(linkTo(methodOn(BookController.class).findById(book.getId())).withSelfRel().withType("GET")));
-			dto.getClient().add(linkTo(methodOn(UserController.class).findById(dto.getClient().getId())).withSelfRel()
-					.withType("GET"));
-		});
-
-		return dtos;
-
-	}
-
 	@Cacheable(value = "reservations")
 	@Transactional(readOnly = true)
-	public Page<ReservationDTOv2> findAllPaged(Pageable pageable, LocalDate startingDate, LocalDate devolutionDate,
-			Long clientId, Long bookId, String status) {
+	public Page<ReservationDTOv2> findAllPaged(
+			Pageable pageable,
+			LocalDate startingDate,
+			LocalDate devolutionDate,
+			Long clientId,
+			Long bookId,
+			String status
+		) {
 
 		ZoneId zoneId = ZoneId.of("America/Sao_Paulo");
 
 		Instant startDate = startingDate != null ? startingDate.atStartOfDay(zoneId).toInstant() : null;
 		Instant endDate = devolutionDate != null ? devolutionDate.atStartOfDay(zoneId).toInstant() : null;
 
-		Page<Reservation> reservationPage = reservationRepository.findPaged(startDate, endDate, clientId, bookId,
-				status.toString().toUpperCase(), pageable);
+		Page<Reservation> reservationPage = reservationRepository.findPaged(
+				startDate,
+				endDate,
+				clientId,
+				bookId,
+				status.toString().toUpperCase(),
+				pageable
+		);
 
 		logger.info("Resource RESERVATION page found: PAGE NUMBER [" + reservationPage.getNumber() + "] "
 				+ "- CONTENT: " + reservationPage.getContent());
@@ -107,13 +92,10 @@ public class ReservationService {
 		Page<ReservationDTOv2> dtos = reservationPage.map(x -> ReservationMapper.convertEntityToDtoV2(x));
 
 		dtos.stream().forEach(dto -> {
-			dto.add(linkTo(methodOn(ReservationController.class).findById(dto.getId())).withSelfRel().withType("GET"))
-					.add(linkTo(methodOn(ReservationController.class).returnReservation(dto.getId())).withRel("return")
-							.withType("PUT"));
-			dto.getBooks().forEach(book -> book
-					.add(linkTo(methodOn(BookController.class).findById(book.getId())).withSelfRel().withType("GET")));
-			dto.getClient().add(linkTo(methodOn(UserController.class).findById(dto.getClient().getId())).withSelfRel()
-					.withType("GET"));
+			dto.add(linkTo(methodOn(ReservationController.class).findById(dto.getId())).withSelfRel().withType("GET"));
+			dto.add(linkTo(methodOn(ReservationController.class).returnReservation(dto.getId())).withRel("return").withType("PUT"));
+			dto.getBooks().forEach(book -> book.add(linkTo(methodOn(BookController.class).findById(book.getId())).withSelfRel().withType("GET")));
+			dto.getClient().add(linkTo(methodOn(UserController.class).findById(dto.getClient().getId())).withSelfRel().withType("GET"));
 		});
 
 		return dtos;
@@ -133,13 +115,10 @@ public class ReservationService {
 
 		ReservationDTOv2 dto = ReservationMapper.convertEntityToDtoV2(entity);
 
-		dto.add(linkTo(methodOn(ReservationController.class).findById(dto.getId())).withSelfRel().withType("GET"))
-				.add(linkTo(methodOn(ReservationController.class).returnReservation(dto.getId())).withRel("return")
-						.withType("PUT"));
-		dto.getBooks().forEach(book -> book
-				.add(linkTo(methodOn(BookController.class).findById(book.getId())).withSelfRel().withType("GET")));
-		dto.getClient().add(
-				linkTo(methodOn(UserController.class).findById(dto.getClient().getId())).withSelfRel().withType("GET"));
+		dto.add(linkTo(methodOn(ReservationController.class).findById(dto.getId())).withSelfRel().withType("GET"));
+		dto.add(linkTo(methodOn(ReservationController.class).returnReservation(dto.getId())).withRel("return").withType("PUT"));
+		dto.getBooks().forEach(book -> book.add(linkTo(methodOn(BookController.class).findById(book.getId())).withSelfRel().withType("GET")));
+		dto.getClient().add(linkTo(methodOn(UserController.class).findById(dto.getClient().getId())).withSelfRel().withType("GET"));
 
 		return dto;
 
@@ -196,24 +175,20 @@ public class ReservationService {
 
 		ReservationDTOv2 newDto = ReservationMapper.convertEntityToDtoV2(entity);
 
-		newDto.add(linkTo(methodOn(ReservationController.class).findById(newDto.getId())).withSelfRel().withType("GET"))
-				.add(linkTo(methodOn(ReservationController.class).returnReservation(newDto.getId())).withRel("return")
-						.withType("PUT"));
-		newDto.getBooks().forEach(book -> book
-				.add(linkTo(methodOn(BookController.class).findById(book.getId())).withSelfRel().withType("GET")));
-		newDto.getClient().add(linkTo(methodOn(UserController.class).findById(newDto.getClient().getId())).withSelfRel()
-				.withType("GET"));
+		newDto.add(linkTo(methodOn(ReservationController.class).findById(newDto.getId())).withSelfRel().withType("GET"));
+		newDto.add(linkTo(methodOn(ReservationController.class).returnReservation(newDto.getId())).withRel("return").withType("PUT"));
+		newDto.getBooks().forEach(book -> book.add(linkTo(methodOn(BookController.class).findById(book.getId())).withSelfRel().withType("GET")));
+		newDto.getClient().add(linkTo(methodOn(UserController.class).findById(newDto.getClient().getId())).withSelfRel().withType("GET"));
 
 		return newDto;
 
 	}
-
-	// TODO getReferenceById bugando sem o @transactional, vale a pena checar resto do programa onde isso poderia ter sido usado, criar issue no remote
-	@Caching(evict = { 	
+	
+	@Caching(evict = { 
 			@CacheEvict(value = "reservations", allEntries = true),
 			@CacheEvict(value = "books", allEntries = true) 
 	})
-	@Transactional 
+	@Transactional
 	public void returnReservation(Long reservationId) {
 
 		try {
@@ -232,13 +207,11 @@ public class ReservationService {
 			}
 
 			reservationRepository.save(reservation);
-			
+
 			logger.info("Resource RESERVATION status changed to FINISHED: {}", reservation);
 
 			if (redisClient.put("reservation::" + reservationId, ReservationMapper.convertEntityToDtoV2(reservation))) {
-
 				logger.info("Cache reservation::{} status changed to FINISHED", reservationId);
-			
 			}
 
 		} catch (EntityNotFoundException ex) {
@@ -255,7 +228,7 @@ public class ReservationService {
 		bookRepository.save(book);
 
 		logger.info("Resource BOOK status changed to AVAILABLE: {}", book);
-
+			
 		if (redisClient.put("book::" + book.getId(), BookMapper.convertEntityToDtoV2(book))) {
 
 			logger.info("Cache book::{} status changed to AVAILABLE", book.getId());
