@@ -25,10 +25,13 @@ public class CustomRedisClient<K, V> {
 
 		try {
 
-			return redisTemplate.opsForValue().get(key);
+			V value =  redisTemplate.opsForValue().get(key);
+			logger.info("retrieved value from cache = [{}]", value);
+			return value;
 
 		} catch (Exception ex) {
 			logger.warn("cache failure trying to get cache: {}", ex.getLocalizedMessage());
+			logger.error(StackTraceFormatter.stackTraceFormatter(ex));
 			return null;
 		}
 
@@ -40,10 +43,13 @@ public class CustomRedisClient<K, V> {
 
 		try {
 
-			return redisTemplate.opsForValue().setIfAbsent(key, value);
+			var setted = redisTemplate.opsForValue().setIfAbsent(key, value);
+			logger.info("inserted value in cache, key = [{}] value = [{}]", key, value);
+			return setted;
 
 		} catch (Exception ex) {
 			logger.warn("cache failure trying to set cache: {}", ex.getLocalizedMessage());
+			logger.error(StackTraceFormatter.stackTraceFormatter(ex));
 			return false;
 		}
 
@@ -55,10 +61,13 @@ public class CustomRedisClient<K, V> {
 
 		try {
 
-			return redisTemplate.opsForValue().setIfPresent(key, value);
+			var setted = redisTemplate.opsForValue().setIfPresent(key, value);
+			logger.info("updated value in cache, key = [{}] value = [{}]", key, value);
+			return setted;
 
 		} catch (Exception ex) {
 			logger.warn("cache failure trying to put cache: {}", ex.getLocalizedMessage());
+			logger.error(StackTraceFormatter.stackTraceFormatter(ex));
 			return false;
 		}
 
@@ -70,10 +79,13 @@ public class CustomRedisClient<K, V> {
 		
 		try {
 
-			return redisTemplate.delete(key);
+			var setted = redisTemplate.delete(key);
+			logger.info("deleted value in cache, key = [{}]", key);
+			return setted;
 			
 		} catch (Exception ex) {
 			logger.warn("cache failure trying to delete cache: {}", ex.getLocalizedMessage());
+			logger.error(StackTraceFormatter.stackTraceFormatter(ex));
 			return false;
 		}
 
