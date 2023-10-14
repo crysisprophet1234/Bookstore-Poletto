@@ -68,5 +68,19 @@ public class ReservationMocks {
 		return dto;
 
 	}
+	
+	public static ReservationDTOv2 insertReservationMockDto(Long... booksId) {
+
+		ReservationDTOv2 dto = new ReservationDTOv2();
+
+		dto.setClient(UserMocks.userMockDto());
+		dto.setWeeks(2);
+		for (Long id: booksId) {
+			dto.getBooks().add(BookMocks.bookMockDto(id));
+		}
+
+		return dto;
+
+	}
 
 }
