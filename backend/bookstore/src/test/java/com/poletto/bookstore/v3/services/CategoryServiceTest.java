@@ -6,7 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
-import java.util.Set;
+import java.util.List;
 import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.AfterAll;
@@ -26,8 +26,10 @@ import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 
+import com.poletto.bookstore.converter.DozerMapperConverter;
 import com.poletto.bookstore.dto.v2.CategoryDTOv2;
-import com.poletto.bookstore.repositories.v2.CategoryRepository;
+import com.poletto.bookstore.entities.Category;
+import com.poletto.bookstore.repositories.v3.CategoryRepository;
 import com.poletto.bookstore.services.v3.CategoryService;
 import com.poletto.bookstore.util.CustomRedisClient;
 
@@ -43,7 +45,7 @@ public class CategoryServiceTest {
 private static final Logger logger = LoggerFactory.getLogger(AuthorServiceTest.class);
 	
 	@Autowired
-	private CustomRedisClient<String , CategoryDTOv2> client;
+	private CustomRedisClient<String , Category> client;
 
 	private static RedisServer redisServer;
 
@@ -90,7 +92,7 @@ private static final Logger logger = LoggerFactory.getLogger(AuthorServiceTest.c
 
 		logger.info("querying category with id 1 on the cache");
 
-		CategoryDTOv2 cachedCategoryDto = client.get("category::" + 1L);
+		CategoryDTOv2 cachedCategoryDto = DozerMapperConverter.parseObject(client.get("category::" + 1L), CategoryDTOv2.class);
 
 		assertNotNull(cachedCategoryDto, "cachedCategoryDto was null");
 
@@ -123,13 +125,16 @@ private static final Logger logger = LoggerFactory.getLogger(AuthorServiceTest.c
 
 		logger.info("querying category list from repository");
 
-		Set<CategoryDTOv2> categoryList = service.findAll();
+		List<CategoryDTOv2> categoryList = service.findAll();
 
 		assertNotNull(categoryList, "categoryList was null");
 
 		logger.info("querying category list from cache");
 
-		Set<CategoryDTOv2> cachedCategoryList = ((Set<?>) client.get(expectedCacheKey)).stream().map(x -> (CategoryDTOv2) x).collect(Collectors.toSet());
+		List<CategoryDTOv2> cachedCategoryList = ((List<?>) client.get(expectedCacheKey))
+				.stream()
+				.map(x -> DozerMapperConverter.parseObject(x, CategoryDTOv2.class))
+				.collect(Collectors.toList());
 
 		assertNotNull(cachedCategoryList, "cachedCategoryList was null");
 

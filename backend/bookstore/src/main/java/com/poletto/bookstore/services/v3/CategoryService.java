@@ -4,13 +4,10 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -22,7 +19,8 @@ import com.poletto.bookstore.converter.DozerMapperConverter;
 import com.poletto.bookstore.dto.v2.CategoryDTOv2;
 import com.poletto.bookstore.entities.Category;
 import com.poletto.bookstore.exceptions.ResourceNotFoundException;
-import com.poletto.bookstore.repositories.v2.CategoryRepository;
+import com.poletto.bookstore.repositories.v3.CategoryRepository;
+
 
 @Service("CategoryServiceV3")
 public class CategoryService {
@@ -32,15 +30,14 @@ public class CategoryService {
 	@Autowired
 	private CategoryRepository categoryRepository;
 	
-	@Cacheable(value = "categoriesList")
 	@Transactional (readOnly = true)
-	public Set<CategoryDTOv2> findAll() {
+	public List<CategoryDTOv2> findAll() {
 		
 		List<Category> entitiesList = categoryRepository.findAll();
 		
 		logger.info("Resource CATEGORY list found: " + DozerMapperConverter.parseListObjects(entitiesList, CategoryDTOv2.class));
 		
-		Set<CategoryDTOv2> dtosList = DozerMapperConverter.parseListObjects(entitiesList, CategoryDTOv2.class).stream().collect(Collectors.toSet());
+		List<CategoryDTOv2> dtosList = DozerMapperConverter.parseListObjects(entitiesList, CategoryDTOv2.class);
 		
 		dtosList.stream().forEach(dto -> dto
 				.add(linkTo(methodOn(CategoryController.class).findById(dto.getId())).withSelfRel().withType("GET"))
@@ -50,7 +47,6 @@ public class CategoryService {
 		
 	}
 	
-	@Cacheable(value = "categoriesPage")
 	@Transactional(readOnly = true)
 	public Page<CategoryDTOv2> findAllPaged(Pageable pageable) {
 		
@@ -68,11 +64,11 @@ public class CategoryService {
 		
 	}
 	
-	@Cacheable(value = "category", key = "#id")
 	@Transactional(readOnly = true)
 	public CategoryDTOv2 findById(Long id) {
-		
-		Category entity = categoryRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Resource CATEGORY not found. ID " + id));
+
+		Category entity = categoryRepository.findById(id).orElseThrow(
+				() -> new ResourceNotFoundException("Resource CATEGORY not found. ID " + id));
 		
 		logger.info("Resource CATEGORY found: " + entity);
 		
