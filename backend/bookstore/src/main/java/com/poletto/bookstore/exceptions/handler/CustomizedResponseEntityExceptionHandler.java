@@ -9,10 +9,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.DisabledException;
+import org.springframework.security.authentication.LockedException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -57,10 +61,10 @@ public class CustomizedResponseEntityExceptionHandler extends ResponseEntityExce
 		return new ResponseEntity<>(exceptionResponse, HttpStatus.INTERNAL_SERVER_ERROR);
 	}
 
-	@ExceptionHandler(DatabaseException.class)
+	@ExceptionHandler({DatabaseException.class, DataIntegrityViolationException.class})
 	public final ResponseEntity<ExceptionResponse> handleDatabaseException(Exception ex, WebRequest request) {
 
-		ExceptionResponse exceptionResponse = new ExceptionResponse(HttpStatus.INTERNAL_SERVER_ERROR, "Somente livros nunca reservados podem ser deletados",
+		ExceptionResponse exceptionResponse = new ExceptionResponse(HttpStatus.INTERNAL_SERVER_ERROR, ex.getMessage(),
 				ex.getLocalizedMessage(), request.getDescription(false));
 
 		logger.warn(exceptionResponse.toString() + clientInfo(request));
@@ -71,6 +75,18 @@ public class CustomizedResponseEntityExceptionHandler extends ResponseEntityExce
 
 	@ExceptionHandler(UnauthorizedException.class)
 	public final ResponseEntity<ExceptionResponse> handleUnauthorizedException(Exception ex, WebRequest request) {
+
+		ExceptionResponse exceptionResponse = new ExceptionResponse(HttpStatus.UNAUTHORIZED, ex.getMessage(),
+				ex.getLocalizedMessage(), request.getDescription(false));
+
+		logger.warn(exceptionResponse.toString() + clientInfo(request));
+		logger.error(StackTraceFormatter.stackTraceFormatter(ex));
+		return new ResponseEntity<>(exceptionResponse, HttpStatus.UNAUTHORIZED);
+
+	}
+	
+	@ExceptionHandler(value = {BadCredentialsException.class, DisabledException.class, LockedException.class}) 
+	public final ResponseEntity<ExceptionResponse> handleLoginException(Exception ex, WebRequest request) {
 
 		ExceptionResponse exceptionResponse = new ExceptionResponse(HttpStatus.UNAUTHORIZED, ex.getMessage(),
 				ex.getLocalizedMessage(), request.getDescription(false));
