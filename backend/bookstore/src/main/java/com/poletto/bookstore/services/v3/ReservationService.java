@@ -6,7 +6,6 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
-import java.util.Optional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,8 +37,6 @@ import com.poletto.bookstore.repositories.v2.BookReservationRepository;
 import com.poletto.bookstore.repositories.v2.ReservationRepository;
 import com.poletto.bookstore.repositories.v2.UserRepository;
 import com.poletto.bookstore.util.CustomRedisClient;
-
-import jakarta.persistence.EntityNotFoundException;
 
 @Service("ReservationServiceV3")
 public class ReservationService {
@@ -77,7 +74,7 @@ public class ReservationService {
 		Instant startDate = startingDate != null ? startingDate.atStartOfDay(zoneId).toInstant() : null;
 		Instant endDate = devolutionDate != null ? devolutionDate.atStartOfDay(zoneId).toInstant() : null;
 
-		Page<Reservation> reservationPage = reservationRepository.findPaged(
+		Page<Reservation> entitiesPage = reservationRepository.findPaged(
 				startDate,
 				endDate,
 				clientId,
@@ -86,19 +83,19 @@ public class ReservationService {
 				pageable
 		);
 
-		logger.info("Resource RESERVATION page found: PAGE NUMBER [" + reservationPage.getNumber() + "] "
-				+ "- CONTENT: " + reservationPage.getContent());
+		logger.info("Resource RESERVATION page found: PAGE NUMBER [" + entitiesPage.getNumber() + "] "
+				+ "- CONTENT: " + entitiesPage.getContent());
 
-		Page<ReservationDTOv2> dtos = reservationPage.map(x -> ReservationMapper.convertEntityToDtoV2(x));
+		Page<ReservationDTOv2> dtosPage = entitiesPage.map(x -> ReservationMapper.convertEntityToDtoV2(x));
 
-		dtos.stream().forEach(dto -> {
+		dtosPage.stream().forEach(dto -> {
 			dto.add(linkTo(methodOn(ReservationController.class).findById(dto.getId())).withSelfRel().withType("GET"));
 			dto.add(linkTo(methodOn(ReservationController.class).returnReservation(dto.getId())).withRel("return").withType("PUT"));
 			dto.getBooks().forEach(book -> book.add(linkTo(methodOn(BookController.class).findById(book.getId())).withSelfRel().withType("GET")));
 			dto.getClient().add(linkTo(methodOn(UserController.class).findById(dto.getClient().getId())).withSelfRel().withType("GET"));
 		});
 
-		return dtos;
+		return dtosPage;
 
 	}
 
@@ -106,12 +103,11 @@ public class ReservationService {
 	@Transactional(readOnly = true)
 	public ReservationDTOv2 findById(Long id) {
 
-		Optional<Reservation> reservation = reservationRepository.findById(id);
-
-		var entity = reservation
-				.orElseThrow(() -> new ResourceNotFoundException("Resource RESERVATION not found. ID " + id));
+		Reservation entity = reservationRepository.findById(id).orElseThrow(
+				() -> new ResourceNotFoundException("Resource RESERVATION not found. ID " + id));
 
 		logger.info("Resource RESERVATION found: " + entity.toString());
+
 
 		ReservationDTOv2 dto = ReservationMapper.convertEntityToDtoV2(entity);
 
@@ -119,9 +115,10 @@ public class ReservationService {
 		dto.add(linkTo(methodOn(ReservationController.class).returnReservation(dto.getId())).withRel("return").withType("PUT"));
 		dto.getBooks().forEach(book -> book.add(linkTo(methodOn(BookController.class).findById(book.getId())).withSelfRel().withType("GET")));
 		dto.getClient().add(linkTo(methodOn(UserController.class).findById(dto.getClient().getId())).withSelfRel().withType("GET"));
-
+		
 		return dto;
 
+		
 	}
 
 	@Caching(evict = { 
@@ -191,33 +188,26 @@ public class ReservationService {
 	@Transactional
 	public void returnReservation(Long reservationId) {
 
-		try {
 
-			var reservation = reservationRepository.getReferenceById(reservationId);
+		Reservation reservation = reservationRepository.getReferenceById(reservationId);
 
-			if (reservation.getStatus().equals(ReservationStatus.IN_PROGRESS)) {
+		if (reservation.getStatus().equals(ReservationStatus.IN_PROGRESS)) {
 
-				reservation.getBooks().forEach(x -> returnBook(x.getBook()));
+			reservation.getBooks().forEach(x -> returnBook(x.getBook()));
 
-				reservation.setStatus(ReservationStatus.FINISHED);
+			reservation.setStatus(ReservationStatus.FINISHED);
 
-			} else {
+		} else {
 
-				throw new InvalidStatusException(reservation);
-			}
+			throw new InvalidStatusException(reservation);
+		}
 
-			reservationRepository.save(reservation);
+		reservationRepository.save(reservation);
 
-			logger.info("Resource RESERVATION status changed to FINISHED: {}", reservation);
+		logger.info("Resource RESERVATION status changed to FINISHED: {}", reservation);
 
-			if (redisClient.put("reservation::" + reservationId, ReservationMapper.convertEntityToDtoV2(reservation))) {
-				logger.info("Cache reservation::{} status changed to FINISHED", reservationId);
-			}
-
-		} catch (EntityNotFoundException ex) {
-
-			throw new ResourceNotFoundException("Resource RESERVATION id " + reservationId + " not found.");
-
+		if (redisClient.put("reservation::" + reservationId, ReservationMapper.convertEntityToDtoV2(reservation))) {
+			logger.info("Cache reservation::{} status changed to FINISHED", reservationId);
 		}
 
 	}

@@ -25,7 +25,7 @@ import com.poletto.bookstore.repositories.v2.AuthorRepository;
 @Service("AuthorServiceV3")
 public class AuthorService {
 	
-	//TODO impossível criar links de livros por autor, categoryId não recebe valor válido
+	//TODO #28
 
 	private static final Logger logger = LoggerFactory.getLogger(AuthorService.class);
 

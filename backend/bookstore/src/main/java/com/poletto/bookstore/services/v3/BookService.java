@@ -3,8 +3,6 @@ package com.poletto.bookstore.services.v3;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
-import java.util.Optional;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,7 +10,6 @@ import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.annotation.Caching;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -25,13 +22,10 @@ import com.poletto.bookstore.dto.v2.CategoryDTOv2;
 import com.poletto.bookstore.entities.Book;
 import com.poletto.bookstore.entities.Category;
 import com.poletto.bookstore.entities.enums.BookStatus;
-import com.poletto.bookstore.exceptions.DatabaseException;
 import com.poletto.bookstore.exceptions.ResourceNotFoundException;
 import com.poletto.bookstore.repositories.v2.AuthorRepository;
 import com.poletto.bookstore.repositories.v2.BookRepository;
 import com.poletto.bookstore.repositories.v2.CategoryRepository;
-
-import jakarta.persistence.EntityNotFoundException;
 
 @Service("BookServiceV3")
 public class BookService {
@@ -53,23 +47,23 @@ public class BookService {
 	@Transactional(readOnly = true)
 	public Page<BookDTOv2> findAllPaged(Pageable pageable, Long categoryId, String name, String status) {
 
-		Page<Book> bookPage = bookRepository.findPaged(
+		Page<Book> entitiesPage = bookRepository.findPaged(
 				categoryId,
 				name.toLowerCase(),
 				status.toUpperCase(),
 				pageable);
 
-		logger.info("Resource BOOK page found: PAGE NUMBER [" + bookPage.getNumber() + "] "
-				+ "- CONTENT: " + bookPage.getContent());
+		logger.info("Resource BOOK page found: PAGE NUMBER [" + entitiesPage.getNumber() + "] "
+				  + "- CONTENT: " + entitiesPage.getContent());
 
-		Page<BookDTOv2> dtosPage = bookPage.map(x -> BookMapper.convertEntityToDtoV2(x));
+		Page<BookDTOv2> dtosPage = entitiesPage.map(x -> BookMapper.convertEntityToDtoV2(x));
 
-		dtosPage.stream().forEach(x -> x
-				.add(linkTo(methodOn(BookController.class).findById(x.getId())).withSelfRel().withType("GET"))
-				.add(linkTo(methodOn(BookController.class).delete(x.getId())).withRel("delete").withType("DELETE"))
-				.add(linkTo(methodOn(BookController.class).update(x.getId(), x)).withRel("update").withType("PUT")));
+		 dtosPage.stream().forEach(dto -> dto
+				.add(linkTo(methodOn(BookController.class).findById(dto.getId())).withSelfRel().withType("GET"))
+				.add(linkTo(methodOn(BookController.class).delete(dto.getId())).withRel("delete").withType("DELETE"))
+				.add(linkTo(methodOn(BookController.class).update(dto.getId(), dto)).withRel("update").withType("PUT")));
 
-		return dtosPage;
+		 return dtosPage;
 
 	}
 
@@ -77,20 +71,16 @@ public class BookService {
 	@Transactional(readOnly = true)
 	public BookDTOv2 findById(Long id) {
 
-		Optional<Book> obj = bookRepository.findById(id);
-
-		Book book = obj.orElseThrow(() -> new ResourceNotFoundException("Resource BOOK not found. ID " + id));
+		Book entity = bookRepository.findById(id).orElseThrow(
+				() -> new ResourceNotFoundException("Resource BOOK not found. ID " + id));
 		
-		BookDTOv2 dto = BookMapper.convertEntityToDtoV2(book);
+		logger.info("Resource BOOK found: " + entity.toString());
 		
-		logger.info("Resource BOOK found: " + dto.toString());
-
-		dto.add(linkTo(methodOn(BookController.class).findById(dto.getId())).withSelfRel().withType("GET"));
-		dto.add(linkTo(methodOn(BookController.class).delete(dto.getId())).withRel("delete").withType("DELETE"));
-		dto.add(linkTo(methodOn(BookController.class).update(dto.getId(), dto)).withRel("update").withType("PUT"));
-
-		return dto;
-
+		return BookMapper.convertEntityToDtoV2(entity)
+				.add(linkTo(methodOn(BookController.class).findById(entity.getId())).withSelfRel().withType("GET"))
+				.add(linkTo(methodOn(BookController.class).delete(entity.getId())).withRel("delete").withType("DELETE"))
+				.add(linkTo(methodOn(BookController.class).update(entity.getId(), BookMapper.convertEntityToDtoV2(entity))).withRel("update").withType("PUT"));
+		
 	}
 
 	@CacheEvict(value = "books", allEntries = true)
@@ -101,66 +91,51 @@ public class BookService {
 		
 		Book entity = BookMapper.convertDtoToEntityV2(dto);
 
-		entity.setAuthor(authorRepository.findById(dto.getAuthor().getId())
-				.orElseThrow(() -> new ResourceNotFoundException(
-						"Resource AUTHOR not found. ID " + dto.getAuthor().getId())));
+		entity.setAuthor(authorRepository.findById(dto.getAuthor().getId()).orElseThrow(
+				() -> new ResourceNotFoundException("Resource AUTHOR not found. ID " + dto.getAuthor().getId())));
 
 		entity.getCategories().clear();
 
 		for (CategoryDTOv2 categoryDTO : dto.getCategories()) {
 
-			Category category = categoryRepository.findById(categoryDTO.getId())
-					.orElseThrow(() -> new ResourceNotFoundException(
-							"Resource CATEGORY not found. ID " + categoryDTO.getId()));
+			Category category = categoryRepository.findById(categoryDTO.getId()).orElseThrow(
+					() -> new ResourceNotFoundException("Resource CATEGORY not found. ID " + categoryDTO.getId()));
 
 			entity.getCategories().add(category);
 
 		}
 
 		entity = bookRepository.save(entity);
-
-		BookDTOv2 newDto = BookMapper.convertEntityToDtoV2(entity);
 		
-		logger.info("Resource BOOK saved: " + newDto.toString());
+		logger.info("Resource BOOK saved: " + entity.toString());
 
-		newDto.add(linkTo(methodOn(BookController.class).findById(newDto.getId())).withSelfRel().withType("GET"));
-		newDto.add(linkTo(methodOn(BookController.class).delete(newDto.getId())).withRel("delete").withType("DELETE"));
-		newDto.add(linkTo(methodOn(BookController.class).update(newDto.getId(), newDto)).withRel("update").withType("PUT"));
-
-		return newDto;
+		return BookMapper.convertEntityToDtoV2(entity)
+				.add(linkTo(methodOn(BookController.class).findById(entity.getId())).withSelfRel().withType("GET"))
+				.add(linkTo(methodOn(BookController.class).delete(entity.getId())).withRel("delete").withType("DELETE"))
+				.add(linkTo(methodOn(BookController.class).update(entity.getId(), BookMapper.convertEntityToDtoV2(entity))).withRel("update").withType("PUT"));
 
 	}
 
-	@Caching(evict = { @CacheEvict(value = "books", allEntries = true) }, put = {
-			@CachePut(value = "book", key = "#id") })
+	@Caching(
+			evict = { @CacheEvict(value = "books", allEntries = true) },
+			put = { @CachePut(value = "book", key = "#id") })
 	@Transactional
 	public BookDTOv2 update(Long id, BookDTOv2 dto) {
 
-		try {
+		Book entity = bookRepository.getReferenceById(id);
+		
+		dto.setStatus(entity.getStatus());
 
-			Book entity = bookRepository.getReferenceById(id);
-			
-			dto.setStatus(entity.getStatus());
+		entity = BookMapper.convertDtoToEntityV2(dto);
 
-			entity = BookMapper.convertDtoToEntityV2(dto);
+		entity = bookRepository.save(entity);
+		
+		logger.info("Resource BOOK updated: " + entity.toString());
 
-			entity = bookRepository.save(entity);
-
-			dto = BookMapper.convertEntityToDtoV2(entity);
-			
-			logger.info("Resource BOOK updated: " + dto.toString());
-
-			dto.add(linkTo(methodOn(BookController.class).findById(dto.getId())).withSelfRel().withType("GET"));
-			dto.add(linkTo(methodOn(BookController.class).delete(dto.getId())).withRel("delete").withType("DELETE"));
-			dto.add(linkTo(methodOn(BookController.class).update(dto.getId(), dto)).withRel("update").withType("PUT"));
-
-			return dto;
-
-		} catch (EntityNotFoundException e) {
-
-			throw new ResourceNotFoundException("Resource BOOK not found. ID " + id);
-
-		}
+		return BookMapper.convertEntityToDtoV2(entity)
+				.add(linkTo(methodOn(BookController.class).findById(entity.getId())).withSelfRel().withType("GET"))
+				.add(linkTo(methodOn(BookController.class).delete(entity.getId())).withRel("delete").withType("DELETE"))
+				.add(linkTo(methodOn(BookController.class).update(entity.getId(), BookMapper.convertEntityToDtoV2(entity))).withRel("update").withType("PUT"));
 
 	}
 
@@ -170,21 +145,13 @@ public class BookService {
 	})
 	public void delete(Long id) {
 
-		try {
-
-			if (bookRepository.existsById(id)) {
-				bookRepository.deleteById(id);
-			} else {
-				throw new ResourceNotFoundException("Resource BOOK not found. ID " + id);
-			}
-
-			logger.info("Resource BOOK deleted: ID " + id);
-
-		} catch (DataIntegrityViolationException e) {
-
-			throw new DatabaseException(e.getMessage());
-
+		if (bookRepository.existsById(id)) {
+			bookRepository.deleteById(id);
+		} else {
+			throw new ResourceNotFoundException("Resource BOOK not found. ID " + id);
 		}
+
+		logger.info("Resource BOOK deleted: ID " + id);
 
 	}
 

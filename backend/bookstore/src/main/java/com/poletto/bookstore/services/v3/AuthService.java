@@ -9,7 +9,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -21,7 +20,7 @@ import com.poletto.bookstore.converter.custom.UserMapper;
 import com.poletto.bookstore.dto.v2.UserAuthDTOv2;
 import com.poletto.bookstore.dto.v2.UserDTOv2;
 import com.poletto.bookstore.entities.User;
-import com.poletto.bookstore.exceptions.UnauthorizedException;
+import com.poletto.bookstore.exceptions.ResourceNotFoundException;
 import com.poletto.bookstore.repositories.v2.RoleRepository;
 import com.poletto.bookstore.repositories.v2.UserRepository;
 
@@ -59,13 +58,10 @@ public class AuthService {
 
 		logger.info("Resource USER saved: " + entity.toString());
 
-		UserDTOv2 newDto = UserMapper.convertEntityToDtoV2(entity);
-		
-		newDto.add(linkTo(methodOn(UserController.class).findById(newDto.getId())).withSelfRel().withType("GET"));
-		newDto.add(linkTo(methodOn(UserController.class).delete(newDto.getId())).withRel("delete").withType("DELETE"));
-		newDto.add(linkTo(methodOn(UserController.class).update(newDto.getId(), UserMapper.convertEntityToAuthDtoV2(UserMapper.convertDtoToEntityV2(newDto)))).withRel("update").withType("PUT"));
-
-		return newDto;
+		return UserMapper.convertEntityToDtoV2(entity)
+				.add(linkTo(methodOn(UserController.class).findById(entity.getId())).withSelfRel().withType("GET"))
+				.add(linkTo(methodOn(UserController.class).delete(entity.getId())).withRel("delete").withType("DELETE"))
+				.add(linkTo(methodOn(UserController.class).update(entity.getId(), UserMapper.convertEntityToAuthDtoV2(entity))).withRel("update").withType("PUT"));
 
 	}
 	
@@ -73,16 +69,13 @@ public class AuthService {
 	@Transactional(readOnly = true)
 	public UserAuthDTOv2 authenticate(UserAuthDTOv2 dto) {
 
-		try {
+		authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
+				dto.getEmail(),
+				dto.getPassword()
+		));
 
-			authenticationManager
-					.authenticate(new UsernamePasswordAuthenticationToken(dto.getEmail(), dto.getPassword()));
-
-		} catch (BadCredentialsException e) {
-			throw new UnauthorizedException("Bad credentials for login");
-		}
-
-		User entity = userRepository.findByEmail(dto.getEmail()).orElseThrow();
+		User entity = userRepository.findByEmail(dto.getEmail()).orElseThrow(
+				() -> new ResourceNotFoundException("Resource USER not found. Email " + dto.getEmail()));
 
 		UserAuthDTOv2 userAuthDTO = UserMapper.convertEntityToAuthDtoV2(entity);
 
@@ -91,12 +84,15 @@ public class AuthService {
 		userAuthDTO.setToken(jwtToken);
 
 		logger.info("Resource USER authenticated {}", userAuthDTO);
-		
-		userAuthDTO.add(linkTo(methodOn(UserController.class).findById(userAuthDTO.getId())).withSelfRel().withType("GET"));
-		userAuthDTO.add(linkTo(methodOn(UserController.class).delete(userAuthDTO.getId())).withRel("delete").withType("DELETE"));
-		userAuthDTO.add(linkTo(methodOn(UserController.class).update(userAuthDTO.getId(), UserMapper.convertEntityToAuthDtoV2(UserMapper.convertDtoToEntityV2(userAuthDTO)))).withRel("update").withType("PUT"));
 
-		return userAuthDTO;
+		
+		//FIXME wtf???
+		 userAuthDTO
+				.add(linkTo(methodOn(UserController.class).findById(entity.getId())).withSelfRel().withType("GET"))
+				.add(linkTo(methodOn(UserController.class).delete(entity.getId())).withRel("delete").withType("DELETE"))
+				.add(linkTo(methodOn(UserController.class).update(entity.getId(), UserMapper.convertEntityToAuthDtoV2(entity))).withRel("update").withType("PUT"));
+		 
+		 return userAuthDTO;
 
 	}
 
