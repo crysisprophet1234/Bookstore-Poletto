@@ -14,8 +14,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.poletto.bookstore.controllers.v2.AuthorController;
-import com.poletto.bookstore.controllers.v2.BookController;
+import com.poletto.bookstore.controllers.v3.AuthorController;
+import com.poletto.bookstore.controllers.v3.BookController;
 import com.poletto.bookstore.converter.DozerMapperConverter;
 import com.poletto.bookstore.dto.v2.AuthorDTOv2;
 import com.poletto.bookstore.entities.Author;
@@ -24,6 +24,8 @@ import com.poletto.bookstore.repositories.v2.AuthorRepository;
 
 @Service("AuthorServiceV3")
 public class AuthorService {
+	
+	//TODO impossível criar links de livros por autor, categoryId não recebe valor válido
 
 	private static final Logger logger = LoggerFactory.getLogger(AuthorService.class);
 
@@ -42,7 +44,7 @@ public class AuthorService {
 
 		dtosList.stream().forEach(dto -> dto
 				.add(linkTo(methodOn(AuthorController.class).findById(dto.getId())).withSelfRel().withType("GET"))
-				.add(linkTo(methodOn(BookController.class).findAllPaged(0, 12, "asc", "name", null, dto.getName(), "all")).withRel("BOOKS BY AUTHOR").withType("GET")));
+				.add(linkTo(methodOn(BookController.class).findAllPaged(0, 12, "asc", "name", 0L, dto.getName(), "all")).withRel("BOOKS BY AUTHOR").withType("GET")));
 
 		return dtosList;
 
@@ -60,7 +62,7 @@ public class AuthorService {
 
 		dtosPage.stream().forEach(dto -> dto
 				.add(linkTo(methodOn(AuthorController.class).findById(dto.getId())).withSelfRel().withType("GET"))
-				.add(linkTo(methodOn(BookController.class).findAllPaged(0, 12, "asc", "name", null, dto.getName(), "all")).withRel("BOOKS BY AUTHOR").withType("GET")));
+				.add(linkTo(methodOn(BookController.class).findAllPaged(0, 12, "asc", "name", 0L, dto.getName(), "all")).withRel("BOOKS BY AUTHOR").withType("GET")));
 
 		return dtosPage;
 
@@ -76,7 +78,8 @@ public class AuthorService {
 		logger.info("Resource AUTHOR found: " + entity.toString());
 
 		return DozerMapperConverter.parseObject(entity, AuthorDTOv2.class)
-				.add(linkTo(methodOn(BookController.class).findAllPaged(0, 12, "asc", "name", null, entity.getName(), "all")).withRel("BOOKS BY AUTHOR").withType("GET"));
+				.add(linkTo(methodOn(AuthorController.class).findById(entity.getId())).withSelfRel().withType("GET"))
+				.add(linkTo(methodOn(BookController.class).findAllPaged(0, 12, "asc", "name", 0L, entity.getName(), "all")).withRel("BOOKS BY AUTHOR").withType("GET"));
 
 	}
 
