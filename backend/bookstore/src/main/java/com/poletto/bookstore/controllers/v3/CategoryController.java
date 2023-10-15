@@ -1,6 +1,6 @@
 package com.poletto.bookstore.controllers.v3;
 
-import java.util.Set;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -22,8 +22,8 @@ public class CategoryController {
 	private CategoryService categoryService;
 	
 	@GetMapping
-	public ResponseEntity<Set<CategoryDTOv2>> findAll() {
-		Set<CategoryDTOv2> categories = categoryService.findAll();
+	public ResponseEntity<List<CategoryDTOv2>> findAll() {
+		List<CategoryDTOv2> categories = categoryService.findAll();
 		return ResponseEntity.ok().body(categories);
 	}
 	
