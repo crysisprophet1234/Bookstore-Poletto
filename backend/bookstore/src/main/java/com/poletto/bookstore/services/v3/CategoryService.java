@@ -16,8 +16,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.poletto.bookstore.controllers.v2.BookController;
-import com.poletto.bookstore.controllers.v2.CategoryController;
+import com.poletto.bookstore.controllers.v3.BookController;
+import com.poletto.bookstore.controllers.v3.CategoryController;
 import com.poletto.bookstore.converter.DozerMapperConverter;
 import com.poletto.bookstore.dto.v2.CategoryDTOv2;
 import com.poletto.bookstore.entities.Category;
