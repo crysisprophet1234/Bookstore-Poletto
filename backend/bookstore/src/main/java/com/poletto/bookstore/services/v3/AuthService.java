@@ -16,7 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.poletto.bookstore.config.JwtService;
-import com.poletto.bookstore.controllers.v2.UserController;
+import com.poletto.bookstore.controllers.v3.UserController;
 import com.poletto.bookstore.converter.custom.UserMapper;
 import com.poletto.bookstore.dto.v2.UserAuthDTOv2;
 import com.poletto.bookstore.dto.v2.UserDTOv2;
