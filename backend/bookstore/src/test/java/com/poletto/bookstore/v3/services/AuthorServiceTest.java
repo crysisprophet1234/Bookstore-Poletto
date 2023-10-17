@@ -26,8 +26,10 @@ import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 
+import com.poletto.bookstore.converter.DozerMapperConverter;
 import com.poletto.bookstore.dto.v2.AuthorDTOv2;
-import com.poletto.bookstore.repositories.v2.AuthorRepository;
+import com.poletto.bookstore.entities.Author;
+import com.poletto.bookstore.repositories.v3.AuthorRepository;
 import com.poletto.bookstore.services.v3.AuthorService;
 import com.poletto.bookstore.util.CustomRedisClient;
 
@@ -43,7 +45,7 @@ public class AuthorServiceTest {
 	private static final Logger logger = LoggerFactory.getLogger(AuthorServiceTest.class);
 	
 	@Autowired
-	private CustomRedisClient<String , AuthorDTOv2> client;
+	private CustomRedisClient<String , Author> client;
 
 	private static RedisServer redisServer;
 
@@ -91,7 +93,7 @@ public class AuthorServiceTest {
 
 		logger.info("querying author with id 1 on the cache");
 
-		AuthorDTOv2 cachedAuthorDto = client.get("author::" + 1L);
+		AuthorDTOv2 cachedAuthorDto = DozerMapperConverter.parseObject(client.get("author::" + 1L), AuthorDTOv2.class);
 
 		assertNotNull(cachedAuthorDto, "cachedAuthorDto was null");
 
@@ -131,7 +133,10 @@ public class AuthorServiceTest {
 
 		logger.info("querying author list from cache");
 
-		List<AuthorDTOv2> cachedAuthorList = ((List<?>) client.get(expectedCacheKey)).stream().map(x -> (AuthorDTOv2) x).collect(Collectors.toList());
+		List<AuthorDTOv2> cachedAuthorList = ((List<?>) client.get(expectedCacheKey))
+				.stream()
+				.map(x -> DozerMapperConverter.parseObject(x, AuthorDTOv2.class))
+				.collect(Collectors.toList());
 
 		assertNotNull(cachedAuthorList, "cachedAuthorList was null");
 

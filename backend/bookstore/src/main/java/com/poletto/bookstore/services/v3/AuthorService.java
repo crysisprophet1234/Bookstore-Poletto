@@ -8,7 +8,6 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -20,7 +19,7 @@ import com.poletto.bookstore.converter.DozerMapperConverter;
 import com.poletto.bookstore.dto.v2.AuthorDTOv2;
 import com.poletto.bookstore.entities.Author;
 import com.poletto.bookstore.exceptions.ResourceNotFoundException;
-import com.poletto.bookstore.repositories.v2.AuthorRepository;
+import com.poletto.bookstore.repositories.v3.AuthorRepository;
 
 @Service("AuthorServiceV3")
 public class AuthorService {
@@ -32,7 +31,6 @@ public class AuthorService {
 	@Autowired
 	private AuthorRepository authorRepository;
 
-	@Cacheable(value = "authorsList")
 	@Transactional(readOnly = true)
 	public List<AuthorDTOv2> findAll() {
 
@@ -50,7 +48,6 @@ public class AuthorService {
 
 	}
 
-	@Cacheable(value = "authorsPage")
 	@Transactional(readOnly = true)
 	public Page<AuthorDTOv2> findAllPaged(Pageable pageable) {
 
@@ -68,7 +65,6 @@ public class AuthorService {
 
 	}
 
-	@Cacheable(value = "author", key = "#id")
 	@Transactional(readOnly = true)
 	public AuthorDTOv2 findById(Long id) {
 
