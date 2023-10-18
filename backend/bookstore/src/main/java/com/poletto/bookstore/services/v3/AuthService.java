@@ -6,8 +6,6 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -21,8 +19,8 @@ import com.poletto.bookstore.dto.v2.UserAuthDTOv2;
 import com.poletto.bookstore.dto.v2.UserDTOv2;
 import com.poletto.bookstore.entities.User;
 import com.poletto.bookstore.exceptions.ResourceNotFoundException;
-import com.poletto.bookstore.repositories.v2.RoleRepository;
-import com.poletto.bookstore.repositories.v2.UserRepository;
+import com.poletto.bookstore.repositories.v3.RoleRepository;
+import com.poletto.bookstore.repositories.v3.AuthRepository;
 
 @Service("AuthServiceV3")
 public class AuthService {
@@ -30,7 +28,7 @@ public class AuthService {
 	private static final Logger logger = LoggerFactory.getLogger(AuthService.class);
 	
 	@Autowired
-	private UserRepository userRepository;
+	private AuthRepository authRepository;
 
 	@Autowired
 	private RoleRepository roleRepository;
@@ -44,7 +42,6 @@ public class AuthService {
 	@Autowired
 	private AuthenticationManager authenticationManager;
 	
-	@CacheEvict(value = "users", allEntries = true)
 	@Transactional
 	public UserDTOv2 register(UserAuthDTOv2 dto) {
 
@@ -54,7 +51,7 @@ public class AuthService {
 
 		entity.setPassword(passwordEncoder.encode(dto.getPassword()));
 
-		entity = userRepository.save(entity);
+		entity = authRepository.save(entity);
 
 		logger.info("Resource USER saved: " + entity.toString());
 
@@ -65,7 +62,6 @@ public class AuthService {
 
 	}
 	
-	@Cacheable(value = "userAuth", key = "#dto.email")
 	@Transactional(readOnly = true)
 	public UserAuthDTOv2 authenticate(UserAuthDTOv2 dto) {
 
@@ -74,7 +70,7 @@ public class AuthService {
 				dto.getPassword()
 		));
 
-		User entity = userRepository.findByEmail(dto.getEmail()).orElseThrow(
+		User entity = authRepository.findByEmail(dto.getEmail()).orElseThrow(
 				() -> new ResourceNotFoundException("Resource USER not found. Email " + dto.getEmail()));
 
 		UserAuthDTOv2 userAuthDTO = UserMapper.convertEntityToAuthDtoV2(entity);

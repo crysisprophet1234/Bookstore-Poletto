@@ -32,9 +32,13 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 
+import com.poletto.bookstore.converter.custom.UserMapper;
 import com.poletto.bookstore.dto.v2.UserAuthDTOv2;
 import com.poletto.bookstore.dto.v2.UserDTOv2;
-import com.poletto.bookstore.repositories.v2.UserRepository;
+import com.poletto.bookstore.entities.User;
+import com.poletto.bookstore.repositories.v3.AuthRepository;
+import com.poletto.bookstore.repositories.v3.RoleRepository;
+import com.poletto.bookstore.repositories.v3.UserRepository;
 import com.poletto.bookstore.services.v3.AuthService;
 import com.poletto.bookstore.services.v3.UserService;
 import com.poletto.bookstore.util.CustomRedisClient;
@@ -49,15 +53,19 @@ import redis.embedded.RedisServer;
 @TestInstance(Lifecycle.PER_CLASS)
 public class AuthServiceTest {
 	
-	//TODO import-test.sql is inserting 4 users, check tests
-
 	private static final Logger logger = LoggerFactory.getLogger(AuthServiceTest.class);
 
 	@Autowired
-	private CustomRedisClient<String, UserDTOv2> client;
+	private CustomRedisClient<String, User> client;
 
 	private static RedisServer redisServer;
 
+	@SpyBean
+	private AuthRepository authRepository;
+	
+	@SpyBean
+	private RoleRepository roleRepository;
+	
 	@SpyBean
 	private UserRepository userRepository;
 	
@@ -127,39 +135,43 @@ public class AuthServiceTest {
 		
 		logger.info("querying userAuth from cache");
 		
-		UserAuthDTOv2 cachedLoginDto = (UserAuthDTOv2) client.get("userAuth::" + loginDto.getEmail());
+		User loginEntity = UserMapper.convertDtoToEntityV2(loginDto);
 		
-		assertNotNull(cachedLoginDto, "cachedLoginDto was null");
+		User cachedLoginEntity =  client.get("userAuth::" + loginDto.getEmail());
 		
-		logger.info("asserting loginDto and cachedLoginDto are equals");
+		assertNotNull(cachedLoginEntity, "cachedLoginEntity was null");
 		
-		assertEquals(loginDto, cachedLoginDto, "loginDto and cachedLoginDto were not equals");
+		logger.info("asserting loginEntity and cachedLoginEntity are equals");
 		
-		logger.info("updating loginDto to check if userAuth cache gets evicted");
+		assertEquals(loginEntity, cachedLoginEntity, "loginEntity and cachedLoginEntity were not equals");
+		
+		logger.info("updating loginEntity to check if userAuth cache gets evicted");
 		
 		loginDto.setPassword("newpassword");
 		
-		userService.update(loginDto.getId(), loginDto);
+		userService.update(loginEntity.getId(), loginDto);
 		
-		logger.info("asserting that the cache userAuth::{} got evicted", loginDto.getEmail());
+		logger.info("asserting that the cache userAuth::{} got evicted", loginEntity.getEmail());
 		
-		assertNull(client.get("userAuth::" + loginDto.getEmail()));
+		assertNull(client.get("userAuth::" + loginEntity.getEmail()));
 		
-		logger.info("authenticating with updated user [{}]", loginDto);
+		logger.info("authenticating with updated user [{}]", loginEntity);
 		
 		assertDoesNotThrow(() -> loginDto = authService.authenticate(loginDto), "error thrown when trying to login with updated user credentials");
 		
-		logger.info("asserting updated loginDto and previous cachedLoginDto are not equals");
+		loginEntity = UserMapper.convertDtoToEntityV2(loginDto);
 		
-		assertNotEquals(loginDto.toString(), cachedLoginDto.toString(), "updated loginDto was equal to previous cachedLoginDto");
+		logger.info("asserting updated loginEntity and previous cachedLoginEntity are not equals");
+		
+		assertNotEquals(loginEntity.toString(), cachedLoginEntity.toString(), "updated loginEntity was equal to previous cachedLoginEntity");
 		
 		logger.info("querying userAuth from cache again");
 		
-		cachedLoginDto = (UserAuthDTOv2) client.get("userAuth::" + loginDto.getEmail());
+		cachedLoginEntity = client.get("userAuth::" + loginEntity.getEmail());
 		
-		logger.info("asserting updated loginDto and updated cachedLoginDto are equals");
+		logger.info("asserting updated loginEntity and updated cachedLoginEntity are equals");
 		
-		assertEquals(loginDto.toString(), cachedLoginDto.toString(), "updated loginDto was not equal to updated cachedLoginDto");
+		assertEquals(loginEntity, cachedLoginEntity, "updated loginEntity was not equal to updated cachedLoginEntity");
 		
 		logger.info("asserting that the authenticationManager got invoked 2 times");
 		
@@ -176,13 +188,13 @@ public class AuthServiceTest {
 		
 		logger.info("querying user page from repository");
 		
-		Page<UserDTOv2> userPage = findPageOfUsersFromService();
+		Page<User> userPage = findPageOfUsersFromService();
 		
 		assertNotNull(userPage, "userPage was null");
 		
 		logger.info("querying user page from cache");
 		
-		Page<UserDTOv2> cachedUserPage = findPageOfUsersFromCache();
+		Page<User> cachedUserPage = findPageOfUsersFromCache();
 		
 		assertNotNull(cachedUserPage, "userPage was null");
 		
@@ -223,19 +235,19 @@ public class AuthServiceTest {
 		
 	}
 	
-	private Page<UserDTOv2> findPageOfUsersFromService() {
+	private Page<User> findPageOfUsersFromService() {
 
 		Pageable pageable = PageRequest.of(0, 20);
 
-		return userService.findAllPaged(pageable);
+		return userService.findAllPaged(pageable).map(x -> UserMapper.convertDtoToEntityV2(x));
 
 	}
 
-	private Page<UserDTOv2> findPageOfUsersFromCache() {
+	private Page<User> findPageOfUsersFromCache() {
 
 		String expectedCacheKey = "users::Page request [number: 0, size 20, sort: UNSORTED]";
 
-		return ((Page<?>) client.get(expectedCacheKey)).map(x -> (UserDTOv2) x);
+		return ((Page<?>) client.get(expectedCacheKey)).map(x -> (User) x);
 
 	}
 	
