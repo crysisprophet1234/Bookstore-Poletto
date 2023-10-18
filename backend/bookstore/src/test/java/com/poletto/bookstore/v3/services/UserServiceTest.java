@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -30,9 +31,11 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 
+import com.poletto.bookstore.converter.custom.UserMapper;
 import com.poletto.bookstore.dto.v2.UserAuthDTOv2;
 import com.poletto.bookstore.dto.v2.UserDTOv2;
-import com.poletto.bookstore.repositories.v2.UserRepository;
+import com.poletto.bookstore.entities.User;
+import com.poletto.bookstore.repositories.v3.UserRepository;
 import com.poletto.bookstore.services.v3.AuthService;
 import com.poletto.bookstore.services.v3.UserService;
 import com.poletto.bookstore.util.CustomRedisClient;
@@ -50,7 +53,7 @@ public class UserServiceTest {
 	private static final Logger logger = LoggerFactory.getLogger(UserServiceTest.class);
 
 	@Autowired
-	private CustomRedisClient<String, UserDTOv2> client;
+	private CustomRedisClient<String, User> client;
 
 	private static RedisServer redisServer;
 
@@ -113,12 +116,11 @@ public class UserServiceTest {
 
 		logger.info("querying user with id 1 on the repository");
 
-		assertDoesNotThrow(() -> userDto = userService.findById(1L),
-				"error thrown when trying to query user with id 1");
+		assertDoesNotThrow(() -> userDto = userService.findById(1L), "error thrown when trying to query user with id 1");
 
 		logger.info("querying user with id 1 on the cache");
 
-		UserDTOv2 cachedUserDto = client.get("user::" + 1L);
+		UserDTOv2 cachedUserDto = UserMapper.convertEntityToDtoV2((User) client.get("user::" + 1L));
 
 		assertNotNull(cachedUserDto, "cachedUserDto was null");
 
@@ -128,8 +130,7 @@ public class UserServiceTest {
 
 		logger.info("querying user with id 1 on the repository again to check if cache gets hit");
 
-		assertDoesNotThrow(() -> userDto = userService.findById(1L),
-				"error thrown when trying to query user with id 1");
+		assertDoesNotThrow(() -> userDto = userService.findById(1L), "error thrown when trying to query user with id 1");
 
 		logger.info("asserting that new userDto is equals to cachedUserDto");
 
@@ -162,8 +163,7 @@ public class UserServiceTest {
 
 		logger.info("asserting userPage from repository and cache are equals");
 
-		assertEquals(userPage.getContent(), cachedUserPage.getContent(),
-				"userPage from repository and cache were not equals");
+		assertEquals(userPage.getContent(), cachedUserPage.getContent(), "userPage from repository and cache were not equals");
 
 		logger.info("querying user page on the repository again to check if cache gets hit");
 
@@ -186,20 +186,15 @@ public class UserServiceTest {
 
 		logger.info("\n\n<=========  STARTING TEST isUserCacheBeingUpdated()  =========>\n");
 
-//		logger.info("inserting a new user");
-//		
-//		assertDoesNotThrow(() -> userDto = authService.register(insertUserDto), "error thrown when trying to insert new user");
-//		
-//		Long 1 = userDto.getId();
+		Long userId = 1L;
 
-		logger.info("querying user with {} on the repository", 1);
+		logger.info("querying user with {} on the repository", userId);
 
-		assertDoesNotThrow(() -> userDto = userService.findById(1L),
-				"error thrown when trying to query user with id " + 1);
+		assertDoesNotThrow(() -> userDto = userService.findById(userId), "error thrown when trying to query user with id " + userId);
 
-		logger.info("querying user with id {} on the cache", 1);
+		logger.info("querying user with id {} on the cache", userId);
 
-		UserDTOv2 cachedUserDto = client.get("user::" + 1);
+		UserDTOv2 cachedUserDto = UserMapper.convertEntityToDtoV2((User) client.get("user::" + userId));
 
 		assertNotNull(cachedUserDto, "cachedUserDto was null");
 
@@ -207,27 +202,25 @@ public class UserServiceTest {
 
 		assertEquals(userDto, cachedUserDto, "userDto and cachedUserDto were not equals");
 
-		logger.info("updating user with id {}", 1);
+		logger.info("updating user with id {}", userId);
 
-		UserAuthDTOv2 updateUserDto = UserMocks.userAuthDto(1L);
+		UserAuthDTOv2 updateUserDto = UserMocks.userAuthDto(userId);
 
 		updateUserDto.setFirstname("Newname");
 
-		assertDoesNotThrow(() -> userDto = userService.update(1L, updateUserDto),
-				"error thrown when trying to update user with id " + 1);
+		assertDoesNotThrow(() -> userDto = userService.update(userId, updateUserDto), "error thrown when trying to update user with id " + userId);
 
 		logger.info("asserting that updated userDto is not equals to previous cached userDto");
 
 		assertNotEquals(userDto, cachedUserDto, "updated userDto was equals to previous cached userDto");
 
-		logger.info("querying user with id {} again", 1);
+		logger.info("querying user with id {} again", userId);
 
-		assertDoesNotThrow(() -> userDto = userService.findById(1L),
-				"error thrown when trying to query user with id " + 1);
+		assertDoesNotThrow(() -> userDto = userService.findById(userId), "error thrown when trying to query user with id " + userId);
 
-		logger.info("querying user with id {} on the cache again", 1);
+		logger.info("querying user with id {} on the cache again", userId);
 
-		cachedUserDto = client.get("user::" + 1);
+		cachedUserDto = UserMapper.convertEntityToDtoV2((User) client.get("user::" + userId));
 
 		logger.info("asserting that the cache got properly updated");
 
@@ -235,19 +228,16 @@ public class UserServiceTest {
 
 		logger.info("asserting that the repository was invoked only once");
 
-		verify(userRepository, times(2)).findById(1L);
+		verify(userRepository, times(1)).findById(userId);
 
-		logger.info(
-				"test success, user with id {} got properly cached and updated, repository was only invoked one time",
-				1);
+		logger.info("test success, user with id {} got properly cached and updated, repository was only invoked one time", userId);
 
 	}
 
 	@Test
 	void isUserPageAndSingleCacheGettingEvictedAfterDeletion() {
 
-		logger.info(
-				"\n\n<=========  STARTING TEST isUserPageAndSingleCacheGettingEvictedAfterDeletion()  =========>\n");
+		logger.info("\n\n<=========  STARTING TEST isUserPageAndSingleCacheGettingEvictedAfterDeletion()  =========>\n");
 
 		logger.info("querying user page from repository");
 
@@ -273,7 +263,7 @@ public class UserServiceTest {
 
 		logger.info("querying user with id 1 on the cache");
 
-		UserDTOv2 cachedUserDto = client.get("user::" + 1L);
+		UserDTOv2 cachedUserDto = UserMapper.convertEntityToDtoV2((User) client.get("user::" + 1L));
 
 		assertNotNull(cachedUserDto, "cachedUserDto was null");
 
@@ -291,7 +281,7 @@ public class UserServiceTest {
 
 		logger.info("asserting that the user page cache got evicted");
 
-		assertNull(findPageOfUsersFromCache(), "user page cache didnt got evicted");
+		assertTrue(findPageOfUsersFromCache().getContent().size() == 0, "user page cache didnt got evicted");
 
 		logger.info("test success, user page and user deleted cache got evicted after user deletion");
 
@@ -310,9 +300,11 @@ public class UserServiceTest {
 		String expectedCacheKey = "users::Page request [number: 0, size 20, sort: UNSORTED]";
 
 		try {
-			return ((Page<?>) client.get(expectedCacheKey)).map(x -> (UserDTOv2) x);
+			
+			return ((Page<?>) client.get(expectedCacheKey)).map(x -> UserMapper.convertEntityToDtoV2((User) x));
+			
 		} catch (NullPointerException ex) {
-			return null;
+			return Page.empty();
 		}
 
 	}

@@ -8,10 +8,6 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.CachePut;
-import org.springframework.cache.annotation.Cacheable;
-import org.springframework.cache.annotation.Caching;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -26,8 +22,8 @@ import com.poletto.bookstore.dto.v2.UserDTOv2;
 import com.poletto.bookstore.entities.Reservation;
 import com.poletto.bookstore.entities.User;
 import com.poletto.bookstore.exceptions.ResourceNotFoundException;
-import com.poletto.bookstore.repositories.v2.RoleRepository;
-import com.poletto.bookstore.repositories.v2.UserRepository;
+import com.poletto.bookstore.repositories.v3.RoleRepository;
+import com.poletto.bookstore.repositories.v3.UserRepository;
 import com.poletto.bookstore.util.CustomRedisClient;
 
 @Service("UserServiceV3")
@@ -49,7 +45,6 @@ public class UserService {
 	@Autowired
 	private PasswordEncoder passwordEncoder;
 
-	@Cacheable("users")
 	@Transactional(readOnly = true)
 	public Page<UserDTOv2> findAllPaged(Pageable pageable) {
 
@@ -69,7 +64,6 @@ public class UserService {
 
 	}
 
-	@Cacheable(value = "user", key = "#id")
 	@Transactional(readOnly = true)
 	public UserDTOv2 findById(Long id) {
 
@@ -86,10 +80,6 @@ public class UserService {
 	}
 
 	// TODO userAuth here??? frontend will eventually have person/user changes
-	@Caching(
-			evict = { @CacheEvict(value = {"users", "reservations", "reservation"}, allEntries = true) },
-			put = { @CachePut(value = "user", key = "#id") }
-	)
 	@Transactional
 	public UserDTOv2 update(Long id, UserAuthDTOv2 dto) {
 
@@ -136,10 +126,6 @@ public class UserService {
 
 	}
 
-	@Caching(evict = { 
-			@CacheEvict(value = "users", allEntries = true),
-			@CacheEvict(value = "user", key = "#id")
-	})
 	@Transactional
 	public void delete(Long id) {
 
