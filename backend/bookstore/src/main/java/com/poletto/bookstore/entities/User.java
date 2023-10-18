@@ -41,7 +41,7 @@ public class User implements UserDetails {
 	private String firstname;
 	private String lastname;
 
-	@OneToMany(mappedBy = "client")
+	@OneToMany(mappedBy = "client", fetch = FetchType.EAGER)
 	private List<Reservation> orders = new ArrayList<>();
 
 	@ManyToMany(fetch = FetchType.EAGER)
