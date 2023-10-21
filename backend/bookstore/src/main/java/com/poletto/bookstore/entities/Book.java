@@ -10,6 +10,7 @@ import com.poletto.bookstore.entities.enums.BookStatus;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -41,10 +42,10 @@ public class Book implements Serializable {
 	@JoinColumn (name = "author_id")
 	private Author author;
 	
-	@OneToMany (mappedBy = "id.book")
+	@OneToMany (mappedBy = "id.book", fetch = FetchType.EAGER)
 	private Set<BookReservation> reservations = new HashSet<>();
 	
-	@ManyToMany
+	@ManyToMany(fetch = FetchType.EAGER)
 	@JoinTable(name = "book_category", joinColumns = @JoinColumn(name = "book_id"), inverseJoinColumns = @JoinColumn(name = "category_id"))
 	private Set<Category> categories = new HashSet<>();
 	
