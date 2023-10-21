@@ -21,8 +21,8 @@ import org.springframework.test.context.ActiveProfiles;
 
 import com.poletto.bookstore.dto.v2.BookDTOv2;
 import com.poletto.bookstore.dto.v2.ReservationDTOv2;
-import com.poletto.bookstore.repositories.v2.BookRepository;
-import com.poletto.bookstore.repositories.v2.ReservationRepository;
+import com.poletto.bookstore.repositories.v3.BookRepository;
+import com.poletto.bookstore.repositories.v3.ReservationRepository;
 import com.poletto.bookstore.services.v3.BookService;
 import com.poletto.bookstore.services.v3.ReservationService;
 import com.poletto.bookstore.util.CustomRedisClient;
@@ -75,7 +75,7 @@ public class CacheExceptionTest {
 
 		bookDTO = bookInsertDto = null;
 		
-		reservationDto = insertReservationDto = null;
+		reservationDto = insertReservationDto = null;	
 
 	}
 
