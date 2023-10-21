@@ -6,10 +6,6 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.CachePut;
-import org.springframework.cache.annotation.Cacheable;
-import org.springframework.cache.annotation.Caching;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -23,15 +19,13 @@ import com.poletto.bookstore.entities.Book;
 import com.poletto.bookstore.entities.Category;
 import com.poletto.bookstore.entities.enums.BookStatus;
 import com.poletto.bookstore.exceptions.ResourceNotFoundException;
-import com.poletto.bookstore.repositories.v2.AuthorRepository;
-import com.poletto.bookstore.repositories.v2.BookRepository;
-import com.poletto.bookstore.repositories.v2.CategoryRepository;
+import com.poletto.bookstore.repositories.v3.AuthorRepository;
+import com.poletto.bookstore.repositories.v3.BookRepository;
+import com.poletto.bookstore.repositories.v3.CategoryRepository;
 
 @Service("BookServiceV3")
 public class BookService {
-
-	// TODO fazer classes de teste para cache
-
+	
 	private static final Logger logger = LoggerFactory.getLogger(BookService.class);
 
 	@Autowired
@@ -43,7 +37,6 @@ public class BookService {
 	@Autowired
 	private AuthorRepository authorRepository;
 
-	@Cacheable(value = "books")
 	@Transactional(readOnly = true)
 	public Page<BookDTOv2> findAllPaged(Pageable pageable, Long categoryId, String name, String status) {
 
@@ -67,7 +60,6 @@ public class BookService {
 
 	}
 
-	@Cacheable(value = "book", key = "#id")
 	@Transactional(readOnly = true)
 	public BookDTOv2 findById(Long id) {
 
@@ -83,10 +75,9 @@ public class BookService {
 		
 	}
 
-	@CacheEvict(value = "books", allEntries = true)
 	@Transactional
 	public BookDTOv2 insert(BookDTOv2 dto) {
-		
+
 		dto.setStatus(BookStatus.AVAILABLE);
 		
 		Book entity = BookMapper.convertDtoToEntityV2(dto);
@@ -116,15 +107,14 @@ public class BookService {
 
 	}
 
-	@Caching(
-			evict = { @CacheEvict(value = "books", allEntries = true) },
-			put = { @CachePut(value = "book", key = "#id") })
 	@Transactional
 	public BookDTOv2 update(Long id, BookDTOv2 dto) {
 
 		Book entity = bookRepository.getReferenceById(id);
 		
 		dto.setStatus(entity.getStatus());
+		
+		dto.setId(id);
 
 		entity = BookMapper.convertDtoToEntityV2(dto);
 
@@ -139,10 +129,6 @@ public class BookService {
 
 	}
 
-	@Caching(evict = {
-			@CacheEvict(value = "books", allEntries = true),
-			@CacheEvict(value = "book", key = "#id")
-	})
 	public void delete(Long id) {
 
 		if (bookRepository.existsById(id)) {

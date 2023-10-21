@@ -33,9 +33,11 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 
+import com.poletto.bookstore.converter.custom.BookMapper;
 import com.poletto.bookstore.dto.v2.BookDTOv2;
+import com.poletto.bookstore.entities.Book;
 import com.poletto.bookstore.exceptions.ResourceNotFoundException;
-import com.poletto.bookstore.repositories.v2.BookRepository;
+import com.poletto.bookstore.repositories.v3.BookRepository;
 import com.poletto.bookstore.services.v3.BookService;
 import com.poletto.bookstore.util.CustomRedisClient;
 import com.poletto.bookstore.v3.mocks.BookMocks;
@@ -52,7 +54,7 @@ public class BookServiceTest {
 	private static final Logger logger = LoggerFactory.getLogger(BookServiceTest.class);
 
 	@Autowired
-	private CustomRedisClient<String , BookDTOv2> client;
+	private CustomRedisClient<String, Book> client;
 
 	private static RedisServer redisServer;
 
@@ -63,8 +65,8 @@ public class BookServiceTest {
 	@InjectMocks
 	private BookService service;
 
-	BookDTOv2 dto;
-	BookDTOv2 insertDto;
+	BookDTOv2 dto, insertDto;
+	Book entity;
 
 	@BeforeAll
 	public void startRedis() {
@@ -84,8 +86,12 @@ public class BookServiceTest {
 		insertDto = BookMocks.insertBookMockDto();
 		
 		dto = BookMocks.bookMockDto(1L);
+		
+		entity = BookMocks.bookMockEntity(1L);
 
 		service.insert(insertDto);
+		client.clear();
+		//FIXME refatorar testes pois o insert inclui cache agora
 
 	}
 
@@ -93,6 +99,8 @@ public class BookServiceTest {
 	public void tearDown() {
 
 		dto = insertDto = null;
+		
+		entity = null;
 
 		client.clear();
 
@@ -118,7 +126,7 @@ public class BookServiceTest {
 
 		logger.info("querying book by id 1 again to assert that the cache will get hit");
 
-		BookDTOv2 cachedDto1 = (BookDTOv2) client.get("book::1");
+		BookDTOv2 cachedDto1 = BookMapper.convertEntityToDtoV2(client.get("book::1"));
 
 		assertNotNull(cachedDto1, "book with id 1 not found on cache");
 
@@ -155,7 +163,7 @@ public class BookServiceTest {
 
 		logger.info("querying book by id 1 again to assert that the cache will get hit");
 
-		BookDTOv2 cachedDto1 = (BookDTOv2) client.get("book::1");
+		BookDTOv2 cachedDto1 = BookMapper.convertEntityToDtoV2(client.get("book::1"));
 
 		assertNotNull(cachedDto1, "book with id 1 not found on cache");
 
@@ -171,7 +179,7 @@ public class BookServiceTest {
 
 		dto1 = service.update(1L, dto1);
 
-		cachedDto1 = (BookDTOv2) client.get("book::1");
+		cachedDto1 = BookMapper.convertEntityToDtoV2(client.get("book::1"));
 
 		assertNotNull(cachedDto1, "book with id 1 not found on cache");
 
@@ -185,9 +193,7 @@ public class BookServiceTest {
 
 		logger.info("asserting that the book 1 cache got evicted");
 
-		cachedDto1 = (BookDTOv2) client.get("book::1");
-
-		assertNull(cachedDto1, "cache of book 1 didnt got evicted");
+		assertNull(client.get("book::1"), "cache of book 1 didnt got evicted");
 
 		logger.info("calling find by id to check if the repository gets called and throws not found exception");
 
@@ -312,9 +318,9 @@ public class BookServiceTest {
 		
 		String bookKey = "book#1";
 		
-		logger.info("setting on the cache value [{}] with key [{}]", dto, bookKey);
+		logger.info("setting on the cache value [{}] with key [{}]", entity, bookKey);
 		
-		assertTrue(client.set(bookKey, dto), "cache didnt got setted");
+		assertTrue(client.set(bookKey, entity), "cache didnt got setted");
 		
 		logger.info("asserting that the cache value is not null");
 		
@@ -322,17 +328,17 @@ public class BookServiceTest {
 		
 		logger.info("asserting that the cache value is equals to bookDto");
 		
-		assertEquals(dto, client.get(bookKey), "cache value didnt get setted properly");
+		assertEquals(entity, client.get(bookKey), "cache value didnt get setted properly");
 		
 		logger.info("updating value on the cache");
 		
 		dto.setName("new book name");
 		
-		assertTrue(client.put(bookKey, dto), "cache value didnt get updated");
+		assertTrue(client.put(bookKey, entity), "cache value didnt get updated");
 		
 		logger.info("asserting that the value got updated");
 		
-		assertEquals(dto.getName(), client.get(bookKey).getName());
+		assertEquals(entity.getName(), client.get(bookKey).getName());
 		
 		logger.info("test success, cache got setted, retrieved and updated properly");
 		
@@ -348,9 +354,15 @@ public class BookServiceTest {
 
 	private Page<BookDTOv2> findPageOfBooksFromCache() {
 
-		String expectedCacheKey = "books::SimpleKey [Page request [number: 0, size 12, sort: UNSORTED],null,,all]";
+		String expectedCacheKey = "books::SimpleKey [null,,ALL,Page request [number: 0, size 12, sort: UNSORTED]]";	
+		
+		try {
 
-		return ((Page<?>) client.get(expectedCacheKey)).map(x -> (BookDTOv2) x);
+			return ((Page<?>) client.get(expectedCacheKey)).map(x -> BookMapper.convertEntityToDtoV2((Book) x));
+		
+		} catch (NullPointerException ex) {
+			return Page.empty();
+		}
 
 	}
 
