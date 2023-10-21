@@ -10,9 +10,6 @@ import java.time.ZoneId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.Cacheable;
-import org.springframework.cache.annotation.Caching;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -21,7 +18,6 @@ import org.springframework.transaction.annotation.Transactional;
 import com.poletto.bookstore.controllers.v3.BookController;
 import com.poletto.bookstore.controllers.v3.ReservationController;
 import com.poletto.bookstore.controllers.v3.UserController;
-import com.poletto.bookstore.converter.custom.BookMapper;
 import com.poletto.bookstore.converter.custom.ReservationMapper;
 import com.poletto.bookstore.dto.v2.BookDTOv2;
 import com.poletto.bookstore.dto.v2.ReservationDTOv2;
@@ -32,10 +28,10 @@ import com.poletto.bookstore.entities.enums.BookStatus;
 import com.poletto.bookstore.entities.enums.ReservationStatus;
 import com.poletto.bookstore.exceptions.InvalidStatusException;
 import com.poletto.bookstore.exceptions.ResourceNotFoundException;
-import com.poletto.bookstore.repositories.v2.BookRepository;
-import com.poletto.bookstore.repositories.v2.BookReservationRepository;
-import com.poletto.bookstore.repositories.v2.ReservationRepository;
-import com.poletto.bookstore.repositories.v2.UserRepository;
+import com.poletto.bookstore.repositories.v3.BookRepository;
+import com.poletto.bookstore.repositories.v3.BookReservationRepository;
+import com.poletto.bookstore.repositories.v3.ReservationRepository;
+import com.poletto.bookstore.repositories.v3.UserRepository;
 import com.poletto.bookstore.util.CustomRedisClient;
 
 @Service("ReservationServiceV3")
@@ -50,15 +46,14 @@ public class ReservationService {
 	private ReservationRepository reservationRepository;
 
 	@Autowired
-	private BookReservationRepository bookReservationRepository;
-
-	@Autowired
 	private UserRepository userRepository;
+	
+	@Autowired
+	private BookReservationRepository bookReservationRepository;
 
 	@Autowired
 	private BookRepository bookRepository;
 
-	@Cacheable(value = "reservations")
 	@Transactional(readOnly = true)
 	public Page<ReservationDTOv2> findAllPaged(
 			Pageable pageable,
@@ -99,7 +94,6 @@ public class ReservationService {
 
 	}
 
-	@Cacheable(value = "reservation", key = "#id")
 	@Transactional(readOnly = true)
 	public ReservationDTOv2 findById(Long id) {
 
@@ -107,7 +101,6 @@ public class ReservationService {
 				() -> new ResourceNotFoundException("Resource RESERVATION not found. ID " + id));
 
 		logger.info("Resource RESERVATION found: " + entity.toString());
-
 
 		ReservationDTOv2 dto = ReservationMapper.convertEntityToDtoV2(entity);
 
@@ -117,14 +110,9 @@ public class ReservationService {
 		dto.getClient().add(linkTo(methodOn(UserController.class).findById(dto.getClient().getId())).withSelfRel().withType("GET"));
 		
 		return dto;
-
 		
 	}
 
-	@Caching(evict = { 
-			@CacheEvict(value = "reservations", allEntries = true),
-			@CacheEvict(value = "books", allEntries = true) 
-	})
 	@Transactional
 	public ReservationDTOv2 reserveBooks(ReservationDTOv2 dto) {
 
@@ -132,7 +120,8 @@ public class ReservationService {
 
 		entity.setStatus(ReservationStatus.IN_PROGRESS);
 
-		entity.setClient(userRepository.getReferenceById(dto.getClient().getId()));
+		entity.setClient(userRepository.findById(dto.getClient().getId())
+				.orElseThrow(() -> new ResourceNotFoundException("Resource USER not found. ID " + dto.getClient().getId())));
 
 		entity.setWeeks(dto.getWeeks());
 
@@ -154,16 +143,17 @@ public class ReservationService {
 			bookEntity.setStatus(BookStatus.BOOKED);
 			entity.getBooks().add(new BookReservation(entity, bookEntity));
 
-			if (redisClient.put("book::" + bookEntity.getId(), BookMapper.convertEntityToDtoV2(bookEntity))) {
-				logger.info("Cache book::{} status changed to BOOKED", bookDTO.getId());
-			}
-
 		}
 
 		entity = reservationRepository.save(entity);
-
+		
 		for (BookReservation book : entity.getBooks()) {
 			bookReservationRepository.save(book);
+			
+			if (redisClient.put("book::" + book.getBook().getId(), book.getBook())) {
+				logger.info("Cache book::{} status changed to BOOKED", book.getBook().getId());
+			}
+			
 		}
 
 		logger.info("Resource RESERVATION saved: " + entity.toString());
@@ -181,49 +171,33 @@ public class ReservationService {
 
 	}
 	
-	@Caching(evict = { 
-			@CacheEvict(value = "reservations", allEntries = true),
-			@CacheEvict(value = "books", allEntries = true) 
-	})
 	@Transactional
 	public void returnReservation(Long reservationId) {
 
+		Reservation reservation = reservationRepository.findById(reservationId)
+				.orElseThrow(() -> new ResourceNotFoundException("Resource RESERVATION not found. ID " + reservationId));
 
-		Reservation reservation = reservationRepository.getReferenceById(reservationId);
+		if (reservation.getStatus().equals(ReservationStatus.FINISHED)) throw new InvalidStatusException(reservation);
+		
+		for (BookReservation bookRes : reservation.getBooks()) {
+			
+			bookRes.getBook().setStatus(BookStatus.AVAILABLE);
+			
+			bookRepository.save(bookRes.getBook());
+			
+			if (redisClient.put("book::" + bookRes.getBook().getId(), bookRes.getBook())) {
 
-		if (reservation.getStatus().equals(ReservationStatus.IN_PROGRESS)) {
+				logger.info("Cache book::{} status changed to AVAILABLE", bookRes.getBook().getId());
 
-			reservation.getBooks().forEach(x -> returnBook(x.getBook()));
-
-			reservation.setStatus(ReservationStatus.FINISHED);
-
-		} else {
-
-			throw new InvalidStatusException(reservation);
+			}
+			
 		}
+		
+		reservation.setStatus(ReservationStatus.FINISHED);
 
 		reservationRepository.save(reservation);
 
 		logger.info("Resource RESERVATION status changed to FINISHED: {}", reservation);
-
-		if (redisClient.put("reservation::" + reservationId, ReservationMapper.convertEntityToDtoV2(reservation))) {
-			logger.info("Cache reservation::{} status changed to FINISHED", reservationId);
-		}
-
-	}
-
-	private void returnBook(Book book) {
-
-		book.setStatus(BookStatus.AVAILABLE);
-		bookRepository.save(book);
-
-		logger.info("Resource BOOK status changed to AVAILABLE: {}", book);
-			
-		if (redisClient.put("book::" + book.getId(), BookMapper.convertEntityToDtoV2(book))) {
-
-			logger.info("Cache book::{} status changed to AVAILABLE", book.getId());
-
-		}
 
 	}
 

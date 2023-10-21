@@ -1,8 +1,10 @@
 package com.poletto.bookstore.v3.services;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.times;
@@ -32,9 +34,11 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 
+import com.poletto.bookstore.converter.custom.ReservationMapper;
 import com.poletto.bookstore.dto.v2.ReservationDTOv2;
+import com.poletto.bookstore.entities.Reservation;
 import com.poletto.bookstore.entities.enums.ReservationStatus;
-import com.poletto.bookstore.repositories.v2.ReservationRepository;
+import com.poletto.bookstore.repositories.v3.ReservationRepository;
 import com.poletto.bookstore.services.v3.BookService;
 import com.poletto.bookstore.services.v3.ReservationService;
 import com.poletto.bookstore.util.CustomRedisClient;
@@ -53,7 +57,7 @@ public class ReservationServiceTest {
 	private static final Logger logger = LoggerFactory.getLogger(ReservationServiceTest.class);
 
 	@Autowired
-	private CustomRedisClient<String, ReservationDTOv2> client;
+	private CustomRedisClient<String, Reservation> client;
 	
 	private static RedisServer redisServer;
 
@@ -68,6 +72,7 @@ public class ReservationServiceTest {
 	private BookService bookService;
 
 	private ReservationDTOv2 insertDto, dto;
+	private Reservation entity;
 	
 	@BeforeAll
 	public void startRedis() {
@@ -92,15 +97,21 @@ public class ReservationServiceTest {
 		dto = ReservationMocks.reservationMockDto(1L);
 		
 		insertDto = ReservationMocks.insertReservationMockDto();
+		
+		entity = ReservationMocks.reservationMockEntity();
 
 		service.reserveBooks(insertDto);
+		
+		client.clear();
 		
 	}
 
 	@AfterEach
 	public void tearDown() {
 		
-		insertDto = null;
+		insertDto = dto = null;
+		
+		entity = null;
 		
 		client.clear();
 		
@@ -115,16 +126,30 @@ public class ReservationServiceTest {
 	void isCacheBeingSavedAfterQueryReservationById() {
 		
 		logger.info("\n\n<=========  STARTING TEST isCacheBeingSavedAfterQueryReservationById()  =========>\n");
+		
+		logger.info("querying reservation with id 1 from the repository");
 
-		ReservationDTOv2 dto1 = service.findById(1L);
+		dto = service.findById(1L);
+		
+		assertNotNull(dto, "reservation with id 1 not found on db");
 
-		ReservationDTOv2 cachedDto1 = client.get("reservation::1");
+		ReservationDTOv2 cachedDto = ReservationMapper.convertEntityToDtoV2(client.get("reservation::1"));
+		
+		assertNotNull(dto, "reservation with id 1 not found on cache");
+		
+		logger.info("asserting that dto from db and cache are equals");
 
-		assertEquals(dto1.toString(), cachedDto1.toString());
-
-		service.findById(1L);
+		assertEquals(dto.toString(), cachedDto.toString(), "dto and cachedDto were not equals");
+		
+		logger.info("querying reservation with id 1 again to assert that the cache will get hit");
+		
+		assertEquals(dto, service.findById(1L));
+		
+		logger.info("asserting that cache got hit");
 
 		verify(repository, times(1)).findById(1L);
+		
+		logger.info("test sucess, service invoked 2 times and repository only 1");
 
 	}
 
@@ -132,24 +157,56 @@ public class ReservationServiceTest {
 	void isCacheBeingUpdatedAfterReturnReservation() {
 		
 		logger.info("\n\n<=========  STARTING TEST isCacheBeingUpdatedAfterReturnReservation()  =========>\n");
+		
+		logger.info("querying reservation with id 1 from the repository");
 
-		ReservationDTOv2 dto1 = service.findById(1L);
+		dto = service.findById(1L);
+		
+		assertNotNull(dto, "reservation with id 1 not found on repository");
+		
+		logger.info("querying reservation with id 1 from cache");
+		
+		ReservationDTOv2 cachedDto = ReservationMapper.convertEntityToDtoV2(client.get("reservation::1"));
+		
+		assertNotNull(cachedDto, "reservation with id 1 not found on cache");
+		
+		logger.info("asserting that dto from db and cache are equals");
 
-		ReservationDTOv2 cachedDto1 = client.get("reservation::1");
+		assertEquals(dto.toString(), cachedDto.toString(), "dto and cachedDto were not equals");
+		
+		logger.info("returning reservation with id 1");
 
-		assertEquals(dto1.toString(), cachedDto1.toString());
+		assertDoesNotThrow(() -> service.returnReservation(1L), "reservation return threw an exception");
+		
+		logger.info("asserting that reservation 1 cache got evicted");
+		
+		assertNull(client.get("reservation::1"), "cache reservation 1 didnt got evicted");
+		
+		logger.info("querying reservation with id 1 again");
 
-		service.returnReservation(1L);
+		dto = service.findById(1L);
+		
+		logger.info("asserting that the cache got updated");
 
-		dto1 = service.findById(1L);
+		assertNotEquals(dto.toString(), cachedDto.toString(), "new cache was equals to previous cache value");
+		
+		logger.info("querying reservation with id 1 from cache again");
 
-		assertNotEquals(dto1.toString(), cachedDto1.toString());
+		cachedDto = ReservationMapper.convertEntityToDtoV2(client.get("reservation::1"));
+		
+		logger.info("asserting that updated dto from db and cache are equals");
 
-		cachedDto1 = client.get("reservation::1");
+		assertEquals(dto.toString(), cachedDto.toString(), "updated dto and cachedDto were not equals");
+		
+		logger.info("calling repository again to check if cache gets hit");
+		
+		service.findById(1L);
+		
+		logger.info("asserting that repository got invoked only 2 times");
 
-		assertEquals(dto1.toString(), cachedDto1.toString());
-
-		verify(repository, times(1)).findById(1L);
+		verify(repository, times(2)).findById(1L);
+		
+		logger.info("test sucess, service invoked 3 times and repository only 2, cache got evicted after reservation return");
 
 	}
 
@@ -233,9 +290,9 @@ public class ReservationServiceTest {
 		
 		String reservationKey = "reservation#1";
 		
-		logger.info("setting on the cache value [{}] with key [{}]", dto, reservationKey);
+		logger.info("setting on the cache value [{}] with key [{}]", entity, reservationKey);
 		
-		assertTrue(client.set(reservationKey, dto), "cache didnt got setted");
+		assertTrue(client.set(reservationKey, entity), "cache didnt got setted");
 		
 		logger.info("asserting that the cache value is not null");
 		
@@ -243,17 +300,17 @@ public class ReservationServiceTest {
 		
 		logger.info("asserting that the cache value is equals to bookDto");
 		
-		assertEquals(dto, client.get(reservationKey), "cache value didnt get setted properly");
+		assertEquals(entity, client.get(reservationKey), "cache value didnt get setted properly");
 		
 		logger.info("updating value on the cache");
 		
-		dto.setStatus(ReservationStatus.FINISHED);
+		entity.setStatus(ReservationStatus.FINISHED);
 		
-		assertTrue(client.put(reservationKey, dto), "cache value didnt get updated");
+		assertTrue(client.put(reservationKey, entity), "cache value didnt get updated");
 		
 		logger.info("asserting that the value got updated");
 		
-		assertEquals(dto.getStatus(), client.get(reservationKey).getStatus());
+		assertEquals(entity.getStatus(), client.get(reservationKey).getStatus());
 		
 		logger.info("test success, cache got setted, retrieved and updated properly");
 		
@@ -263,23 +320,25 @@ public class ReservationServiceTest {
 
 		Pageable pageable = PageRequest.of(0, 12);
 		
-		LocalDate startingDate = LocalDate.now().minusMonths(1);
+		LocalDate startingDate = LocalDate.of(2020, 1, 1);
 
-		LocalDate devolutionDate = startingDate.plusMonths(3);
+		LocalDate devolutionDate = LocalDate.of(2099, 1, 1);
 
 		return service.findAllPaged(pageable, startingDate, devolutionDate, null, null, "all");
 
 	}
 
 	private Page<ReservationDTOv2> findPageOfReservationsFromCache() {
+
+		String expectedCacheKey = "reservations::SimpleKey [2020-01-01T03:00:00Z,2099-01-01T03:00:00Z,null,null,ALL,Page request [number: 0, size 12, sort: UNSORTED]]";
 		
-		LocalDate startingDate = LocalDate.now().minusMonths(1);
+		try {
 
-		LocalDate devolutionDate = startingDate.plusMonths(3);
-
-		String expectedCacheKey = "reservations::SimpleKey [Page request [number: 0, size 12, sort: UNSORTED]," + startingDate + "," + devolutionDate +",null,null,all]";
-
-		return ((Page<?>) client.get(expectedCacheKey)).map(x -> (ReservationDTOv2) x);
+			return ((Page<?>) client.get(expectedCacheKey)).map(x -> ReservationMapper.convertEntityToDtoV2((Reservation) x));
+		
+		} catch (NullPointerException ex) {
+			return Page.empty();
+		}
 
 	}
 
