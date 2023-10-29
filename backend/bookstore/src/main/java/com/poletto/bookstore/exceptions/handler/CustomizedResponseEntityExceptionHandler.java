@@ -152,7 +152,7 @@ public class CustomizedResponseEntityExceptionHandler extends ResponseEntityExce
 
 		logger.warn(exceptionResponse.toString() + clientInfo(request));
 		logger.error(StackTraceFormatter.stackTraceFormatter(ex));
-		return new ResponseEntity<>(exceptionResponse, HttpStatus.BAD_REQUEST);
+		return new ResponseEntity<>(exceptionResponse, HttpStatus.CONFLICT);
 
 	}
 
