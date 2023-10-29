@@ -12,6 +12,8 @@ import com.poletto.bookstore.entities.User;
 @Repository("AuthRepositoryV3")
 public interface AuthRepository extends JpaRepository<User, Long> {
 	
+	boolean existsByEmail(String email);
+	
 	@Cacheable(value = "userAuth", key = "#email")
 	Optional<User> findByEmail(String email);
 	
