@@ -30,6 +30,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
+import com.poletto.bookstore.exceptions.AlreadyExistingAccountException;
 import com.poletto.bookstore.exceptions.DatabaseException;
 import com.poletto.bookstore.exceptions.InvalidStatusException;
 import com.poletto.bookstore.exceptions.ObjectNotValidException;
@@ -45,8 +46,6 @@ import jakarta.validation.ConstraintViolationException;
 @ControllerAdvice
 @RestController
 public class CustomizedResponseEntityExceptionHandler extends ResponseEntityExceptionHandler {
-	
-	//TODO refactor this...
 
 	private static final Logger logger = LoggerFactory.getLogger(CustomizedResponseEntityExceptionHandler.class);
 
@@ -137,6 +136,18 @@ public class CustomizedResponseEntityExceptionHandler extends ResponseEntityExce
 	public final ResponseEntity<ExceptionResponse> handleInvalidStatusException(Exception ex, WebRequest request) {
 
 		ExceptionResponse exceptionResponse = new ExceptionResponse(HttpStatus.BAD_REQUEST, ex.getMessage(),
+				ex.getLocalizedMessage(), request.getDescription(false));
+
+		logger.warn(exceptionResponse.toString() + clientInfo(request));
+		logger.error(StackTraceFormatter.stackTraceFormatter(ex));
+		return new ResponseEntity<>(exceptionResponse, HttpStatus.BAD_REQUEST);
+
+	}
+	
+	@ExceptionHandler(AlreadyExistingAccountException.class)
+	public final ResponseEntity<ExceptionResponse> handleAlreadyExistingAccountException(Exception ex, WebRequest request) {
+
+		ExceptionResponse exceptionResponse = new ExceptionResponse(HttpStatus.CONFLICT, ex.getMessage(),
 				ex.getLocalizedMessage(), request.getDescription(false));
 
 		logger.warn(exceptionResponse.toString() + clientInfo(request));
