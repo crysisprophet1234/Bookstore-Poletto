@@ -18,9 +18,10 @@ import com.poletto.bookstore.converter.custom.UserMapper;
 import com.poletto.bookstore.dto.v2.UserAuthDTOv2;
 import com.poletto.bookstore.dto.v2.UserDTOv2;
 import com.poletto.bookstore.entities.User;
+import com.poletto.bookstore.exceptions.AlreadyExistingAccountException;
 import com.poletto.bookstore.exceptions.ResourceNotFoundException;
-import com.poletto.bookstore.repositories.v3.RoleRepository;
 import com.poletto.bookstore.repositories.v3.AuthRepository;
+import com.poletto.bookstore.repositories.v3.RoleRepository;
 
 @Service("AuthServiceV3")
 public class AuthService {
@@ -46,11 +47,15 @@ public class AuthService {
 	public UserDTOv2 register(UserAuthDTOv2 dto) {
 
 		User entity = UserMapper.convertDtoToEntityV2(dto);
+		
+		if (authRepository.existsByEmail(dto.getEmail())) {
+			throw new AlreadyExistingAccountException(dto.getEmail());
+		}
 
 		entity.getRoles().add(roleRepository.getReferenceById(1L));
 
 		entity.setPassword(passwordEncoder.encode(dto.getPassword()));
-
+		
 		entity = authRepository.save(entity);
 
 		logger.info("Resource USER saved: " + entity.toString());
@@ -81,8 +86,6 @@ public class AuthService {
 
 		logger.info("Resource USER authenticated {}", userAuthDTO);
 
-		
-		//FIXME wtf???
 		 userAuthDTO
 				.add(linkTo(methodOn(UserController.class).findById(entity.getId())).withSelfRel().withType("GET"))
 				.add(linkTo(methodOn(UserController.class).delete(entity.getId())).withRel("delete").withType("DELETE"))
