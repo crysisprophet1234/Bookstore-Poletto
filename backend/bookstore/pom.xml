@@ -19,145 +19,209 @@
 	</properties>
 	<dependencies>
 		<!-- SPRING -->
+		
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-web</artifactId>
 		</dependency>
+		
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-actuator</artifactId>
 		</dependency>
+		
 		<!-- EMAIL -->
+		
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-mail</artifactId>
 		</dependency>
+		
 		<!-- SECURITY -->
+		
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-security</artifactId>
 		</dependency>
+		
 		<dependency>
 			<groupId>org.springframework.security</groupId>
 			<artifactId>spring-security-test</artifactId>
 			<scope>test</scope>
 		</dependency>
+		
 		<!-- JWT -->
+		
 		<dependency>
 			<groupId>io.jsonwebtoken</groupId>
 			<artifactId>jjwt-api</artifactId>
 			<version>0.11.5</version>
 		</dependency>
+		
 		<dependency>
 			<groupId>io.jsonwebtoken</groupId>
 			<artifactId>jjwt-impl</artifactId>
 			<version>0.11.5</version>
 		</dependency>
+		
 		<dependency>
 			<groupId>io.jsonwebtoken</groupId>
 			<artifactId>jjwt-jackson</artifactId>
 			<version>0.11.5</version>
 		</dependency>
+		
 		<!-- ORM -->
+		
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-data-jpa</artifactId>
 		</dependency>
+		
 		<!-- SWAGGER -->
+		
 		<dependency>
 			<groupId>org.springdoc</groupId>
 			<artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
 			<version>2.0.3</version>
 		</dependency>
+		
 		<!-- HYPERMEDIA -->
+		
 		<dependency>
 			<groupId>org.springframework.hateoas</groupId>
 			<artifactId>spring-hateoas</artifactId>
 		</dependency>
+		
 		<!-- DATABASE -->
+		
 		<dependency>
 			<groupId>org.postgresql</groupId>
 			<artifactId>postgresql</artifactId>
 		</dependency>
+		
 		<dependency>
 			<groupId>org.flywaydb</groupId>
 			<artifactId>flyway-core</artifactId>
 		</dependency>
+		
 		<!-- CACHING -->
+		
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-cache</artifactId>
 		</dependency>
+
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-data-redis</artifactId>
 		</dependency>
-		<dependency>
+		
+		<dependency>		
 			<groupId>it.ozimov</groupId>
 			<artifactId>embedded-redis</artifactId>
 			<scope>test</scope>
 			<version>0.7.3</version>
 		</dependency>
+		
 		<!-- CONTENT NEGOTIATION -->
+		
 		<dependency>
 			<groupId>com.fasterxml.jackson.dataformat</groupId>
 			<artifactId>jackson-dataformat-xml</artifactId>
 		</dependency>
+		
 		<dependency>
 			<groupId>com.fasterxml.jackson.dataformat</groupId>
 			<artifactId>jackson-dataformat-yaml</artifactId>
 		</dependency>
+		
 		<dependency>
 			<groupId>com.fasterxml.jackson.datatype</groupId>
 			<artifactId>jackson-datatype-jsr310</artifactId>
 		</dependency>
+		
 		<!-- MAPPING -->
+		
 		<dependency>
 			<groupId>com.github.dozermapper</groupId>
 			<artifactId>dozer-core</artifactId>
 			<version>6.4.1</version>
 		</dependency>
+		
 		<!-- VALIDATION -->
+		
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-validation</artifactId>
 		</dependency>
+		
 		<dependency>
 			<groupId>org.glassfish.web</groupId>
 			<artifactId>el-impl</artifactId>
 			<version>2.2</version>
 		</dependency>
+		
 		<!-- TESTING -->
+		
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
 		</dependency>
+		
 		<dependency>
 			<groupId>org.mockito</groupId>
 			<artifactId>mockito-core</artifactId>
 			<scope>test</scope>
 		</dependency>
+		
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
 		</dependency>
+
+		<dependency>
+			<groupId>io.rest-assured</groupId>
+			<artifactId>rest-assured</artifactId>
+			<scope>test</scope>
+		</dependency>
+		
+		<dependency>
+		    <groupId>org.hamcrest</groupId>
+		    <artifactId>hamcrest-library</artifactId>
+		    <scope>test</scope>
+		</dependency>
+
 	</dependencies>
+	
 	<build>
+		
 		<plugins>
+			
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
 			</plugin>
+			
 			<plugin>
 				<groupId>org.flywaydb</groupId>
 				<artifactId>flyway-maven-plugin</artifactId>
+				
 				<configuration>
-					<url>jdbc:postgresql://ep-super-sun-61629120.us-east-2.aws.neon.tech/bookstore?user=crysisprophet1234&amp;password={wFaljFI2/0EHRjSPi7+PiNtzpiZbUXoU1VVHE5hyhjM=}&amp;useTimezone=true&amp;serverTimezone=UTC&amp;useSSL=true</url>
+					
+					<url>jdbc:postgresql://ep-super-sun-61629120.us-east-2.aws.neon.tech/bookstore?
+						user=crysisprophet1234&amp;
+						password={wFaljFI2/0EHRjSPi7+PiNtzpiZbUXoU1VVHE5hyhjM=}&amp;
+						useTimezone=true&amp;serverTimezone=UTC&amp;
+						useSSL=true
+					</url>
 					<user>crysisprophet1234</user>
 					<password>{wFaljFI2/0EHRjSPi7+PiNtzpiZbUXoU1VVHE5hyhjM=}</password>
+					
 				</configuration>
+				
 				<dependencies>
+					
 					<dependency>
 						<groupId>org.postgresql</groupId>
 						<artifactId>postgresql</artifactId>
@@ -169,9 +233,15 @@
 							</exclusion>
 						</exclusions>
 					</dependency>
+					
 				</dependencies>
+				
 			</plugin>
+			
 		</plugins>
+		
 	</build>
+	
 	<url>polettobookstore.netlify.com</url>
+	
 </project>
