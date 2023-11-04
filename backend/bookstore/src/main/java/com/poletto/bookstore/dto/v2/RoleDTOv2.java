@@ -65,7 +65,7 @@ public class RoleDTOv2 implements Serializable {
 
 	@Override
 	public String toString() {
-		return "RoleDTO [id=" + key + ", authority=" + authority + "]";
+		return "{id=" + key + ", authority=" + authority + "}";
 	}
 	
 }
