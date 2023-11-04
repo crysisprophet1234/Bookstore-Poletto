@@ -1,4 +1,4 @@
-package com.poletto.bookstore.v3.services;
+package com.poletto.bookstore.v3.services.caching;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertNotNull;

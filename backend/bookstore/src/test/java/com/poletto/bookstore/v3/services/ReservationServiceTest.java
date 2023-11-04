@@ -1,345 +1,428 @@
 package com.poletto.bookstore.v3.services;
 
+import static io.restassured.RestAssured.baseURI;
+import static io.restassured.RestAssured.filters;
+import static io.restassured.RestAssured.given;
+import static io.restassured.RestAssured.port;
+import static io.restassured.RestAssured.useRelaxedHTTPSValidation;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
 
+import java.text.ParseException;
 import java.time.LocalDate;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.stream.Collectors;
 
-import org.junit.jupiter.api.AfterAll;
+import org.hamcrest.collection.IsEmptyCollection;
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
+import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInstance;
-import org.junit.jupiter.api.TestInstance.Lifecycle;
+import org.junit.jupiter.api.TestMethodOrder;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.mock.mockito.SpyBean;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.test.context.ActiveProfiles;
 
-import com.poletto.bookstore.converter.custom.ReservationMapper;
+import com.poletto.bookstore.dto.v2.BookDTOv2;
 import com.poletto.bookstore.dto.v2.ReservationDTOv2;
-import com.poletto.bookstore.entities.Reservation;
+import com.poletto.bookstore.entities.enums.BookStatus;
 import com.poletto.bookstore.entities.enums.ReservationStatus;
+import com.poletto.bookstore.repositories.v3.BookRepository;
 import com.poletto.bookstore.repositories.v3.ReservationRepository;
 import com.poletto.bookstore.services.v3.BookService;
 import com.poletto.bookstore.services.v3.ReservationService;
-import com.poletto.bookstore.util.CustomRedisClient;
 import com.poletto.bookstore.v3.mocks.BookMocks;
 import com.poletto.bookstore.v3.mocks.ReservationMocks;
+import com.poletto.bookstore.v3.mocks.UserAuthMocks;
 
-import redis.embedded.RedisServer;
+import io.restassured.filter.log.RequestLoggingFilter;
+import io.restassured.filter.log.ResponseLoggingFilter;
+import io.restassured.http.ContentType;
+import io.restassured.path.json.JsonPath;
+import io.restassured.response.Response;
+import io.restassured.specification.RequestSpecification;
 
-@SpringBootTest
+@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("test")
 @ExtendWith(MockitoExtension.class)
-@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
-@TestInstance(Lifecycle.PER_CLASS)
+@TestMethodOrder(OrderAnnotation.class)
 public class ReservationServiceTest {
-
-	private static final Logger logger = LoggerFactory.getLogger(ReservationServiceTest.class);
-
-	@Autowired
-	private CustomRedisClient<String, Reservation> client;
 	
-	private static RedisServer redisServer;
-
+	private static final Logger logger = LoggerFactory.getLogger(ReservationServiceTest.class);
+	
+	@LocalServerPort
+	private int serverPort;
+	
+	private final String serverBaseURI = "https://localhost";
+	
+	private Response response;
+	private JsonPath jsonPath;
+	private Map<String, String> json = new HashMap<>();
+	
+	@Mock
+	private BookRepository bookRepository;
+	
 	@SpyBean
-	private ReservationRepository repository;
-
+	private ReservationRepository reservationRepository;
+	
 	@Autowired
 	@InjectMocks
-	private ReservationService service;
+	private BookService bookService;
 	
 	@Autowired
-	private BookService bookService;
-
-	private ReservationDTOv2 insertDto, dto;
-	private Reservation entity;
+	@InjectMocks
+	private ReservationService reservationService;
 	
-	@BeforeAll
-	public void startRedis() {
-		
-		try {
-			redisServer = RedisServer.builder()
-					.port(6370)
-					.setting("maxmemory 128M")
-					.build();
-			redisServer.start();
-		} catch (Exception e) {
-			logger.error(e.getMessage());
-		}
-		
-	}
-
-	@BeforeEach
-	public void setUp() {
-		
-		bookService.insert(BookMocks.insertBookMockDto());
-		
-		dto = ReservationMocks.reservationMockDto(1L);
-		
-		insertDto = ReservationMocks.insertReservationMockDto();
-		
-		entity = ReservationMocks.reservationMockEntity();
-
-		service.reserveBooks(insertDto);
-		
-		client.clear();
-		
-	}
-
-	@AfterEach
-	public void tearDown() {
-		
-		insertDto = dto = null;
-		
-		entity = null;
-		
-		client.clear();
-		
-	}
+	private static ReservationDTOv2 reservationDto;
 	
-	@AfterAll
-	public void cleanUp() {
-		redisServer.stop();
-	}
-
-	@Test
-	void isCacheBeingSavedAfterQueryReservationById() {
-		
-		logger.info("\n\n<=========  STARTING TEST isCacheBeingSavedAfterQueryReservationById()  =========>\n");
-		
-		logger.info("querying reservation with id 1 from the repository");
-
-		dto = service.findById(1L);
-		
-		assertNotNull(dto, "reservation with id 1 not found on db");
-
-		ReservationDTOv2 cachedDto = ReservationMapper.convertEntityToDtoV2(client.get("reservation::1"));
-		
-		assertNotNull(dto, "reservation with id 1 not found on cache");
-		
-		logger.info("asserting that dto from db and cache are equals");
-
-		assertEquals(dto.toString(), cachedDto.toString(), "dto and cachedDto were not equals");
-		
-		logger.info("querying reservation with id 1 again to assert that the cache will get hit");
-		
-		assertEquals(dto, service.findById(1L));
-		
-		logger.info("asserting that cache got hit");
-
-		verify(repository, times(1)).findById(1L);
-		
-		logger.info("test sucess, service invoked 2 times and repository only 1");
-
-	}
-
-	@Test
-	void isCacheBeingUpdatedAfterReturnReservation() {
-		
-		logger.info("\n\n<=========  STARTING TEST isCacheBeingUpdatedAfterReturnReservation()  =========>\n");
-		
-		logger.info("querying reservation with id 1 from the repository");
-
-		dto = service.findById(1L);
-		
-		assertNotNull(dto, "reservation with id 1 not found on repository");
-		
-		logger.info("querying reservation with id 1 from cache");
-		
-		ReservationDTOv2 cachedDto = ReservationMapper.convertEntityToDtoV2(client.get("reservation::1"));
-		
-		assertNotNull(cachedDto, "reservation with id 1 not found on cache");
-		
-		logger.info("asserting that dto from db and cache are equals");
-
-		assertEquals(dto.toString(), cachedDto.toString(), "dto and cachedDto were not equals");
-		
-		logger.info("returning reservation with id 1");
-
-		assertDoesNotThrow(() -> service.returnReservation(1L), "reservation return threw an exception");
-		
-		logger.info("asserting that reservation 1 cache got evicted");
-		
-		assertNull(client.get("reservation::1"), "cache reservation 1 didnt got evicted");
-		
-		logger.info("querying reservation with id 1 again");
-
-		dto = service.findById(1L);
-		
-		logger.info("asserting that the cache got updated");
-
-		assertNotEquals(dto.toString(), cachedDto.toString(), "new cache was equals to previous cache value");
-		
-		logger.info("querying reservation with id 1 from cache again");
-
-		cachedDto = ReservationMapper.convertEntityToDtoV2(client.get("reservation::1"));
-		
-		logger.info("asserting that updated dto from db and cache are equals");
-
-		assertEquals(dto.toString(), cachedDto.toString(), "updated dto and cachedDto were not equals");
-		
-		logger.info("calling repository again to check if cache gets hit");
-		
-		service.findById(1L);
-		
-		logger.info("asserting that repository got invoked only 2 times");
-
-		verify(repository, times(2)).findById(1L);
-		
-		logger.info("test sucess, service invoked 3 times and repository only 2, cache got evicted after reservation return");
-
-	}
-
-	@Test
-	void isPageCacheBeingEvictedAfterNewReservationsAndReturns() {
-		
-		logger.info("\n\n<=========  STARTING TEST isPageCacheBeingEvictedAfterNewReservationsAndReturns()  =========>\n");
-		
-		logger.info("querying page of books on the repository");
-
-		Page<ReservationDTOv2> dtoPage = findPageOfReservationsFromService();
-		
-		assertNotNull(dtoPage, "dtoPage not found on repository");
-
-		assertNotEquals(List.of().size(), dtoPage.getContent().size(), "dtoPage found but with 0 elements");
-		
-		logger.info("dtoPage retrieved from db: {}", dtoPage.getContent());
-		
-		logger.info("querying dtoPage again to assert that the cache will get hit");
-
-		Page<ReservationDTOv2> cachedDtoPage = findPageOfReservationsFromCache();
-		
-		assertNotNull(cachedDtoPage, "dtoPage with not found on cache");
-		
-		assertNotEquals(List.of().size(), cachedDtoPage.getContent().size(), "cacheDtoPage found but with 0 elements");
-		
-		logger.info("dtoPage retrieved from cache: {}", cachedDtoPage.getContent());
-
-		assertEquals(
-				dtoPage.getContent().get(0).toString(),
-				cachedDtoPage.getContent().get(0).toString(),
-				"dtoPage from db and cache are not equals"
-		);
-		
-		logger.info("querying dtoPage from repo again to assert that the cache will get hit");
-
-		findPageOfReservationsFromService();
-		
-		logger.info("asserting that the repository will not get a call");
-
-		verify(repository, times(1)).findPaged(any(), any(), any(), any(), any(), any());
-		
-		logger.info("returning reservation with id 1 to check if the cache gets updated");
-
-		service.returnReservation(1L);
-		
-		logger.info("querying dtoPage again to assert that the repo will get called");
-
-		dtoPage = findPageOfReservationsFromService();
-		
-		verify(repository, times(2)).findPaged(any(), any(), any(), any(), any(), any());
-		
-		logger.info("asserting that the new dtoPage is not equal to the old dtoPage from cache");
-		
-		logger.info("dtoPage after update = {}, old cachedDtoPage = {}", dtoPage.getContent(), cachedDtoPage.getContent());
-		
-		assertNotEquals(
-				dtoPage.getContent().get(0).toString(),
-				cachedDtoPage.getContent().get(0).toString(),
-				"cache didnt get evicted after return method got called"
-		);
-		
-		logger.info("inserting new reservation to check if the cache gets updated");
-
-		service.reserveBooks(insertDto);
-		
-		logger.info("querying dtoPage again to assert that the repo will get called one more time");
-
-		dtoPage = findPageOfReservationsFromService();
-
-		verify(repository, times(3)).findPaged(any(), any(), any(), any(), any(), any());
-		
-		logger.info("test sucess, service called 6 times and repository only 3");
-
-	}
+	private static BookDTOv2 bookDto;
+ 
+    @BeforeEach
+    public void setUp() {
+    	
+    	baseURI = serverBaseURI;
+        port = serverPort;
+        useRelaxedHTTPSValidation();
+        filters(new RequestLoggingFilter(), new ResponseLoggingFilter()); 
 	
-	@Test
-	void isCacheGettingProperlySettedUsingClient() {
-		
-		logger.info("\n\n<=========  STARTING TEST isCacheGettingProperlySettedUsingClient()  =========>\n");
-		
-		String reservationKey = "reservation#1";
-		
-		logger.info("setting on the cache value [{}] with key [{}]", entity, reservationKey);
-		
-		assertTrue(client.set(reservationKey, entity), "cache didnt got setted");
-		
-		logger.info("asserting that the cache value is not null");
-		
-		assertNotNull(client.get(reservationKey));
-		
-		logger.info("asserting that the cache value is equals to bookDto");
-		
-		assertEquals(entity, client.get(reservationKey), "cache value didnt get setted properly");
-		
-		logger.info("updating value on the cache");
-		
-		entity.setStatus(ReservationStatus.FINISHED);
-		
-		assertTrue(client.put(reservationKey, entity), "cache value didnt get updated");
-		
-		logger.info("asserting that the value got updated");
-		
-		assertEquals(entity.getStatus(), client.get(reservationKey).getStatus());
-		
-		logger.info("test success, cache got setted, retrieved and updated properly");
-		
-	}
+    }
+    
+    @AfterEach
+    public void tearDown() {
+    	
+    	response = null;
+    	jsonPath = null;
+    	json.clear();
+    	
+    }
+    
+    @Test
+    @Order(1)
+    void givenValidData_whenCreatingNewReservation_thenCreateAndRetrieveReservationDetails() {
+    	
+    	logger.info("\n\n<=========  STARTING TEST givenValidData_whenCreatingNewReservation_thenCreateAndRetrieveReservationDetails()  =========>\n");
+    		
+    	bookDto = bookService.insert(BookMocks.insertBookMockDto());
+        	
+        reservationDto = ReservationMocks.insertReservationMockDto(bookDto.getId());
 	
-	private Page<ReservationDTOv2> findPageOfReservationsFromService() {
+    	response = given()
+					.spec(UserAuthMocks.UserWithToken("operator@gmail.com"))
+					.body(reservationDto)
+					.contentType(ContentType.JSON)
+				.when()
+			  		.post("api/reservations/v3")
+			  	.then()
+				  	.assertThat()
+				  	.statusCode(201)
+				  	.and()
+				  	.extract()
+				  	.response();
+	
+    	jsonPath = JsonPath.from(response.getBody().asString());
+    	
+    	Long reservationId = jsonPath.getLong("id");
+    	
+    	assertEquals(reservationDto.getClient().getId(), jsonPath.getLong("client.id"));
+    	
+    	assertEquals(ReservationStatus.IN_PROGRESS, ReservationStatus.valueOf(jsonPath.getString("status")));
+    	
+    	assertEquals(reservationDto.getWeeks(), jsonPath.getInt("weeks"));
+    	
+    	assertEquals(LocalDate.now().plusWeeks(reservationDto.getWeeks()).toString(), jsonPath.get("devolution"));
+    	
+    	assertEquals(reservationDto.getBooks().get(0).getId(), jsonPath.getLong("books[0].id"));
+    	
+    	assertEquals(BookStatus.BOOKED, BookStatus.valueOf(jsonPath.getString("books[0].status")));
+    	
+    	assertEquals(jsonPath.getList("links").size(), 2);
+    	
+    	assertDoesNotThrow(() -> reservationDto = reservationService.findById(reservationId));
+    	
+    	logger.info("test success, reservation was registered properly and the response provided the new reservation id along its details");
+    	 	
+    }
+    
+    @Test
+    @Order(2)
+    void givenAlreadyReservedBook_whenCreatingNewReservation_thenReceiveInvalidStatusResponse () {
+    	
+    	logger.info("\n\n<=========  STARTING TEST givenAlreadyReservedBook_whenCreatingNewReservation_thenReceiveInvalidStatusResponse()  =========>\n");
+    	
+    	Long reservationId = reservationDto.getId();
+    	
+    	reservationDto = ReservationMocks.insertReservationMockDto(reservationDto.getBooks().get(0).getId());
+    	
+    	given()
+			.spec(UserAuthMocks.UserWithToken("operator@gmail.com"))
+			.body(reservationDto)
+			.contentType(ContentType.JSON)
+		.when()
+	  		.post("api/reservations/v3")
+	  	.then()
+		  	.assertThat()
+		  	.statusCode(400)
+		.and()
+			.body("message", is("Invalid status for book ID " + reservationDto.getBooks().get(0).getId()));
+    	
+    	assertDoesNotThrow(() -> reservationDto = reservationService.findById(reservationId));
+    	
+    	logger.info("test success, reservation wasnt registered when the book passed is already reserved, the response provided the details");
+    	
+    }
+    
+    @Test
+    @Order(3)
+    void whenRequestingReservationById_thenReceiveReservationDetails() throws ParseException {
+    	
+    	logger.info("\n\n<=========  STARTING TEST whenRequestingReservationById_thenReceiveReservationDetails()  =========>\n");
+    	
+    	Long reservationId = reservationDto.getId();
+    	
+    	bookDto = bookService.findById(reservationId);
+    	
+    	response = given()
+    			.spec(UserAuthMocks.UserWithToken("operator@gmail.com"))
+			  	.get("api/reservations/v3/{reservationId}", reservationId)
+			  .then()
+			  	.assertThat()
+			  	.statusCode(200)
+			  .and()
+			  	.extract()
+			  	.response();
+	
+    	jsonPath = JsonPath.from(response.getBody().asString());
+    	
+    	assertEquals(reservationDto.getId(), jsonPath.getLong("id"));
+    	
+    	assertEquals(
+    			reservationDto.getDevolution().toString(),
+    			jsonPath.getString("devolution")
+    	);
+    	
+    	assertEquals(reservationDto.getWeeks(), jsonPath.getInt("weeks"));
+    	
+    	assertEquals(reservationDto.getStatus(), ReservationStatus.valueOf(jsonPath.get("status")));
+    	
+    	assertEquals(reservationDto.getClient().getId(), jsonPath.getLong("client.id"));
+    	
+    	assertEquals(
+    			reservationDto.getBooks().stream().map(x -> x.getId()).collect(Collectors.toList()).toString(),
+    			jsonPath.getList("books.id").toString()
+    	);
+    	
+    	assertEquals(jsonPath.getList("links").size(), 2);
+    	
+    	logger.info("test success, when a operator requested a reservation details by its id, the response properly provided the reservation details");
+    	
+    }
+    
+    @Test
+    @Order(4)
+    void givenPageParameters_whenRequestingReservationPage_thenReceiveReservationPage() {
+    	
+    	logger.info("\n\n<=========  STARTING TEST givenPageParameters_whenRequestingReservationPage_thenReceiveReservationPage()  =========>\n");
+    	
+    	int pageSize = 3;
+    	int pageNumber = 0;
+    	
+    	response = given()
+    			.spec(UserAuthMocks.UserWithToken("operator@gmail.com"))
+				.queryParam("size", pageSize)
+				.queryParam("page", pageNumber)
+			  .when()
+			  	.get("api/reservations/v3")
+			  .then()
+			  	.extract().response();
+    	
+    	jsonPath = JsonPath.from(response.getBody().asString());
+    	
+    	assertEquals(response.getStatusCode(), 200);
+    	
+    	assertFalse(jsonPath.getList("content").isEmpty());
+    	
+    	assertEquals(jsonPath.getInt("pageable.pageSize"), pageSize);
+    	
+    	assertEquals(jsonPath.getInt("pageable.pageNumber"), pageNumber);
+    	
+    	given()
+			.spec(UserAuthMocks.UserWithToken("operator@gmail.com"))
+			.queryParam("size", pageSize)
+			.queryParam("page", pageNumber)
+			.queryParam("book", 2)
+		.when()
+	  		.get("api/reservations/v3")
+	  	.then()
+	  		.statusCode(200)
+	  		.body("content", IsEmptyCollection.empty());
+    	
+    	given()
+			.spec(UserAuthMocks.UserWithToken("operator@gmail.com"))
+			.queryParam("size", pageSize)
+			.queryParam("page", pageNumber)
+			.queryParam("client", 2)
+		.when()
+  			.get("api/reservations/v3")
+  		.then()
+  			.statusCode(200)
+  			.body("content", IsEmptyCollection.empty());
+    	
+    	given()
+			.spec(UserAuthMocks.UserWithToken("operator@gmail.com"))
+			.queryParam("size", pageSize)
+			.queryParam("page", pageNumber)
+			.queryParam("status", "finished")
+		.when()
+			.get("api/reservations/v3")
+		.then()
+			.statusCode(200)
+			.body("content", IsEmptyCollection.empty());
+    	
+    	logger.info("test success, when a user requested an reservation page with defined page params, the response properly provided the page");
+    	
+    }
+    
+    @Test
+    @Order(5)
+    void givenExistingAndInProgressReservation_whenReturningReservation_thenReturnAndRespondWithPositiveFeedback() {
+    	
+    	logger.info("\n\n<=========  STARTING TEST whenRequestingReservationById_thenReceiveReservationDetails()  =========>\n");
+    	
+    	Long reservationId = reservationDto.getId();
+    	
+    	Long bookId = reservationDto.getBooks().get(0).getId();
+    	
+    	RequestSpecification reqSpec = UserAuthMocks.UserWithToken("operator@gmail.com");
+    	
+    	given()
+			.spec(reqSpec)
+			.put("api/reservations/v3/return/{reservationId}", reservationId)
+		.then()
+	  		.assertThat()
+	  		.statusCode(204);
+    	
+    	given()
+			.spec(reqSpec)
+		  	.get("api/reservations/v3/{reservationId}", reservationId)
+		.then()
+		  	.assertThat()
+		  	.statusCode(200)
+		.and()
+		  	.body("status", is(ReservationStatus.FINISHED.toString()))
+		  	.body("books[0].status", is(BookStatus.AVAILABLE.toString()));
+    	
+    	given()
+			.auth().none()
+			.get("api/books/v3/{bookId}", bookId)
+		.then()
+  			.assertThat()
+  			.statusCode(200)
+  		.and()
+  			.body("status", is(BookStatus.AVAILABLE.toString()));
+    	
+    	given()
+			.spec(reqSpec)
+			.put("api/reservations/v3/return/{reservationId}", reservationId)
+		.then()
+  			.assertThat()
+  			.statusCode(400)
+  		.and()
+  			.body("message", is("Invalid status for reservation ID " + reservationId));
+    	
+    	logger.info("test success, when a operator returned a reservation by its id, the response properly provided the positive feedback on the return");
 
-		Pageable pageable = PageRequest.of(0, 12);
-		
-		LocalDate startingDate = LocalDate.of(2020, 1, 1);
+    }
+    
+    @Test
+    @Order(6)
+    void givenReservationOperationsRequests_whenUserDontHaveEnoughPrivileges_thenReceiveNotAuthorized() {
+    	
+    	logger.info("\n\n<=========  STARTING TEST givenReservationOperationsRequests_whenUserDontHaveEnoughPrivileges_thenReceiveNotAuthorized()  =========>\n");
+    	
+    	Long reservationId = reservationDto.getId();
+    	
+    	given()
+    	.auth().none()
+    	.when()
+    	.get("api/reservations/v3")
+    	.then()
+    	.assertThat()
+    	.statusCode(401);
+    	
+    	given()
+    	.auth().none()
+    	.when()
+    	.get("api/reservations/v3/{reservationId}", reservationId)
+    	.then()
+    	.assertThat()
+    	.statusCode(401);
 
-		LocalDate devolutionDate = LocalDate.of(2099, 1, 1);
+    	given()
+    	.auth().none()
+    	.when()
+    	.post("api/reservations/v3")
+    	.then()
+    	.assertThat()
+    	.statusCode(401);
+    	
+    	given()
+    	.auth().none()
+    	.when()
+    	.put("api/reservations/v3/return/{reservationId}", reservationId)
+    	.then()
+    	.assertThat()
+    	.statusCode(401);
+    	
+    	RequestSpecification reqSpec = UserAuthMocks.UserWithToken("customer@gmail.com");
 
-		return service.findAllPaged(pageable, startingDate, devolutionDate, null, null, "all");
+    	given()
+    	.spec(reqSpec)
+    	.when()
+    	.get("api/reservations/v3")
+    	.then()
+    	.assertThat()
+    	.statusCode(403);
+    	
+    	given()
+    	.spec(reqSpec)
+    	.when()
+    	.get("api/reservations/v3/{reservationId}", reservationId)
+    	.then()
+    	.assertThat()
+    	.statusCode(403);
 
-	}
-
-	private Page<ReservationDTOv2> findPageOfReservationsFromCache() {
-
-		String expectedCacheKey = "reservations::SimpleKey [2020-01-01T03:00:00Z,2099-01-01T03:00:00Z,null,null,ALL,Page request [number: 0, size 12, sort: UNSORTED]]";
-		
-		try {
-
-			return ((Page<?>) client.get(expectedCacheKey)).map(x -> ReservationMapper.convertEntityToDtoV2((Reservation) x));
-		
-		} catch (NullPointerException ex) {
-			return Page.empty();
-		}
-
-	}
+    	given()
+    	.spec(reqSpec)
+    	.when()
+    	.post("api/reservations/v3")
+    	.then()
+    	.assertThat()
+    	.statusCode(403);
+    	
+    	given()
+    	.spec(reqSpec)
+    	.when()
+    	.put("api/reservations/v3/return/{reservationId}", reservationId)
+    	.then()
+    	.assertThat()
+    	.statusCode(403);
+    	
+    	logger.info("test success, when a request was made without auth token the response was 401 UNAUTHORIZED "
+    			  + "and when there was a token without OPERATOR or ADMIN privileges then the response was 403 FORBIDDEN");
+    	   	
+    }
 
 }

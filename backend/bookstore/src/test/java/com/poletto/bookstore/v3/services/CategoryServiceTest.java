@@ -1,162 +1,122 @@
 package com.poletto.bookstore.v3.services;
 
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
+import static io.restassured.RestAssured.baseURI;
+import static io.restassured.RestAssured.filters;
+import static io.restassured.RestAssured.given;
+import static io.restassured.RestAssured.port;
+import static io.restassured.RestAssured.useRelaxedHTTPSValidation;
+import static org.hamcrest.CoreMatchers.containsString;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.not;
 
-import java.util.List;
-import java.util.stream.Collectors;
-
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeAll;
+import org.hamcrest.collection.IsEmptyCollection;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
+import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInstance;
-import org.junit.jupiter.api.TestInstance.Lifecycle;
+import org.junit.jupiter.api.TestMethodOrder;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.SpyBean;
-import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
+import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.test.context.ActiveProfiles;
 
-import com.poletto.bookstore.converter.DozerMapperConverter;
 import com.poletto.bookstore.dto.v2.CategoryDTOv2;
-import com.poletto.bookstore.entities.Category;
 import com.poletto.bookstore.repositories.v3.CategoryRepository;
 import com.poletto.bookstore.services.v3.CategoryService;
-import com.poletto.bookstore.util.CustomRedisClient;
 
-import redis.embedded.RedisServer;
+import io.restassured.filter.log.RequestLoggingFilter;
+import io.restassured.filter.log.ResponseLoggingFilter;
 
-@SpringBootTest
+@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("test")
 @ExtendWith(MockitoExtension.class)
-@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
-@TestInstance(Lifecycle.PER_CLASS)
+@TestMethodOrder(OrderAnnotation.class)
 public class CategoryServiceTest {
 
-private static final Logger logger = LoggerFactory.getLogger(AuthorServiceTest.class);
-	
-	@Autowired
-	private CustomRedisClient<String , Category> client;
+	private static final Logger logger = LoggerFactory.getLogger(CategoryServiceTest.class);
 
-	private static RedisServer redisServer;
+	@LocalServerPort
+	private int serverPort;
 
-	@SpyBean
-	private CategoryRepository repository;
+	private final String serverBaseURI = "https://localhost";
+
+	@Mock
+	private CategoryRepository categoryRepository;
 
 	@Autowired
 	@InjectMocks
-	private CategoryService service;
-	
-	CategoryDTOv2 categoryDto;
-	
-	@BeforeAll
-	public void startRedis() {
+	private CategoryService categoryService;
 
-		try {
-			redisServer = RedisServer.builder().port(6370).setting("maxmemory 128M").build();
-			redisServer.start();
-		} catch (Exception e) {
-			logger.error(e.getMessage());
-		}
+	private static CategoryDTOv2 categoryDto;
 
-	}
-	
 	@BeforeEach
 	public void setUp() {
-		categoryDto = new CategoryDTOv2();
+
+		baseURI = serverBaseURI;
+		port = serverPort;
+		useRelaxedHTTPSValidation();
+		filters(new RequestLoggingFilter(), new ResponseLoggingFilter());
+
 	}
-	
-	@AfterAll
-	public void cleanUp() {
-		categoryDto = null;
-		redisServer.stop();
-	}
-	
+
 	@Test
-	void isCategoryBeingCachedAfterQueryById() {
+	@Order(1)
+	void givenExistingId_whenRequestingCategoryById_thenReceiveCategoryDetails() {
+
+		logger.info("\n\n<=========  STARTING TEST givenExistingId_whenRequestingCategoryById_thenReceiveCategoryDetails()  =========>\n");
+
+		Long categoryId = 1L;
+
+		categoryDto = categoryService.findById(categoryId);
+
+		given()
+			.auth().none()
+			.get("api/categories/v3/{categoryId}", categoryId)
+		.then()
+			.assertThat()
+			.statusCode(200)		
+		.and()
+			.body("id", is(categoryDto.getId().intValue()))
+			.body("name", is(categoryDto.getName()))
+			.body("links[0].rel", containsString(categoryDto.getLink("BOOKS WITH THIS CATEGORY").get().getRel().toString()))
+			.body("links[0].href", containsString(categoryDto.getLink("BOOKS WITH THIS CATEGORY").get().getHref()))
+			.body("links[0].type", containsString(categoryDto.getLink("BOOKS WITH THIS CATEGORY").get().getType()));
 		
-		logger.info("\n\n<=========  STARTING TEST isCategoryBeingCachedAfterQueryById()  =========>\n");
-		
-		logger.info("querying category with id 1 on the repository");
+		given()
+			.auth().none()
+			.get("api/categories/v3/9999")
+		.then()
+			.assertThat()
+			.statusCode(404)
+		.and()
+			.body("message", is("Resource CATEGORY not found. ID 9999"));
 
-		assertDoesNotThrow(() -> categoryDto = service.findById(1L), "error thrown when trying to query category with id 1");
+		logger.info("test success, when a user requested a category details by its id, the response properly provided the category details");
 
-		logger.info("querying category with id 1 on the cache");
-
-		CategoryDTOv2 cachedCategoryDto = DozerMapperConverter.parseObject(client.get("category::" + 1L), CategoryDTOv2.class);
-
-		assertNotNull(cachedCategoryDto, "cachedCategoryDto was null");
-
-		logger.info("asserting that categoryDto is equals to cachedCategoryDto");
-
-		assertEquals(categoryDto, cachedCategoryDto, "categoryDto and cachedCategoryDto were not equals");
-
-		logger.info("querying category with id 1 on the repository again to check if cache gets hit");
-
-		assertDoesNotThrow(() -> categoryDto = service.findById(1L), "error thrown when trying to query category with id 1");
-
-		logger.info("asserting that new categoryDto is equals to cachedCategoryDto");
-
-		assertEquals(categoryDto, cachedCategoryDto, "new categoryDto and cachedCategoryDto were not equals");
-
-		logger.info("asserting that repository was invoked only once");
-
-		verify(repository, times(1)).findById(1L);
-
-		logger.info("test success, category with id 1 got properly cached and repository was only invoked one time");	
-		
 	}
-	
+
 	@Test
-	void isCategoryListBeingCachedAfterQueryAll() {
+	@Order(2)
+	void whenRequestingAllCategories_thenReceiveListOfAllCategories() {
 
-		logger.info("\n\n<=========  STARTING TEST isCategoryListBeingCachedAfterQueryAll()  =========>\n");
+		logger.info("\n\n<=========  STARTING TEST whenRequestingAllCategories_thenReceiveListOfAllCategories()  =========>\n");
 		
-		String expectedCacheKey = "categoriesList::SimpleKey []";
-
-		logger.info("querying category list from repository");
-
-		List<CategoryDTOv2> categoryList = service.findAll();
-
-		assertNotNull(categoryList, "categoryList was null");
-
-		logger.info("querying category list from cache");
-
-		List<CategoryDTOv2> cachedCategoryList = ((List<?>) client.get(expectedCacheKey))
-				.stream()
-				.map(x -> DozerMapperConverter.parseObject(x, CategoryDTOv2.class))
-				.collect(Collectors.toList());
-
-		assertNotNull(cachedCategoryList, "cachedCategoryList was null");
-
-		logger.info("asserting categoryList from repository and cache are equals");
-
-		assertEquals(categoryList, cachedCategoryList, "categoryList from repository and cache were not equals");
-
-		logger.info("querying category list on the repository again to check if cache gets hit");
-
-		categoryList = service.findAll();
-
-		logger.info("asserting that the updated categoryList is equals to cachedCategoryList");
-
-		assertEquals(categoryList, cachedCategoryList, "updated categoryList and cachedCategoryList were not equals");
-
-		logger.info("asserting that repository was invoked only once");
-
-		verify(repository, times(1)).findAll();
-
-		logger.info("test success, categoryList got properly cached and repository was only invoked one time");
+		given()
+			.auth().none()
+			.get("api/categories/v3")
+		.then()
+			.assertThat()
+			.statusCode(200)
+		.and()
+			.body("$", is(not(IsEmptyCollection.empty())));
 
 	}
-	
-	
+
 }

@@ -1,21 +1,29 @@
 package com.poletto.bookstore.v3.services;
 
+import static io.restassured.RestAssured.baseURI;
+import static io.restassured.RestAssured.filters;
+import static io.restassured.RestAssured.given;
+import static io.restassured.RestAssured.port;
+import static io.restassured.RestAssured.useRelaxedHTTPSValidation;
+import static org.hamcrest.CoreMatchers.containsString;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
-import org.junit.jupiter.api.AfterAll;
+import java.util.HashMap;
+import java.util.Map;
+
+import org.json.JSONObject;
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
+import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInstance;
-import org.junit.jupiter.api.TestInstance.Lifecycle;
+import org.junit.jupiter.api.TestMethodOrder;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -23,233 +31,253 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.mock.mockito.SpyBean;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.test.context.ActiveProfiles;
 
-import com.poletto.bookstore.converter.custom.UserMapper;
-import com.poletto.bookstore.dto.v2.UserAuthDTOv2;
+import com.poletto.bookstore.config.JwtService;
 import com.poletto.bookstore.dto.v2.UserDTOv2;
-import com.poletto.bookstore.entities.User;
 import com.poletto.bookstore.repositories.v3.AuthRepository;
-import com.poletto.bookstore.repositories.v3.RoleRepository;
 import com.poletto.bookstore.repositories.v3.UserRepository;
-import com.poletto.bookstore.services.v3.AuthService;
+import com.poletto.bookstore.services.v2.EmailService;
 import com.poletto.bookstore.services.v3.UserService;
-import com.poletto.bookstore.util.CustomRedisClient;
-import com.poletto.bookstore.v3.mocks.UserMocks;
 
-import redis.embedded.RedisServer;
+import io.restassured.filter.log.RequestLoggingFilter;
+import io.restassured.filter.log.ResponseLoggingFilter;
+import io.restassured.http.ContentType;
+import io.restassured.path.json.JsonPath;
+import io.restassured.response.Response;
 
-@SpringBootTest
+@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("test")
 @ExtendWith(MockitoExtension.class)
-@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
-@TestInstance(Lifecycle.PER_CLASS)
+@TestMethodOrder(OrderAnnotation.class)
 public class AuthServiceTest {
 	
 	private static final Logger logger = LoggerFactory.getLogger(AuthServiceTest.class);
-
+	
+	@LocalServerPort
+	private int serverPort;
+	
+	private final String serverBaseURI = "https://localhost";
+	
 	@Autowired
-	private CustomRedisClient<String, User> client;
-
-	private static RedisServer redisServer;
-
-	@SpyBean
-	private AuthRepository authRepository;
+	private JwtService jwtService;
 	
 	@SpyBean
-	private RoleRepository roleRepository;
+	private EmailService emailService;
 	
 	@SpyBean
 	private UserRepository userRepository;
 	
 	@SpyBean
-	private AuthenticationManager authenticationManager;
+	private AuthRepository authRepository;
 
-	@Autowired
-	@InjectMocks
-	private AuthService authService;
-	
 	@Autowired
 	@InjectMocks
 	private UserService userService;
-
-	UserDTOv2 dto;
-	UserAuthDTOv2 insertDto, loginDto;
-
-	@BeforeAll
-	public void startRedis() {
-
-		try {
-			redisServer = RedisServer.builder().port(6370).setting("maxmemory 128M").build();
-			redisServer.start();
-		} catch (Exception e) {
-			logger.error(e.getMessage());
-		}
-
-	}
-
-	@BeforeEach
-	public void setUp() {
-
-		dto =  UserMocks.userMockDto();
+	
+	private Response response;
+	private JsonPath jsonPath;
+	private Map<String, String> json = new HashMap<>();
+	
+	private static UserDTOv2 userDto;
+ 
+    @BeforeEach
+    public void setUp() {
+    	
+    	baseURI = serverBaseURI;
+        port = serverPort;
+        useRelaxedHTTPSValidation();
+        filters(new RequestLoggingFilter(), new ResponseLoggingFilter()); 
+	
+    }
+    
+    @AfterEach
+    public void tearDown() {
+    	
+    	response = null;
+    	jsonPath = null;
+    	json.clear();
+    	
+    }
+    
+    @Test
+    @Order(1)
+    void givenValidCredentials_whenCreatingNewAccount_thenCreateAndProvideDetails() {
+    	
+    	logger.info("\n\n<=========  STARTING TEST givenValidCredentials_whenCreatingNewAccount_thenCreateAndProvideDetails()  =========>\n");
+    	
+    	json.put("firstname", "newfirstname");
+		json.put("lastname", "newlastname");
+		json.put("email", "newemail@mail.com");
+		json.put("password", "newpsw12");
 		
-		insertDto = UserMocks.registerUserMockDto();
+		response = given()
+			.contentType(ContentType.JSON)
+			.body(new JSONObject(json).toString())
+		.when()
+			.post("api/auth/v3/register")
+			.then()
+			.extract().response();
 		
-		loginDto = UserMocks.loginUserMockDto(insertDto);
+		jsonPath = JsonPath.from(response.getBody().asString());
+		
+		assertEquals(response.getStatusCode(), 201);
+		
+		Long userId = jsonPath.getLong("id");
+		
+		assertNotNull(userId);
+		
+		assertEquals(jsonPath.get("firstname"), json.get("firstname"));
+		
+		assertEquals(jsonPath.get("lastname"), json.get("lastname"));
+		
+		assertEquals(jsonPath.get("email"), json.get("email"));
+		
+		assertNull(jsonPath.get("password"));
+		
+		assertEquals(jsonPath.getList("links.href").size(), 3);
+		
+		assertDoesNotThrow(() -> userDto = userService.findById(userId));
+		
+		verify(authRepository, times(1)).save(any());
+		
+		verify(emailService, times(1)).sendEmailFromTemplate(
+				userDto.getEmail(),
+				"Confirmação de criação de conta", userDto.getFirstname() + " " + userDto.getLastname()
+		);
+		
+		logger.info("test success, user was registered properly and the response provided the new user id along user details");
+		
+    }
+	
+	@Test
+	@Order(2)
+	void givenValidUserCredentials_whenAuthenticating_thenReceiveValidToken() {
+		
+		logger.info("\n\n<=========  STARTING TEST givenValidUserCredentials_whenAuthenticating_thenReceiveValidToken()  =========>\n");
+		
+		json.put("email", userDto.getEmail());
+		json.put("password", "newpsw12");
+		
+		response = given()
+			.contentType(ContentType.JSON)
+			.body(new JSONObject(json).toString())
+		.when()
+			.post("api/auth/v3/authenticate")
+			.then().extract().response();
+		
+		jsonPath = JsonPath.from(response.getBody().asString());
+		
+		assertEquals(response.getStatusCode(), 200);
 
-	}
-
-	@AfterEach
-	public void tearDown() {
-
-		dto = insertDto = loginDto = null;
-
-		client.clear();
-
-	}
-
-	@AfterAll
-	public void cleanUp() {
-		redisServer.stop();
+		assertEquals(jsonPath.getLong("id"), userDto.getId());
+		
+		assertEquals(jsonPath.get("email"), userDto.getEmail());
+		
+		assertEquals(jsonPath.get("firstname"), userDto.getFirstname());
+		
+		assertEquals(jsonPath.get("lastname"), userDto.getLastname());
+		
+		assertEquals(jsonPath.getList("links.href").size(), 3);
+		
+		assertEquals(jsonPath.getList("roles").size(), 1);
+		
+		assertEquals(jsonPath.get("roles[0].authority"), "ROLE_CUSTOMER");
+		
+		assertEquals(
+				jwtService.extractUsername(jsonPath.getString("token")),
+				userDto.getEmail(),
+				"username on token didnt got setted properly"
+		);
+		
+		verify(authRepository, times(1)).findByEmail(userDto.getEmail());
+		
+		logger.info("test success, user was authenticated properly and the response provided the token along user details");
+		
 	}
 	
 	@Test
-	void isUserAuthBeingCachedAfterAuthentication() {
+	@Order(3)
+    void givenAlreadyRegisteredEmail_whenCreatingNewAccount_thenReceive() {
 		
-		logger.info("\n\n<=========  STARTING TEST isUserAuthBeingCachedAfterAuthentication()  =========>\n");
+		logger.info("\n\n<=========  STARTING TEST givenAlreadyRegisteredEmail_whenCreatingNewAccount_thenReceive()  =========>\n");
 		
-		logger.info("inserting a new user");
+		json.put("firstname", "newfirstname");
+		json.put("lastname", "newlastname");
+		json.put("email", "newemail@mail.com");
+		json.put("password", "newpsw12");
 		
-		assertDoesNotThrow(() -> authService.register(insertDto), "error thrown when trying to insert new user");
+		given()
+			.contentType(ContentType.JSON)
+			.body(new JSONObject(json).toString())
+		.when()
+			.post("api/auth/v3/register")
+		.then()
+		.assertThat()
+			.statusCode(409)
+		.and()
+			.body("message", containsString("Email provided is already registered"));
 		
-		logger.info("authenticating with new user [{}]", loginDto);
-
-		assertDoesNotThrow(() -> loginDto = authService.authenticate(loginDto), "error thrown when trying to login with new user credentials");
-		
-		logger.info("querying userAuth from cache");
-		
-		User loginEntity = UserMapper.convertDtoToEntityV2(loginDto);
-		
-		User cachedLoginEntity =  client.get("userAuth::" + loginDto.getEmail());
-		
-		assertNotNull(cachedLoginEntity, "cachedLoginEntity was null");
-		
-		logger.info("asserting loginEntity and cachedLoginEntity are equals");
-		
-		assertEquals(loginEntity, cachedLoginEntity, "loginEntity and cachedLoginEntity were not equals");
-		
-		logger.info("updating loginEntity to check if userAuth cache gets evicted");
-		
-		loginDto.setPassword("newpassword");
-		
-		userService.update(loginEntity.getId(), loginDto);
-		
-		logger.info("asserting that the cache userAuth::{} got evicted", loginEntity.getEmail());
-		
-		assertNull(client.get("userAuth::" + loginEntity.getEmail()));
-		
-		logger.info("authenticating with updated user [{}]", loginEntity);
-		
-		assertDoesNotThrow(() -> loginDto = authService.authenticate(loginDto), "error thrown when trying to login with updated user credentials");
-		
-		loginEntity = UserMapper.convertDtoToEntityV2(loginDto);
-		
-		logger.info("asserting updated loginEntity and previous cachedLoginEntity are not equals");
-		
-		assertNotEquals(loginEntity.toString(), cachedLoginEntity.toString(), "updated loginEntity was equal to previous cachedLoginEntity");
-		
-		logger.info("querying userAuth from cache again");
-		
-		cachedLoginEntity = client.get("userAuth::" + loginEntity.getEmail());
-		
-		logger.info("asserting updated loginEntity and updated cachedLoginEntity are equals");
-		
-		assertEquals(loginEntity, cachedLoginEntity, "updated loginEntity was not equal to updated cachedLoginEntity");
-		
-		logger.info("asserting that the authenticationManager got invoked 2 times");
-		
-		verify(authenticationManager, times(2)).authenticate(any(UsernamePasswordAuthenticationToken.class));
-		
-		logger.info("test success, userAuth cache got properly set after a successful authentication and then evicted after user update");
+		logger.info("test success, when the user provides a already registered email the response provideds a conflict status and message explaining");
 		
 	}
 	
 	@Test
-	void isUsersPageGettingEvictedAfterUserRegistration() {
+    void givenInvalidCredentials_whenCreatingNewAccount_thenReceiveUnprocessableEntity() {
 		
-		logger.info("\n\n<=========  STARTING TEST isUsersPageGettingEvictedAfterUserRegistration()  =========>\n");
+		logger.info("\n\n<=========  STARTING TEST givenInvalidCredentials_whenCreatingNewAccount_thenReceiveUnprocessableEntity()  =========>\n");
 		
-		logger.info("querying user page from repository");
+		json.put("firstname", "newfirstname");
+		json.put("lastname", "newlastname");
+		json.put("email", "invalid_email");
+		json.put("password", "pass123");
 		
-		Page<User> userPage = findPageOfUsersFromService();
+		given()
+			.contentType(ContentType.JSON)
+			.body(new JSONObject(json).toString())
+		.when()
+			.post("api/auth/v3/register").then()
+			.assertThat()
+			.statusCode(422)
+			.body("message", containsString("campo [email] deve ser um endereço de e-mail bem formado"));
 		
-		assertNotNull(userPage, "userPage was null");
+		json.put("email", "valid@email.com");
+		json.put("password", "invalid_password");
 		
-		logger.info("querying user page from cache");
+		given()
+			.contentType(ContentType.JSON)
+			.body(new JSONObject(json).toString())
+		.when()
+			.post("api/auth/v3/register").then()
+			.assertThat()
+			.statusCode(422)
+			.body("message", containsString("campo [password] deve conter entre 6 e 8 caracteres"));
 		
-		Page<User> cachedUserPage = findPageOfUsersFromCache();
-		
-		assertNotNull(cachedUserPage, "userPage was null");
-		
-		logger.info("asserting userPage from repository and cache are equals");
-		
-		assertEquals(userPage.getContent(), cachedUserPage.getContent(), "userPage from repository and cache were not equals");
-		
-		logger.info("inserting a new user to check if userPage cache gets evicted");
-		
-		assertDoesNotThrow(() -> authService.register(insertDto), "error thrown when trying to insert new user");
-		
-		logger.info("querying user page from repository again");
-		
-		userPage = findPageOfUsersFromService();
-		
-		assertNotNull(userPage, "userPage was null");
-		
-		logger.info("asserting updated userPage is not equals to previous cachedPage");
-		
-		assertNotEquals(userPage.getContent(), cachedUserPage.getContent(), "updated userPage is equals to previous userPageCached");
-		
-		logger.info("querying user page from cache again");
-		
-		cachedUserPage = findPageOfUsersFromCache();
-		
-		assertNotNull(cachedUserPage, "userPage was null");
-		
-		logger.info("asserting updated userPage is equals to updated cachedPage");
-		
-		assertEquals(userPage.getContent(), cachedUserPage.getContent(), "updated userPage is not equals to updated userPageCached");
-		
-		logger.info("asserting that the repository got invoked 2 times");
-		
-		verify(userRepository, times(2)).findAll(any(Pageable.class));
-		
-		logger.info("test success, cache got properly evicted and repository was invoked 2 times");
-		
+		logger.info("test success, new users were not created and the message provided explained what was wrong");
 		
 	}
 	
-	private Page<User> findPageOfUsersFromService() {
-
-		Pageable pageable = PageRequest.of(0, 20);
-
-		return userService.findAllPaged(pageable).map(x -> UserMapper.convertDtoToEntityV2(x));
-
-	}
-
-	private Page<User> findPageOfUsersFromCache() {
-
-		String expectedCacheKey = "users::Page request [number: 0, size 20, sort: UNSORTED]";
-
-		return ((Page<?>) client.get(expectedCacheKey)).map(x -> (User) x);
-
+	@Test
+	void givenNonExistingUserCredentials_whenAuthenticating_thenReceiveBadCredentials() {
+		
+		logger.info("\n\n<=========  STARTING TEST givenNonExistingUserCredentials_whenAuthenticating_thenReceiveBadCredentials()  =========>\n");
+		
+		json.put("email", "nonexisting_user");
+		json.put("password", "nonexisting_psw");
+		
+		given()
+			.contentType(ContentType.JSON)
+			.body(new JSONObject(json).toString())
+		.when()
+			.post("api/auth/v3/authenticate").then()
+			.assertThat()
+			.statusCode(401);
+		
+		logger.info("test success, when user credentials didnt matched any account created a bad credentials status was returned");
+		
 	}
 	
-
 }

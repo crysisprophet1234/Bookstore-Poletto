@@ -1,24 +1,25 @@
 package com.poletto.bookstore.v3.services;
 
+import static io.restassured.RestAssured.baseURI;
+import static io.restassured.RestAssured.filters;
+import static io.restassured.RestAssured.given;
+import static io.restassured.RestAssured.port;
+import static io.restassured.RestAssured.useRelaxedHTTPSValidation;
+import static org.hamcrest.CoreMatchers.containsString;
+import static org.junit.Assert.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
 
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.stream.Collectors;
 
-import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
+import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInstance;
-import org.junit.jupiter.api.TestInstance.Lifecycle;
+import org.junit.jupiter.api.TestMethodOrder;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -26,344 +27,314 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.mock.mockito.SpyBean;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.test.context.ActiveProfiles;
 
-import com.poletto.bookstore.converter.custom.BookMapper;
 import com.poletto.bookstore.dto.v2.BookDTOv2;
-import com.poletto.bookstore.entities.Book;
-import com.poletto.bookstore.exceptions.ResourceNotFoundException;
 import com.poletto.bookstore.repositories.v3.BookRepository;
 import com.poletto.bookstore.services.v3.BookService;
-import com.poletto.bookstore.util.CustomRedisClient;
 import com.poletto.bookstore.v3.mocks.BookMocks;
+import com.poletto.bookstore.v3.mocks.UserAuthMocks;
 
-import redis.embedded.RedisServer;
+import io.restassured.filter.log.RequestLoggingFilter;
+import io.restassured.filter.log.ResponseLoggingFilter;
+import io.restassured.http.ContentType;
+import io.restassured.path.json.JsonPath;
+import io.restassured.response.Response;
+import io.restassured.specification.RequestSpecification;
 
-@SpringBootTest
+@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("test")
 @ExtendWith(MockitoExtension.class)
-@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
-@TestInstance(Lifecycle.PER_CLASS)
+@TestMethodOrder(OrderAnnotation.class)
 public class BookServiceTest {
-
+	
 	private static final Logger logger = LoggerFactory.getLogger(BookServiceTest.class);
-
-	@Autowired
-	private CustomRedisClient<String, Book> client;
-
-	private static RedisServer redisServer;
-
+	
+	@LocalServerPort
+	private int serverPort;
+	
+	private final String serverBaseURI = "https://localhost";
+	
+	private Response response;
+	private JsonPath jsonPath;
+	private Map<String, String> json = new HashMap<>();
+	
 	@SpyBean
-	private BookRepository repository;
-
+	private BookRepository bookRepository;
+	
 	@Autowired
 	@InjectMocks
-	private BookService service;
-
-	BookDTOv2 dto, insertDto;
-	Book entity;
-
-	@BeforeAll
-	public void startRedis() {
-
-		try {
-			redisServer = RedisServer.builder().port(6370).setting("maxmemory 128M").build();
-			redisServer.start();
-		} catch (Exception e) {
-			logger.error(e.getMessage());
-		}
-
-	}
-
-	@BeforeEach
-	public void setUp() {
-
-		insertDto = BookMocks.insertBookMockDto();
-		
-		dto = BookMocks.bookMockDto(1L);
-		
-		entity = BookMocks.bookMockEntity(1L);
-
-		service.insert(insertDto);
-		client.clear();
-		//FIXME refatorar testes pois o insert inclui cache agora
-
-	}
-
-	@AfterEach
-	public void tearDown() {
-
-		dto = insertDto = null;
-		
-		entity = null;
-
-		client.clear();
-
-	}
-
-	@AfterAll
-	public void cleanUp() {
-		redisServer.stop();
-	}
-
-	@Test
-	void isCacheBeingSavedAfterQueryById() {
-
-		logger.info("\n\n<=========  STARTING TEST isCacheBeingSavedAfterQueryById()  =========>\n");
-
-		logger.info("querying book with id 1 from the repository");
-
-		BookDTOv2 dto1 = service.findById(1L);
-
-		assertNotNull(dto1, "book with id 1 not found on db");
-
-		logger.info("dto retrieved from db: {}", dto1);
-
-		logger.info("querying book by id 1 again to assert that the cache will get hit");
-
-		BookDTOv2 cachedDto1 = BookMapper.convertEntityToDtoV2(client.get("book::1"));
-
-		assertNotNull(cachedDto1, "book with id 1 not found on cache");
-
-		logger.info("dto retrieved from cache: {}", cachedDto1);
-
-		logger.info("asserting that dto from db and cache are equals");
-
-		assertEquals(dto1, cachedDto1, "dto from db and cache were not equals");
-
-		logger.info("querying book with id 1 again to assert that the cache will get hit");
-
-		service.findById(1L);
-
-		logger.info("asserting that the repository will not get a call");
-
-		verify(repository, times(1)).findById(1L);
-
-		logger.info("test sucess, service called two times and repository only one");
-
-	}
-
-	@Test
-	void isCacheGettingUpdatedAfterUpdateAndDelete() {
-
-		logger.info("\n\n<=========  STARTING TEST isCacheGettingUpdatedAfterBookUpdate()  =========>\n");
-
-		logger.info("querying book with id 1 from the repository");
-
-		BookDTOv2 dto1 = service.findById(1L);
-
-		assertNotNull(dto1, "book with id 1 not found on db");
-
-		logger.info("dto retrieved from db: {}", dto1);
-
-		logger.info("querying book by id 1 again to assert that the cache will get hit");
-
-		BookDTOv2 cachedDto1 = BookMapper.convertEntityToDtoV2(client.get("book::1"));
-
-		assertNotNull(cachedDto1, "book with id 1 not found on cache");
-
-		logger.info("dto retrieved from cache: {}", cachedDto1);
-
-		logger.info("asserting that dto from db and cache are equals");
-
-		assertEquals(dto1, cachedDto1, "dto from db and cache were not equals");
-
-		logger.info("updating book name with id 1 to check if cache gets updated");
-
-		dto1.setName("Book new name");
-
-		dto1 = service.update(1L, dto1);
-
-		cachedDto1 = BookMapper.convertEntityToDtoV2(client.get("book::1"));
-
-		assertNotNull(cachedDto1, "book with id 1 not found on cache");
-
-		logger.info("asserting that the cache got updated");
-
-		assertEquals(dto1, cachedDto1, "cache of book with id 1 didnt got updated");
-
-		logger.info("deleting book with id 1 from the db");
-
-		service.delete(1L);
-
-		logger.info("asserting that the book 1 cache got evicted");
-
-		assertNull(client.get("book::1"), "cache of book 1 didnt got evicted");
-
-		logger.info("calling find by id to check if the repository gets called and throws not found exception");
-
-		assertThrows(ResourceNotFoundException.class, () -> service.findById(1L),
-				"service actually found book with id 1");
-
-		verify(repository, times(2)).findById(1L);
-
-		logger.info("test sucess, service called two times and repository only one");
-
-	}
-
-	@Test
-	void isCacheGettingEvictedAfterInsertsAndUpdates() {
-
-		logger.info("\n\n<=========  STARTING TEST isCacheGettingEvictedAfterInsertsAndUpdates()  =========>\n");
-
-		logger.info("querying page of books on the repository");
-
-		Page<BookDTOv2> dtoPage = findPageOfBooksFromService();
-
-		assertNotNull(dtoPage, "dtoPage not found on repository");
-
-		assertNotEquals(List.of().size(), dtoPage.getContent().size(), "dtoPage found but with 0 elements");
-
-		logger.info("dtoPage retrieved from db: {}", dtoPage.getContent());
-
-		logger.info("querying page of books on the cache");
-
-		Page<BookDTOv2> cachedDtoPage = findPageOfBooksFromCache();
-
-		assertNotNull(cachedDtoPage, "dtoPage with not found on cache");
-
-		assertNotEquals(List.of().size(), cachedDtoPage.getContent().size(), "cacheDtoPage found but with 0 elements");
-		
-		logger.info("dtoPage retrieved from cache: {}", cachedDtoPage.getContent());
-		
-		assertEquals(
-				dtoPage.getContent(),
-				cachedDtoPage.getContent(),
-				"dtoPage from db and cache are not equals"
-		);
-		
-		logger.info("querying dtoPage from repo again to assert that the cache will get hit");
-		
-		findPageOfBooksFromService();
-		
-		logger.info("asserting that the repository will not get a call");
-		
-		verify(repository, times(1)).findPaged(any(), any(), any(), any());
-		
-		logger.info("inserting new book to check if the page cache gets updated");
-		
-		service.insert(insertDto);
-		
-		logger.info("querying dtoPage again to assert that the repo will get called one more time");
-		
-		dtoPage = findPageOfBooksFromService();
-		
-		verify(repository, times(2)).findPaged(any(), any(), any(), any());
-		
-		logger.info("asserting that the new dtoPage queried is different from the previous cache");
-		
-		assertNotEquals(
-				dtoPage.getContent(),
-				cachedDtoPage.getContent(),
-				"dtoPage from db and cache are equals"
-		);
-		
-		logger.info("asserting that the new dtoPage queried is equals to the new cache");
-		
-		cachedDtoPage = findPageOfBooksFromCache();
-		
-		assertEquals(
-				dtoPage.getContent(),
-				cachedDtoPage.getContent(),
-				"dtoPage from db and cache are not equals"
-		);
-		
-		logger.info("deleting book with id 1 to check if the page cache gets updated");
-		
-		service.delete(1L);
-		
-		logger.info("querying dtoPage again to assert that the repo will get called one more time");
-		
-		dtoPage = findPageOfBooksFromService();
-		
-		verify(repository, times(3)).findPaged(any(), any(), any(), any());
-		
-		logger.info("asserting that the new dtoPage queried is different from the previous cache");
-		
-		assertNotEquals(
-				dtoPage.getContent(),
-				cachedDtoPage.getContent(),
-				"dtoPage from db and cache are equals"
-		);
-		
-		logger.info("asserting that the new dtoPage queried is equals to the new cache");
-		
-		cachedDtoPage = findPageOfBooksFromCache();
-		
-		assertEquals(
-				dtoPage.getContent(),
-				cachedDtoPage.getContent(),
-				"dtoPage from db and cache are not equals"
-		);
-		
-		logger.info("querying dtoPage from repo again to assert that the cache will get hit");
-		
-		findPageOfBooksFromService();
-		
-		verify(repository, times(3)).findPaged(any(), any(), any(), any());
-		
-		logger.info("test sucess, service find by id called 5 times and repository only 3");
-
-	}
-
-	@Test
-	void isCacheGettingProperlySettedUsingCustomClient() {
-		
-		logger.info("\n\n<=========  STARTING TEST isCacheGettingProperlySettedCustomUsingClient()  =========>\n");
-		
-		String bookKey = "book#1";
-		
-		logger.info("setting on the cache value [{}] with key [{}]", entity, bookKey);
-		
-		assertTrue(client.set(bookKey, entity), "cache didnt got setted");
-		
-		logger.info("asserting that the cache value is not null");
-		
-		assertNotNull(client.get(bookKey));
-		
-		logger.info("asserting that the cache value is equals to bookDto");
-		
-		assertEquals(entity, client.get(bookKey), "cache value didnt get setted properly");
-		
-		logger.info("updating value on the cache");
-		
-		dto.setName("new book name");
-		
-		assertTrue(client.put(bookKey, entity), "cache value didnt get updated");
-		
-		logger.info("asserting that the value got updated");
-		
-		assertEquals(entity.getName(), client.get(bookKey).getName());
-		
-		logger.info("test success, cache got setted, retrieved and updated properly");
-		
-	}
+	private BookService bookService;
 	
-	private Page<BookDTOv2> findPageOfBooksFromService() {
+	private static BookDTOv2 bookDto;
+ 
+    @BeforeEach
+    public void setUp() {
+    	
+    	baseURI = serverBaseURI;
+        port = serverPort;
+        useRelaxedHTTPSValidation();
+        filters(new RequestLoggingFilter(), new ResponseLoggingFilter()); 
+	
+    }
+    
+    @AfterEach
+    public void tearDown() {
+    	
+    	response = null;
+    	jsonPath = null;
+    	json.clear();
+    	
+    }
+    
+    @Test
+    @Order(1)
+    void givenValidData_whenCreatingNewBook_thenCreateAndRetrieveBookDetails() {
+    	
+    	logger.info("\n\n<=========  STARTING TEST givenValidData_whenCreatingNewBook_thenCreateAndRetrieveBookDetails()  =========>\n");
+    	
+    	bookDto = BookMocks.insertBookMockDto();
+    	
+    	response = given()
+					.spec(UserAuthMocks.UserWithToken("operator@gmail.com"))
+					.body(bookDto)
+					.contentType(ContentType.JSON)
+				  .when()
+				  	.post("api/books/v3")
+				  .then()
+				  	.assertThat()
+				  	.statusCode(201)
+				  .and()
+				  	.extract()
+				  	.response();
+    	
+    	jsonPath = JsonPath.from(response.getBody().asString());
+    	
+    	Long bookId = jsonPath.getLong("id");
+    	
+    	assertEquals(bookDto.getName(), jsonPath.get("name"));
+    	
+    	assertEquals(bookDto.getReleaseDate().toString(), jsonPath.getString("releaseDate"));
+    	
+    	assertEquals(bookDto.getImgUrl(), jsonPath.get("imgUrl"));
+    	
+    	assertEquals(bookDto.getAuthor().getId(), jsonPath.getLong("author.id"));
+    	
+    	assertEquals(
+    			bookDto.getCategories().stream().map(x -> x.getId()).collect(Collectors.toList()).toString(),
+    			jsonPath.getList("categories.id").toString()
+    	);
+    	
+    	assertEquals(jsonPath.getList("links").size(), 3);
+    	
+    	assertDoesNotThrow(() -> bookDto = bookService.findById(bookId));
+    	
+    	logger.info("test success, book was registered properly and the response provided the new book id along its details");	
+    	
+    }
+    
+    @Test
+    @Order(2)
+    void whenRequestingBookById_thenReceiveBookDetails() {
+    	
+    	logger.info("\n\n<=========  STARTING TEST whenRequestingBookById_thenReceiveBookDetails()  =========>\n");
+    	
+    	Long bookId = bookDto.getId();
+    	
+    	bookDto = bookService.findById(bookId);
+    	
+    	response = given()
+    				.auth().none()
+				  	.get("api/books/v3/{bookId}", bookId)
+				  .then()
+				  	.assertThat()
+				  	.statusCode(200)
+				  .and()
+				  	.extract()
+				  	.response();
+    	
+    	jsonPath = JsonPath.from(response.getBody().asString());
+    	
+    	assertEquals(bookDto.getId(), jsonPath.getLong("id"));
+    	
+    	assertEquals(bookDto.getName(), jsonPath.get("name"));
+    	
+    	assertEquals(bookDto.getReleaseDate().toString(), jsonPath.getString("releaseDate"));
+    	
+    	assertEquals(bookDto.getImgUrl(), jsonPath.get("imgUrl"));
+    	
+    	assertEquals(bookDto.getAuthor().getId(), jsonPath.getLong("author.id"));
+    	
+    	assertEquals(
+    			bookDto.getCategories().stream().map(x -> x.getId()).collect(Collectors.toList()).toString(),
+    			jsonPath.getList("categories.id").toString()
+    	);
+    	
+    	assertEquals(jsonPath.getList("links").size(), 3);
+    	
+    	logger.info("test success, when a operator requested a book details by its id, the response properly provided the book details");
+    	
+    }
+    
+    @Test
+    @Order(3)
+    void givenPageParameters_whenRequestingBookPage_thenReceiveBookPage() {
+    	
+    	logger.info("\n\n<=========  STARTING TEST givenPageParameters_whenRequestingBookPage_thenReceiveBookPage()  =========>\n");
+    	
+    	int pageSize = 3;
+    	int pageNumber = 0;
+    	
+    	response = given()
+				.auth().none()
+				.queryParam("size", pageSize)
+				.queryParam("page", pageNumber)
+			  .when()
+			  	.get("api/books/v3")
+			  .then()
+			  	.extract().response();
+    	
+    	jsonPath = JsonPath.from(response.getBody().asString());
+    	
+    	assertEquals(response.getStatusCode(), 200);
+    	
+    	assertFalse(jsonPath.getList("content").isEmpty());
+    	
+    	assertEquals(jsonPath.getInt("pageable.pageSize"), pageSize);
+    	
+    	assertEquals(jsonPath.getInt("pageable.pageNumber"), pageNumber);
+    	
+    	logger.info("test success, when a user requested an book page with defined page params, the response properly provided the page");
+    	
+    }
+    
+    @Test
+    @Order(4)
+    void givenValidData_whenUpdatingBookById_thenReceiveUpdatedBookDetails() {
+    	
+    	logger.info("\n\n<=========  STARTING TEST givenValidData_whenUpdatingBookById_thenReceiveUpdatedBookDetails()  =========>\n");
+    	
+    	Long bookId = bookDto.getId();
+    	
+    	bookDto = bookService.findById(bookId);
+    	
+    	bookDto.setName("New Book Name");
+    	
+    	bookDto.setImgUrl("http://new_imageurl");
+    	
+    	response = given()
+    			.spec(UserAuthMocks.UserWithToken("operator@gmail.com"))
+    			.contentType(ContentType.JSON)
+    			.body(bookDto)
+			  	.put("api/books/v3/{bookId}", bookId)
+			  .then()
+			  	.assertThat()
+			  	.statusCode(200)
+			  .and()
+			  	.extract()
+			  	.response();
+	
+    	jsonPath = JsonPath.from(response.getBody().asString());
+    	
+    	assertEquals(bookDto.getId(), jsonPath.getLong("id"));
+    	
+    	assertEquals(bookDto.getName(), jsonPath.get("name"));
+    	
+    	assertEquals(bookDto.getReleaseDate().toString(), jsonPath.getString("releaseDate"));
+    	
+    	assertEquals(bookDto.getImgUrl(), jsonPath.get("imgUrl"));
+    	
+    	assertEquals(bookDto.getAuthor().getId(), jsonPath.getLong("author.id"));
+    	
+    	assertEquals(
+    			bookDto.getCategories().stream().map(x -> x.getId()).collect(Collectors.toList()).toString(),
+    			jsonPath.getList("categories.id").toString()
+    	);
+    	
+    	assertEquals(jsonPath.getList("links").size(), 3);
+    	
+    	logger.info("test success, when a admin user updated a book details by its id, the response properly provided the updated details");
+    	
+    }
+    
+    @Test
+    @Order(5)
+    void givenExistingBook_whenDeletingBookById_thenReceivePositiveFeedback() {
+    	
+    	logger.info("\n\n<=========  STARTING TEST givenExistingBook_whenDeletingBookById_thenReceivePositiveFeedback()  =========>\n");
+    	
+    	Long bookId = bookDto.getId();
+    	
+    	given()
+			.spec(UserAuthMocks.AdminPrivilegesUser())
+		.when()
+			.delete("api/books/v3/{userId}", bookId)
+		.then()
+	  		.assertThat()
+	  		.statusCode(204);
+	
+    	given()
+			.spec(UserAuthMocks.AdminPrivilegesUser())
+		.when()
+			.get("api/books/v3/{userId}", bookId)
+		.then()
+			.assertThat()
+			.statusCode(404)
+		.and()
+			.body("message", containsString("Resource BOOK not found. ID " + bookId));
+	
+    	logger.info("test success, when a admin user deleted a book by its id, the response properly provided feedback on the book deletion");
+    	
+    }
+    
+    @Test
+    @Order(6)
+    void givenBookOperationsRequests_whenUserDontHaveEnoughPrivileges_thenReceiveNotAuthorized() {
+    	
+    	logger.info("\n\n<=========  STARTING TEST givenBookOperationsRequests_whenUserDontHaveEnoughPrivileges_thenReceiveNotAuthorized()  =========>\n");
+    	
+    	Long bookId = bookDto.getId();
 
-		Pageable pageable = PageRequest.of(0, 12);
+    	given()
+    	.auth().none()
+    	.when()
+    	.put("api/books/v3/{bookId}", bookId)
+    	.then()
+    	.assertThat()
+    	.statusCode(401);
 
-		return service.findAllPaged(pageable, null, "", "all");
+    	given()
+    	.auth().none()
+    	.when()
+    	.delete("api/books/v3/{bookId}", bookId)
+    	.then()
+    	.assertThat()
+    	.statusCode(401);
+    	
+    	RequestSpecification reqSpec = UserAuthMocks.UserWithToken("customer@gmail.com");
 
-	}
+    	given()
+    	.spec(reqSpec)
+    	.when()
+    	.put("api/books/v3/{bookId}", bookId)
+    	.then()
+    	.assertThat()
+    	.statusCode(403);
 
-	private Page<BookDTOv2> findPageOfBooksFromCache() {
-
-		String expectedCacheKey = "books::SimpleKey [null,,ALL,Page request [number: 0, size 12, sort: UNSORTED]]";	
-		
-		try {
-
-			return ((Page<?>) client.get(expectedCacheKey)).map(x -> BookMapper.convertEntityToDtoV2((Book) x));
-		
-		} catch (NullPointerException ex) {
-			return Page.empty();
-		}
-
-	}
+    	given()
+    	.spec(reqSpec)
+    	.when()
+    	.delete("api/books/v3/{bookId}", bookId)
+    	.then()
+    	.assertThat()
+    	.statusCode(403);
+    	
+    	logger.info("test success, when a request was made without auth token the response was 401 UNAUTHORIZED "
+    			  + "and when there was a token without OPERATOR or ADMIN privileges then the response was 403 FORBIDDEN");
+    	
+    }
 
 }
