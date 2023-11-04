@@ -188,7 +188,7 @@ public class ReservationService {
 
 	}
 
-	@Transactional // TODO getReferenceById bugando sem o @transactional, vale a pena checar resto do programa onde isso poderia ter sido usado, criar issue no git
+	@Transactional
 	public void returnReservation(Long reservationId) {
 
 		try {
