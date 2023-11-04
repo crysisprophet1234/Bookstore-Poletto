@@ -70,9 +70,9 @@ public class BookMocks {
 		bookDTOv2.setReleaseDate(LocalDate.of(2023, 1, 1));
 		bookDTOv2.setImgUrl("http://imageurl");
 		bookDTOv2.setAuthor(new AuthorDTOv2(1L, "Author Author"));
-		bookDTOv2.getCategories().add(new CategoryDTOv2(1L, "Category1"));
-		bookDTOv2.getCategories().add(new CategoryDTOv2(2L, "Category2"));
-		bookDTOv2.getCategories().add(new CategoryDTOv2(3L, "Category3"));
+		bookDTOv2.getCategories().add(new CategoryDTOv2(1L, "CategoryMock"));
+		bookDTOv2.getCategories().add(new CategoryDTOv2(2L, "CategoryMock"));
+		bookDTOv2.getCategories().add(new CategoryDTOv2(3L, "CategoryMock"));
 		return bookDTOv2;	
 	}
 	
