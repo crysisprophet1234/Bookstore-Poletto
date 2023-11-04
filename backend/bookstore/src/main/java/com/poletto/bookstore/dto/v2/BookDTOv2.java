@@ -121,16 +121,6 @@ public class BookDTOv2 extends RepresentationModel<BookDTOv2> implements Seriali
 		return categories;
 	}
 	
-	//TODO could have potential
-//	@Override
-//	@JsonProperty("links")
-//	@JsonInclude(Include.NON_EMPTY)
-//	@JsonSerialize(using = Jackson2HalModule.HalLinkListSerializer.class)
-//	@JsonDeserialize(using = Jackson2HalModule.HalLinkListDeserializer.class)
-//	public Links getLinks() {
-//	  return super.getLinks();
-//	}
-	
 	@Override
 	public int hashCode() {
 		return Objects.hash(key);
