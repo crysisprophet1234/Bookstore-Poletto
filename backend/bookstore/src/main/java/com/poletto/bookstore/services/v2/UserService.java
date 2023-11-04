@@ -1,9 +1,9 @@
 package com.poletto.bookstore.services.v2;
 
-import java.util.Optional;
-
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
+
+import java.util.Optional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -135,7 +135,7 @@ public class UserService {
 
 		userAuthDTO.setToken(jwtToken);
 
-		logger.info("Resource USER authenticated " + entity.toString());
+		logger.info("Resource USER authenticated {}", userAuthDTO);
 		
 		userAuthDTO.add(linkTo(methodOn(UserController.class).findById(userAuthDTO.getId())).withSelfRel().withType("GET"));
 		userAuthDTO.add(linkTo(methodOn(UserController.class).delete(userAuthDTO.getId())).withRel("delete").withType("DELETE"));
@@ -144,8 +144,6 @@ public class UserService {
 		return userAuthDTO;
 
 	}
-
-	// TODO userAuth here??? frontend will eventually have person/user changes
 	
 	@Transactional
 	public UserDTOv2 update(Long id, UserAuthDTOv2 dto) {
@@ -179,9 +177,9 @@ public class UserService {
 
 			entity = userRepository.save(entity);
 
-			logger.info("Resource USER updated: " + entity.toString());
-
 			UserDTOv2 newDto = UserMapper.convertEntityToDtoV2(entity);
+			
+			logger.info("Resource USER updated: {}", newDto);
 			
 			newDto.add(linkTo(methodOn(UserController.class).findById(newDto.getId())).withSelfRel().withType("GET"));
 			newDto.add(linkTo(methodOn(UserController.class).delete(newDto.getId())).withRel("delete").withType("DELETE"));
