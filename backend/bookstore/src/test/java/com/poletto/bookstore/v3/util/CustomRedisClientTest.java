@@ -54,13 +54,13 @@ class CustomRedisClientTest {
 	}
 
 	@BeforeEach
-	void setUp() throws Exception {
+	void setUp() {
 		keyMockString = "key test string";
 		valueMockString = "value test string";
 	}
 
 	@AfterEach
-	void tearDown() throws Exception {
+	void tearDown() {
 		keyMockString = valueMockString = null;
 		client.clear();
 	}
