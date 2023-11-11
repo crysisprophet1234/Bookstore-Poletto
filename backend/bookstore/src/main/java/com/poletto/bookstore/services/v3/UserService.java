@@ -4,25 +4,23 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 import java.util.List;
+import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.poletto.bookstore.controllers.v3.UserController;
 import com.poletto.bookstore.converter.custom.UserMapper;
-import com.poletto.bookstore.dto.v2.RoleDTOv2;
-import com.poletto.bookstore.dto.v2.UserAuthDTOv2;
 import com.poletto.bookstore.dto.v2.UserDTOv2;
 import com.poletto.bookstore.entities.Reservation;
+import com.poletto.bookstore.entities.Role;
 import com.poletto.bookstore.entities.User;
 import com.poletto.bookstore.exceptions.ResourceNotFoundException;
-import com.poletto.bookstore.repositories.v3.RoleRepository;
 import com.poletto.bookstore.repositories.v3.UserRepository;
 import com.poletto.bookstore.util.CustomRedisClient;
 
@@ -38,12 +36,6 @@ public class UserService {
 
 	@Autowired
 	private UserRepository userRepository;
-
-	@Autowired
-	private RoleRepository roleRepository;
-
-	@Autowired
-	private PasswordEncoder passwordEncoder;
 
 	@Transactional(readOnly = true)
 	public Page<UserDTOv2> findAllPaged(Pageable pageable) {
@@ -79,9 +71,8 @@ public class UserService {
 
 	}
 
-	// TODO userAuth here??? frontend will eventually have person/user changes
 	@Transactional
-	public UserDTOv2 update(Long id, UserAuthDTOv2 dto) {
+	public UserDTOv2 update(Long id, UserDTOv2 dto) {
 
 			User entity = userRepository.findById(id)
 					.orElseThrow(() -> new ResourceNotFoundException("Resource USER not found. ID: " + id));
@@ -89,20 +80,14 @@ public class UserService {
 			String previousEmail = entity.getEmail();
 			
 			List<Reservation> reservations = entity.getOrders();
+			
+			Set<Role> roles = entity.getRoles();
 
 			entity = UserMapper.convertDtoToEntityV2(dto);
 
 			entity.setId(id);
-			
-			entity.setPassword(passwordEncoder.encode(dto.getPassword()));
 
-			entity.getRoles().clear();
-
-			for (RoleDTOv2 roleDTO : dto.getRoles()) {
-
-				entity.getRoles().add(roleRepository.getReferenceById(roleDTO.getId()));
-
-			}
+			entity.getRoles().addAll(roles);
 
 			entity = userRepository.save(entity);
 

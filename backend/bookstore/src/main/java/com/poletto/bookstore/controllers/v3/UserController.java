@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.poletto.bookstore.dto.v2.UserAuthDTOv2;
 import com.poletto.bookstore.dto.v2.UserDTOv2;
 import com.poletto.bookstore.services.v3.UserService;
 
@@ -38,7 +37,7 @@ public class UserController {
 	}
 	
 	@PutMapping(value = "/{id}")
-	public ResponseEntity<UserDTOv2> update(@PathVariable Long id, @RequestBody @Valid UserAuthDTOv2 dto) {
+	public ResponseEntity<UserDTOv2> update(@PathVariable Long id, @RequestBody @Valid UserDTOv2 dto) {
 		UserDTOv2 userDTO = userService.update(id, dto);
 		return ResponseEntity.ok().body(userDTO);
 	}
