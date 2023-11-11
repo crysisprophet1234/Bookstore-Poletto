@@ -53,6 +53,7 @@ public class BookDTOv2 extends RepresentationModel<BookDTOv2> implements Seriali
 	private AuthorDTOv2 author;
 
 	@Valid
+	@NotEmpty
 	@JsonIgnoreProperties(value = {"links"})
 	private Set<CategoryDTOv2> categories = new HashSet<>();
 	
