@@ -5,11 +5,12 @@ import { SpringPage } from '../../../../types/vendor/spring'
 import { requestBackend } from '../../../../utils/requests'
 
 import Pagination from '../../../../components/Pagination'
-import ReservesFilter, { ReserveFilterData } from '../../../../components/ReservesFilter'
+import ReservesFilter, { ReserveFilterData } from '../ReservesFilter'
 
 import { formatDateApi } from '../../../../utils/formatters'
 
 import { PulseLoader } from 'react-spinners'
+import { toast } from 'react-toastify'
 import './styles.css'
 
 const LazyReservationCard = lazy(() => import('../ReservationCard'))
@@ -88,8 +89,7 @@ const List = () => {
 
             })
             .catch((error) => {
-                //FIXME: handling apropriado
-                console.log(error)
+                toast.error(`Falha ao buscar reservas: \n ${error.response.data.message}`)
             })
 
     }, [controlComponentsData])
@@ -107,7 +107,7 @@ const List = () => {
             <div className='mt-3'>
                 <Pagination
                     forcePage={page?.number}
-                    pageCount={page ? (page.totalPages > 0 ? page.totalPages : 1) : 0}
+                    pageCount={page?.totalPages || 1}
                     range={window.innerWidth > 768 ? 3 : 1}
                     onChange={handlePageChange}
                 />

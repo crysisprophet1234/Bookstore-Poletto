@@ -1,5 +1,6 @@
 package com.poletto.bookstore.dto.v2;
 
+import java.util.Objects;
 import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
@@ -59,8 +60,31 @@ public class UserAuthDTOv2 extends UserDTOv2 {
 	}
 
 	@Override
-	public String toString() {
-		return "UserAuthDTO [password=" + password + ", token=" + token + "]";
+	public int hashCode() {
+		final int prime = 31;
+		int result = super.hashCode();
+		result = prime * result + Objects.hash(password, token);
+		return result;
 	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (!super.equals(obj))
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		UserAuthDTOv2 other = (UserAuthDTOv2) obj;
+		return Objects.equals(password, other.password) && Objects.equals(token, other.token);
+	}
+
+	@Override
+	public String toString() {
+		return "UserAuthDTOv2 [key=" + getId() + ", firstname=" + getFirstname() + ", lastname=" + getLastname() 
+			 + ", email=" + getEmail() + ", password=" + password + ", token=" + token + "]";
+	}
+
+	
 
 }

@@ -1,0 +1,2637 @@
+{
+	"info": {
+		"_postman_id": "157a5def-1ba5-48f2-8674-a26615bcccc1",
+		"name": "Poletto Bookstore",
+		"description": "API que sustenta o backend e transição de dados da Poletto Bookstore, armazenando os dados das entidades abstraídas da área de negócio como livros, reservas, usuários e etc.  \nAtualmente contém duas versões estáveis e nova versão 3 em desenvolvimento.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_uid": "25349262-157a5def-1ba5-48f2-8674-a26615bcccc1"
+	},
+	"item": [
+		{
+			"name": "Books",
+			"item": [
+				{
+					"name": "v1",
+					"item": [
+						{
+							"name": "Books all - deprecated",
+							"id": "688dd1f5-8b53-49b2-99e2-e37c4050732a",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true,
+								"disabledSystemHeaders": {
+									"accept": true
+								}
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{tokenBookstore}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									},
+									{
+										"key": "Accept",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "text"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{host}}/api/books/v1",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"api",
+										"books",
+										"v1"
+									],
+									"query": [
+										{
+											"key": null,
+											"value": "",
+											"type": "text",
+											"disabled": true
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Books paged",
+							"id": "8c90c1ac-f8c5-45f3-9503-0b2b23e49835",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{tokenBookstore}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									},
+									{
+										"key": "Accept",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "text"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{host}}/api/books/v1?page=0&size=12&orderBy=name&sort=asc&categoryId=0&name=&booked=",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"api",
+										"books",
+										"v1"
+									],
+									"query": [
+										{
+											"key": "page",
+											"value": "0",
+											"description": "index da página"
+										},
+										{
+											"key": "size",
+											"value": "12",
+											"description": "quantidade de elementos por página"
+										},
+										{
+											"key": "orderBy",
+											"value": "name",
+											"description": "ordenar resultados por [ name, id, author.name, etc... ]"
+										},
+										{
+											"key": "sort",
+											"value": "asc",
+											"description": "ordernar asc ou desc"
+										},
+										{
+											"key": "categoryId",
+											"value": "0",
+											"description": "filtro por categoria, todas = 0"
+										},
+										{
+											"key": "name",
+											"value": "",
+											"description": "filtro por nome, todas = "
+										},
+										{
+											"key": "booked",
+											"value": "",
+											"description": "filtro por status (available ou booked), todas = "
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Book by id",
+							"id": "deb5a582-b1ac-426a-a3e9-dfc6512eb828",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{tokenBookstore}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{host}}/api/books/v1/1",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"api",
+										"books",
+										"v1",
+										"1"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Book delete",
+							"id": "a0d0a7e0-0ea8-4815-9d52-b73febee18a5",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{tokenBookstore}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "{{host}}/api/books/v1/7",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"api",
+										"books",
+										"v1",
+										"7"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Book insert",
+							"id": "b532e118-45ef-4169-a1e3-01ec637d2f35",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{tokenBookstore}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"name\": \"A Dance With Dragons\",\r\n    \"releaseDate\": \"2025-07-12\",\r\n    \"imgUrl\": \"https://m.media-amazon.com/images/I/51b7SH0qgxL._SY346_.jpg\",\r\n    \"author\": {\r\n        \"id\": 5\r\n    },\r\n    \"categories\": [\r\n        {\r\n            \"id\": 2\r\n        },\r\n        {\r\n            \"id\": 5\r\n        },\r\n        {\r\n            \"id\": 11\r\n        }\r\n    ]\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{host}}/api/books/v1",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"api",
+										"books",
+										"v1"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Book update",
+							"id": "1ac212cd-22c1-4f6c-8c11-7f614bcd4068",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{tokenBookstore}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"name\": \"testetesteste\",\r\n    \"releaseDate\": \"2018-05-22\",\r\n    \"imgUrl\": \"https://m.media-amazon.com/images/I/61dOYnvCQ2L._SY344_BO1,204,203,200_QL70_ML2_.jpg\",\r\n    \"author\": {\r\n        \"id\": 1\r\n    },\r\n    \"categories\": [\r\n        {\r\n            \"id\": 6\r\n        },\r\n        {\r\n            \"id\": 1\r\n        }\r\n    ]\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{host}}/api/books/v1/1",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"api",
+										"books",
+										"v1",
+										"1"
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"id": "0264c7e6-aa4d-47c1-ab06-fcaeb2b87833"
+				},
+				{
+					"name": "v2",
+					"item": [
+						{
+							"name": "Books paged",
+							"id": "304adcf2-4476-4691-89a8-84f09fe43bb9",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "noauth"
+								},
+								"method": "GET",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									},
+									{
+										"key": "Accept",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "text"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{https-host}}/api/books/v2?page=0&size=12&orderBy=name&sort=asc&categoryId=&name=&booked=",
+									"host": [
+										"{{https-host}}"
+									],
+									"path": [
+										"api",
+										"books",
+										"v2"
+									],
+									"query": [
+										{
+											"key": "page",
+											"value": "0",
+											"description": "index da página"
+										},
+										{
+											"key": "size",
+											"value": "12",
+											"description": "quantidade de elementos por página"
+										},
+										{
+											"key": "orderBy",
+											"value": "name",
+											"description": "ordenar resultados por [ name, id, author.name, etc... ]"
+										},
+										{
+											"key": "sort",
+											"value": "asc",
+											"description": "ordernar asc ou desc"
+										},
+										{
+											"key": "categoryId",
+											"value": "",
+											"description": "filtro por categoria, todas = 0"
+										},
+										{
+											"key": "name",
+											"value": "",
+											"description": "filtro por nome de livro ou autor, todas = "
+										},
+										{
+											"key": "booked",
+											"value": "",
+											"description": "all, booked or available, default = all"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Book insert",
+							"id": "b31a2167-9742-4910-b80a-bd09fe6880cb",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{tokenBookstore}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"name\": \"Dance with Dragons\",\r\n    \"releaseDate\": \"2021-07-12\",\r\n    \"imgUrl\": \"https://m.media-amazon.com/images/I/51b7SH0qgxL._SY346_.jpg\",\r\n    \"author\": {\r\n        \"id\": 5\r\n    },\r\n    \"categories\": [\r\n        {\r\n            \"id\": 2\r\n        },\r\n        {\r\n            \"id\": 5\r\n        },\r\n        {\r\n            \"id\": 11\r\n        }\r\n    ]\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{https-host}}/api/books/v2",
+									"host": [
+										"{{https-host}}"
+									],
+									"path": [
+										"api",
+										"books",
+										"v2"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Book by id",
+							"id": "6a1d3c34-7fb5-4cfb-ae25-ed39e00c50af",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "noauth"
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{https-host}}/api/books/v2/1",
+									"host": [
+										"{{https-host}}"
+									],
+									"path": [
+										"api",
+										"books",
+										"v2",
+										"1"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Book delete",
+							"id": "9bd7dd0e-4073-4781-98e7-283fdf180a32",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{tokenBookstore}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "{{https-host}}/api/books/v2/1",
+									"host": [
+										"{{https-host}}"
+									],
+									"path": [
+										"api",
+										"books",
+										"v2",
+										"1"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Book update",
+							"id": "21215ed9-dad2-453c-8564-8fb5dab34d71",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{tokenBookstore}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"name\": \"testetesteste\",\r\n    \"releaseDate\": \"2018-05-22\",\r\n    \"imgUrl\": \"https://m.media-amazon.com/images/I/61dOYnvCQ2L._SY344_BO1,204,203,200_QL70_ML2_.jpg\",\r\n    \"author\": {\r\n        \"id\": 1\r\n    },\r\n    \"categories\": [\r\n        {\r\n            \"id\": 6\r\n        },\r\n        {\r\n            \"id\": 1\r\n        }\r\n    ]\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{https-host}}/api/books/v2/1",
+									"host": [
+										"{{https-host}}"
+									],
+									"path": [
+										"api",
+										"books",
+										"v2",
+										"1"
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"id": "340665f7-24dd-4821-8741-7cc84252e5f5"
+				},
+				{
+					"name": "v3",
+					"item": [
+						{
+							"name": "Books paged",
+							"id": "9f6f3a48-17f0-4fad-a83e-9306f1ef63a5",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "noauth"
+								},
+								"method": "GET",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									},
+									{
+										"key": "Accept",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "text"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{https-host}}/api/books/v3?page=0&size=12&orderBy=name&sort=asc&categoryId=&name=&booked=",
+									"host": [
+										"{{https-host}}"
+									],
+									"path": [
+										"api",
+										"books",
+										"v3"
+									],
+									"query": [
+										{
+											"key": "page",
+											"value": "0",
+											"description": "index da página"
+										},
+										{
+											"key": "size",
+											"value": "12",
+											"description": "quantidade de elementos por página"
+										},
+										{
+											"key": "orderBy",
+											"value": "name",
+											"description": "ordenar resultados por [ name, id, author.name, etc... ]"
+										},
+										{
+											"key": "sort",
+											"value": "asc",
+											"description": "ordernar asc ou desc"
+										},
+										{
+											"key": "categoryId",
+											"value": "",
+											"description": "filtro por categoria, todas = 0"
+										},
+										{
+											"key": "name",
+											"value": "",
+											"description": "filtro por nome de livro ou autor, todas = "
+										},
+										{
+											"key": "booked",
+											"value": "",
+											"description": "all, booked or available, default = all"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Book insert",
+							"id": "8a400d13-b6b4-40fb-9b84-4e66fac8567d",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{tokenBookstore}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"name\": \"Dance with Dragons\",\r\n    \"releaseDate\": \"2021-07-12\",\r\n    \"imgUrl\": \"https://m.media-amazon.com/images/I/51b7SH0qgxL._SY346_.jpg\",\r\n    \"author\": {\r\n        \"id\": 5\r\n    },\r\n    \"categories\": [\r\n        {\r\n            \"id\": 2\r\n        },\r\n        {\r\n            \"id\": 5\r\n        },\r\n        {\r\n            \"id\": 11\r\n        }\r\n    ]\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{https-host}}/api/books/v3",
+									"host": [
+										"{{https-host}}"
+									],
+									"path": [
+										"api",
+										"books",
+										"v3"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Book by id",
+							"id": "abc3a8bb-228c-4e06-9c15-e9a4debfccd7",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "noauth"
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{https-host}}/api/books/v3/2",
+									"host": [
+										"{{https-host}}"
+									],
+									"path": [
+										"api",
+										"books",
+										"v3",
+										"2"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Book delete",
+							"id": "b6164350-c840-406b-8004-00b442bfd1ad",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{tokenBookstore}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "{{https-host}}/api/books/v3/2",
+									"host": [
+										"{{https-host}}"
+									],
+									"path": [
+										"api",
+										"books",
+										"v3",
+										"2"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Book update",
+							"id": "81b9f7bc-1733-4f17-83ce-87e6f5aef907",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{tokenBookstore}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"name\": \"testetesteste\",\r\n    \"releaseDate\": \"2018-05-22\",\r\n    \"imgUrl\": \"https://m.media-amazon.com/images/I/61dOYnvCQ2L._SY344_BO1,204,203,200_QL70_ML2_.jpg\",\r\n    \"author\": {\r\n        \"id\": 1\r\n    },\r\n    \"categories\": [\r\n        {\r\n            \"id\": 6\r\n        },\r\n        {\r\n            \"id\": 1\r\n        }\r\n    ]\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{https-host}}/api/books/v3/1",
+									"host": [
+										"{{https-host}}"
+									],
+									"path": [
+										"api",
+										"books",
+										"v3",
+										"1"
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"id": "bbbece08-7047-4e82-b87f-421a57b42d7d"
+				}
+			],
+			"id": "17842405-41a0-473a-ab08-b0560d185f9b",
+			"description": "Entidade que armazena o principal produto de negócio que são os livros, armazenando dados sobre o livro e sua avaliabilidade."
+		},
+		{
+			"name": "Users",
+			"item": [
+				{
+					"name": "v1",
+					"item": [
+						{
+							"name": "User all",
+							"id": "9a7a9634-a8bc-406b-b9fa-01b635d09493",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{tokenBookstore}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{host}}/api/users/v1",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"api",
+										"users",
+										"v1"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "User by id",
+							"id": "e48b34d0-4d00-4e1a-ba5c-8e2087110b1d",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{tokenBookstore}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{host}}/api/users/v1/5",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"api",
+										"users",
+										"v1",
+										"5"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "User paged",
+							"id": "b0a095fd-dfb9-4824-bd36-bb0a3632eee5",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{tokenBookstore}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{host}}/api/users/v1/paged",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"api",
+										"users",
+										"v1",
+										"paged"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "User update",
+							"id": "8eacfb3f-d93b-411c-80da-4ae98d651571",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{tokenBookstore}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"firstname\": \"Cleudisvaldo\",\r\n    \"lastname\": \"Pereira\",\r\n    \"email\": \"deovaldo@gmail.com\",\r\n    \"password\": \"1234\",\r\n    \"roles\": [\r\n    {\r\n        \"id\": 1\r\n    },\r\n    {\r\n        \"id\": 2\r\n    }\r\n  ]\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{host}}/api/users/v1/5",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"api",
+										"users",
+										"v1",
+										"5"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "User delete",
+							"id": "235232c8-4e9f-4038-ab41-9f68c99cc4f8",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{tokenBookstore}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "{{host}}/api/users/v1/57",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"api",
+										"users",
+										"v1",
+										"57"
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"id": "f6f320af-f616-46ed-84f3-cf27b9f01fc7"
+				},
+				{
+					"name": "v2",
+					"item": [
+						{
+							"name": "User by id",
+							"id": "3197ac59-27b3-47d3-9bdb-0d101ec708e2",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{tokenBookstore}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{https-host}}/api/users/v2/1",
+									"host": [
+										"{{https-host}}"
+									],
+									"path": [
+										"api",
+										"users",
+										"v2",
+										"1"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "User paged",
+							"id": "a8f3fd69-7f78-4bc4-a0de-683b2d88eade",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{tokenBookstore}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{https-host}}/api/users/v2",
+									"host": [
+										"{{https-host}}"
+									],
+									"path": [
+										"api",
+										"users",
+										"v2"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "User update",
+							"id": "98ea59d9-332c-489e-826b-ac2f504043c7",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{tokenBookstore}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"firstname\": \"Cleudisvaldo\",\r\n    \"lastname\": \"Pereira\",\r\n    \"email\": \"deovaldo@gmail.com\",\r\n    \"password\": \"abc12345\",\r\n    \"roles\": [\r\n        {\r\n            \"id\": 1\r\n        },\r\n        {\r\n            \"id\": 2\r\n        }\r\n    ]\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{https-host}}/api/users/v2/53",
+									"host": [
+										"{{https-host}}"
+									],
+									"path": [
+										"api",
+										"users",
+										"v2",
+										"53"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "User delete",
+							"id": "6af1c903-514b-4f2c-8b48-b216fade28fc",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{tokenBookstore}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "{{https-host}}/api/users/v2/53",
+									"host": [
+										"{{https-host}}"
+									],
+									"path": [
+										"api",
+										"users",
+										"v2",
+										"53"
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"id": "71cacb70-013f-425a-9ef7-95895a72e198"
+				},
+				{
+					"name": "v3",
+					"item": [
+						{
+							"name": "User by id",
+							"id": "2e234486-37d6-4c75-9004-688aa844a3ba",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{tokenBookstore}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{https-host}}/api/users/v3/1",
+									"host": [
+										"{{https-host}}"
+									],
+									"path": [
+										"api",
+										"users",
+										"v3",
+										"1"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "User paged",
+							"id": "f9ce124f-b4f7-470e-89fa-2f447ac59c6c",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{tokenBookstore}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{https-host}}/api/users/v3",
+									"host": [
+										"{{https-host}}"
+									],
+									"path": [
+										"api",
+										"users",
+										"v3"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "User update",
+							"id": "04338deb-1320-42af-afdd-9c5f475758a4",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{tokenBookstore}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"firstname\": \"Cleudisvaldo\",\r\n    \"lastname\": \"Pereira\",\r\n    \"email\": \"deovaldo@gmail.com\",\r\n    \"password\": \"abc12345\",\r\n    \"roles\": [\r\n        {\r\n            \"id\": 1\r\n        },\r\n        {\r\n            \"id\": 2\r\n        }\r\n    ]\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{https-host}}/api/users/v3/53",
+									"host": [
+										"{{https-host}}"
+									],
+									"path": [
+										"api",
+										"users",
+										"v3",
+										"53"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "User delete",
+							"id": "0eff23de-441e-4649-8e12-550bbb70833e",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{tokenBookstore}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "{{https-host}}/api/users/v3/53",
+									"host": [
+										"{{https-host}}"
+									],
+									"path": [
+										"api",
+										"users",
+										"v3",
+										"53"
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"id": "4474d583-5d8e-464f-8385-e413d1c944ff"
+				}
+			],
+			"id": "f962902f-ef50-4385-aaee-aaa91115cbea"
+		},
+		{
+			"name": "Reservations",
+			"item": [
+				{
+					"name": "v1",
+					"item": [
+						{
+							"name": "Reservations all",
+							"id": "ab37a26e-66db-46bc-9b1a-6000062d4a8e",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{tokenBookstore}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{host}}/api/reservations/v1",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"api",
+										"reservations",
+										"v1"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Reservation by id",
+							"id": "367cb944-6396-4a6f-a1f9-3f3a8ffe1154",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{tokenBookstore}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{host}}/api/reservations/v1/1",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"api",
+										"reservations",
+										"v1",
+										"1"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Reservation return",
+							"id": "91e90d4f-128f-43e9-89d4-74c54b327492",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{tokenBookstore}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "PUT",
+								"header": [],
+								"url": {
+									"raw": "{{host}}/api/reservations/v1/return/6",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"api",
+										"reservations",
+										"v1",
+										"return",
+										"6"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Reservation insert",
+							"id": "7b331c67-b0c5-4d1c-ba79-931c551dbe3f",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{tokenBookstore}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"weeks\": 2,\r\n    \"client\": {\r\n        \"id\": 4\r\n    },\r\n    \"books\": [\r\n        {\r\n            \"id\": 6\r\n        },\r\n        {\r\n            \"id\": 2\r\n        }\r\n    ]\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{https-host}}/api/reservations/v1",
+									"host": [
+										"{{https-host}}"
+									],
+									"path": [
+										"api",
+										"reservations",
+										"v1"
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"id": "c9cd6a0a-af28-4f59-bfa0-b4a14bb6f11b"
+				},
+				{
+					"name": "v2",
+					"item": [
+						{
+							"name": "Reservations all",
+							"id": "a6f6cf11-3b04-440d-b876-8fb0b0b8fd70",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{tokenBookstore}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{https-host}}/api/reservations/v2?page=0&size=5&orderBy=&sort=&client=&book=&status=&startingDate=&devolutionDate=",
+									"host": [
+										"{{https-host}}"
+									],
+									"path": [
+										"api",
+										"reservations",
+										"v2"
+									],
+									"query": [
+										{
+											"key": "page",
+											"value": "0",
+											"description": "default 0"
+										},
+										{
+											"key": "size",
+											"value": "5",
+											"description": "default 5"
+										},
+										{
+											"key": "orderBy",
+											"value": "",
+											"description": "id, moment, devolution, weeks, status, client, books (default id)"
+										},
+										{
+											"key": "sort",
+											"value": "",
+											"description": "asc, desc (default asc)"
+										},
+										{
+											"key": "client",
+											"value": "",
+											"description": "client id"
+										},
+										{
+											"key": "book",
+											"value": "",
+											"description": "book id"
+										},
+										{
+											"key": "status",
+											"value": "",
+											"description": "in_progress | finished (defaul all)"
+										},
+										{
+											"key": "startingDate",
+											"value": "",
+											"description": "yyyy-MM-dd"
+										},
+										{
+											"key": "devolutionDate",
+											"value": "",
+											"description": "yyyy-MM-dd"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Reservation by id",
+							"id": "226428d1-4136-4448-9334-74df9e6dc7ba",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{tokenBookstore}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{https-host}}/api/reservations/v2/1",
+									"host": [
+										"{{https-host}}"
+									],
+									"path": [
+										"api",
+										"reservations",
+										"v2",
+										"1"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Reservation return",
+							"id": "f73fcfa9-2d31-427c-95ce-fd23814c00d9",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{tokenBookstore}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "PUT",
+								"header": [],
+								"url": {
+									"raw": "{{https-host}}/api/reservations/v2/return/5",
+									"host": [
+										"{{https-host}}"
+									],
+									"path": [
+										"api",
+										"reservations",
+										"v2",
+										"return",
+										"5"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Reservation insert",
+							"id": "f8dc3f02-f08a-4a7f-a34c-c50970431353",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{tokenBookstore}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"weeks\": 2,\r\n    \"client\": {\r\n        \"id\": 1\r\n    },\r\n    \"books\": [\r\n        {\r\n            \"id\": 4\r\n        },\r\n        {\r\n            \"id\": 6\r\n        }\r\n    ]\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{https-host}}/api/reservations/v2",
+									"host": [
+										"{{https-host}}"
+									],
+									"path": [
+										"api",
+										"reservations",
+										"v2"
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"id": "9c960a25-4dd5-4b32-8484-d53052ba79e6"
+				},
+				{
+					"name": "v3",
+					"item": [
+						{
+							"name": "Reservations all",
+							"id": "e652ec9a-b0bc-40e1-8100-3017b1cf0bb0",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{tokenBookstore}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{https-host}}/api/reservations/v3?page=0&size=5&orderBy=&sort=&client=&book=&status=&startingDate=&devolutionDate=",
+									"host": [
+										"{{https-host}}"
+									],
+									"path": [
+										"api",
+										"reservations",
+										"v3"
+									],
+									"query": [
+										{
+											"key": "page",
+											"value": "0",
+											"description": "default 0"
+										},
+										{
+											"key": "size",
+											"value": "5",
+											"description": "default 5"
+										},
+										{
+											"key": "orderBy",
+											"value": "",
+											"description": "id, moment, devolution, weeks, status, client, books (default id)"
+										},
+										{
+											"key": "sort",
+											"value": "",
+											"description": "asc, desc (default asc)"
+										},
+										{
+											"key": "client",
+											"value": "",
+											"description": "client id"
+										},
+										{
+											"key": "book",
+											"value": "",
+											"description": "book id"
+										},
+										{
+											"key": "status",
+											"value": "",
+											"description": "in_progress | finished (defaul all)"
+										},
+										{
+											"key": "startingDate",
+											"value": "",
+											"description": "yyyy-MM-dd"
+										},
+										{
+											"key": "devolutionDate",
+											"value": "",
+											"description": "yyyy-MM-dd"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Reservation by id",
+							"id": "8852687c-d147-4f48-babe-241432ace6ef",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{tokenBookstore}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{https-host}}/api/reservations/v3/1",
+									"host": [
+										"{{https-host}}"
+									],
+									"path": [
+										"api",
+										"reservations",
+										"v3",
+										"1"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Reservation return",
+							"id": "7f49b00f-e221-4cde-b3de-dab83bc13103",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{tokenBookstore}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "PUT",
+								"header": [],
+								"url": {
+									"raw": "{{https-host}}/api/reservations/v3/return/1",
+									"host": [
+										"{{https-host}}"
+									],
+									"path": [
+										"api",
+										"reservations",
+										"v3",
+										"return",
+										"1"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Reservation insert",
+							"id": "9dc41b12-84ce-4930-8eb6-61211a80682e",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{tokenBookstore}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"weeks\": 2,\r\n    \"client\": {\r\n        \"id\": 1\r\n    },\r\n    \"books\": [\r\n        {\r\n            \"id\": 4\r\n        },\r\n        {\r\n            \"id\": 6\r\n        }\r\n    ]\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{https-host}}/api/reservations/v3",
+									"host": [
+										"{{https-host}}"
+									],
+									"path": [
+										"api",
+										"reservations",
+										"v3"
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"id": "e2bdcee7-b1cd-4d67-88ae-ddae2f39c7eb"
+				}
+			],
+			"id": "cad3759d-3ddc-42ed-9f80-6515abf24c3b"
+		},
+		{
+			"name": "Auth",
+			"item": [
+				{
+					"name": "v1",
+					"item": [
+						{
+							"name": "Authenticate",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "d3a81266-2261-49c5-88b5-bb1314166336",
+										"exec": [
+											"if (responseCode.code >= 200 && responseCode.code < 300) {\r",
+											"    var json = JSON.parse(responseBody);\r",
+											"    postman.setEnvironmentVariable('tokenBookstore', json.token);\r",
+											"}"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"id": "99c1287c-d2ac-4e47-8bc7-b60415e1a1a9",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "noauth"
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"email\": \"leo@gmail.com\",\r\n    \"password\": \"t5y6u7i8\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{host}}/api/auth/v1/authenticate",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"api",
+										"auth",
+										"v1",
+										"authenticate"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Register",
+							"id": "0181d475-6539-4778-833c-1e875a9389e3",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"firstname\": \"Deovaldo\",\r\n    \"lastname\": \"Pereira\",\r\n    \"email\": \"deovaldo@gmail.com\",\r\n    \"password\": \"1234\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{host}}/api/auth/v1/register",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"api",
+										"auth",
+										"v1",
+										"register"
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"id": "9a37ff23-0511-46ac-be5d-7405b90b037a"
+				},
+				{
+					"name": "v2",
+					"item": [
+						{
+							"name": "Register",
+							"id": "5d806738-efa6-450c-b9c5-9b9de48c7a39",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"firstname\": \"Leonardo\",\r\n    \"lastname\": \"Poletto\",\r\n    \"email\": \"ultimateleodib@gmail.com\",\r\n    \"password\": \"abc1234\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{https-host}}/api/auth/v2/register",
+									"host": [
+										"{{https-host}}"
+									],
+									"path": [
+										"api",
+										"auth",
+										"v2",
+										"register"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Authenticate",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "9a50ff47-1158-4363-9de7-2a80de30cf61",
+										"exec": [
+											"if (responseCode.code >= 200 && responseCode.code < 300) {\r",
+											"    var json = JSON.parse(responseBody);\r",
+											"    postman.setEnvironmentVariable('tokenBookstore', json.token);\r",
+											"}"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"id": "dfaacd5e-2267-4881-ab6e-fc55fef954f8",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "noauth"
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"email\": \"leo@gmail.com\",\r\n    \"password\": \"t5y6u7i8\"\r\n}\r\n",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{https-host}}/api/auth/v2/authenticate",
+									"host": [
+										"{{https-host}}"
+									],
+									"path": [
+										"api",
+										"auth",
+										"v2",
+										"authenticate"
+									]
+								},
+								"description": "StartFragment\n\n``` json\n//CUSTOMER, OPERATOR, ADMIN\n{\n    \"email\": \"leo@gmail.com\",\n    \"password\": \"t5y6u7i8\"\n}\n\n ```\n\n``` json\n//CUSTOMER\n{\n    \"email\": \"customer@gmail.com\",\n    \"password\": \"123456\"\n}\n\n ```\n\n``` json\n//CUSTOMER, OPERATOR\n{\n    \"email\": \"john@gmail.com\",\n    \"password\": \"123456\"\n}\n\n ```\n\nEndFragment"
+							},
+							"response": []
+						}
+					],
+					"id": "9933217f-df24-4a78-833d-78e5053a2704"
+				},
+				{
+					"name": "v3",
+					"item": [
+						{
+							"name": "Register",
+							"id": "7b471348-8d2c-4277-b73c-d80b53c6f4ff",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"firstname\": \"Leonardo\",\r\n    \"lastname\": \"Poletto\",\r\n    \"email\": \"ultimateleodib@gmail.com\",\r\n    \"password\": \"abc1234\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{https-host}}/api/auth/v3/register",
+									"host": [
+										"{{https-host}}"
+									],
+									"path": [
+										"api",
+										"auth",
+										"v3",
+										"register"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Authenticate",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "932e107a-6a04-4f3e-a401-67cb59accdb6",
+										"exec": [
+											"if (responseCode.code >= 200 && responseCode.code < 300) {\r",
+											"    var json = JSON.parse(responseBody);\r",
+											"    postman.setEnvironmentVariable('tokenBookstore', json.token);\r",
+											"}"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"id": "fafdfc7c-414a-4472-af95-b5e3bb0cd4f9",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "noauth"
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"email\": \"leo@gmail.com\",\r\n    \"password\": \"t5y6u7i8\"\r\n}\r\n",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{https-host}}/api/auth/v3/authenticate",
+									"host": [
+										"{{https-host}}"
+									],
+									"path": [
+										"api",
+										"auth",
+										"v3",
+										"authenticate"
+									]
+								},
+								"description": "StartFragment\n\n``` json\n//CUSTOMER, OPERATOR, ADMIN\n{\n    \"email\": \"leo@gmail.com\",\n    \"password\": \"t5y6u7i8\"\n}\n\n ```\n\n``` json\n//CUSTOMER\n{\n    \"email\": \"customer@gmail.com\",\n    \"password\": \"123456\"\n}\n\n ```\n\n``` json\n//CUSTOMER, OPERATOR\n{\n    \"email\": \"john@gmail.com\",\n    \"password\": \"123456\"\n}\n\n ```\n\nEndFragment"
+							},
+							"response": []
+						}
+					],
+					"id": "a6da07b0-9799-41c8-914e-01ecb2a91505"
+				}
+			],
+			"id": "57bcb478-e626-49ff-a124-48f34adae444"
+		},
+		{
+			"name": "Categories",
+			"item": [
+				{
+					"name": "v1",
+					"item": [
+						{
+							"name": "Categories all",
+							"id": "26d5146c-5811-4461-a300-d6824a45b4fa",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{tokenBookstore}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{host}}/api/categories/v1",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"api",
+										"categories",
+										"v1"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Category by id",
+							"id": "066c1905-f0c1-40d3-b7cd-202c7cf62e4d",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{tokenBookstore}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{host}}/api/categories/v1/1",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"api",
+										"categories",
+										"v1",
+										"1"
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"id": "3dc9a579-22e7-48db-a190-b4ac4450133d"
+				},
+				{
+					"name": "v2",
+					"item": [
+						{
+							"name": "Categories all",
+							"id": "ce938b96-f0b5-4b61-8fae-27d18de74031",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "noauth"
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{https-host}}/api/categories/v2",
+									"host": [
+										"{{https-host}}"
+									],
+									"path": [
+										"api",
+										"categories",
+										"v2"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Categories paged",
+							"id": "75d76f4a-7d03-42e7-a2dd-224312af0db5",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{tokenBookstore}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{https-host}}/api/categories/v2/paged",
+									"host": [
+										"{{https-host}}"
+									],
+									"path": [
+										"api",
+										"categories",
+										"v2",
+										"paged"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Category by id",
+							"id": "a7217e38-8b66-47ae-a88a-7c0e34aab464",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "noauth"
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{https-host}}/api/categories/v2/1",
+									"host": [
+										"{{https-host}}"
+									],
+									"path": [
+										"api",
+										"categories",
+										"v2",
+										"1"
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"id": "1afaad7c-fbb8-4c65-a56e-1e464b511d58"
+				},
+				{
+					"name": "v3",
+					"item": [
+						{
+							"name": "Categories all",
+							"id": "535bc546-e228-438b-b4b7-806645c7aca4",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "noauth"
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{https-host}}/api/categories/v3",
+									"host": [
+										"{{https-host}}"
+									],
+									"path": [
+										"api",
+										"categories",
+										"v3"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Categories paged",
+							"id": "3b095404-d827-4fd6-9f5f-56490c1f6862",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{tokenBookstore}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{https-host}}/api/categories/v3/paged",
+									"host": [
+										"{{https-host}}"
+									],
+									"path": [
+										"api",
+										"categories",
+										"v3",
+										"paged"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Category by id",
+							"id": "5bce45da-b13d-4569-980c-82a7cfd0dbd2",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "noauth"
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{https-host}}/api/categories/v3/1",
+									"host": [
+										"{{https-host}}"
+									],
+									"path": [
+										"api",
+										"categories",
+										"v3",
+										"1"
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"id": "e8e1548f-0b9f-465d-b75a-401bd9da6e1b"
+				}
+			],
+			"id": "2164c232-50a3-468a-8860-bc3d9eea2f5e"
+		},
+		{
+			"name": "Authors",
+			"item": [
+				{
+					"name": "v1",
+					"item": [
+						{
+							"name": "Authors all",
+							"id": "05cdabc7-62a6-4f1a-90fe-0c7676afe551",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{host}}/api/authors/v1",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"api",
+										"authors",
+										"v1"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Authors paged",
+							"id": "0e466ba2-5429-4120-b390-5e4fa00ea9b2",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{host}}/api/authors/v1/paged",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"api",
+										"authors",
+										"v1",
+										"paged"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Author by id",
+							"id": "d7dc6501-6fdd-4187-bc0b-c32adbcf19e8",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{host}}/api/authors/v1/1",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"api",
+										"authors",
+										"v1",
+										"1"
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"id": "e615ff19-0603-4913-a116-ed35d26a5b15"
+				},
+				{
+					"name": "v2",
+					"item": [
+						{
+							"name": "Authors all",
+							"id": "1170e324-a173-4f38-a22e-f468dfff6d37",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{https-host}}/api/authors/v2",
+									"host": [
+										"{{https-host}}"
+									],
+									"path": [
+										"api",
+										"authors",
+										"v2"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Author by id",
+							"id": "2e7f6cb3-4ca6-45c3-9735-0d9d8b814336",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{https-host}}/api/authors/v2/1",
+									"host": [
+										"{{https-host}}"
+									],
+									"path": [
+										"api",
+										"authors",
+										"v2",
+										"1"
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"id": "7581822d-5202-4172-a39e-67f15685ec6e"
+				},
+				{
+					"name": "v3",
+					"item": [
+						{
+							"name": "Authors all",
+							"id": "90b8bdfd-eac7-4da3-af69-f15621b1b157",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{https-host}}/api/authors/v3",
+									"host": [
+										"{{https-host}}"
+									],
+									"path": [
+										"api",
+										"authors",
+										"v3"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Authors paged",
+							"id": "5d7a20a8-4eae-4fe9-b27f-acd3152a10f6",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{https-host}}/api/authors/v3/paged",
+									"host": [
+										"{{https-host}}"
+									],
+									"path": [
+										"api",
+										"authors",
+										"v3",
+										"paged"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Author by id",
+							"id": "e35fe6fa-f895-4808-9069-96eb73b08822",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{https-host}}/api/authors/v3/1",
+									"host": [
+										"{{https-host}}"
+									],
+									"path": [
+										"api",
+										"authors",
+										"v3",
+										"1"
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"id": "6e4dbc51-ac4c-4d51-8cab-19d9185ce77b"
+				}
+			],
+			"id": "0f5263d8-8427-42e2-9b78-300138b36b92"
+		},
+		{
+			"name": "Actuator",
+			"item": [
+				{
+					"name": "Health",
+					"id": "aec7f545-acb3-49bc-a423-ce1e83a42f80",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{tokenBookstore}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{https-host}}/api/actuator/health/custom",
+							"host": [
+								"{{https-host}}"
+							],
+							"path": [
+								"api",
+								"actuator",
+								"health",
+								"custom"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"id": "c089007e-c958-4e12-96f9-cfe950e6aef5"
+		}
+	]
+}

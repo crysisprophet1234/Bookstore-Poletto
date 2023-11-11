@@ -36,10 +36,10 @@ public class EmailService {
 
 		mailSender.send(message);
 
-		logger.debug("EMAIL SENT {\"From\": \"" + message.getFrom() + "\","
-					+ " \"To\": \"" + message.getTo() + "\","
-					+ " \"Subject\": \"" + message.getSubject() + "\","
-					+ " \"Body\": \"" + message.getText() + "\"}");
+		logger.info("EMAIL SENT {\"From\": \"" + message.getFrom() + "\","
+				  + " \"To\": \"" + message.getTo() + "\","
+				  + " \"Subject\": \"" + message.getSubject() + "\","
+				  + " \"Body\": \"" + message.getText() + "\"}");
 
 	}
 
@@ -65,17 +65,17 @@ public class EmailService {
 		mailSender.send(message);
 
 		logger.info("EMAIL SENT {\"From\": \"" + "polettobookstore@gmail.com" + "\","
-					+ " \"To\": \"" + to + "\","
-					+ " \"Subject\": \"" + subject + "\","
-					+ " \"Username\": \"" + username + "\"}");
+				  + " \"To\": \"" + to + "\","
+				  + " \"Subject\": \"" + subject + "\","
+			      + " \"Username\": \"" + username + "\"}");
 
 	}
 
 	private String generateAccountCreationEmailBody(String username) {
 		try {
 			ClassPathResource resource = new ClassPathResource("templates/account-creation-template.html");
-			return StreamUtils.copyToString(resource.getInputStream(), StandardCharsets.UTF_8).replace("{username}",
-					username);
+			return StreamUtils.copyToString(resource.getInputStream(), StandardCharsets.UTF_8)
+					.replace("{username}", username);
 		} catch (IOException e) {
 			e.printStackTrace();
 			return null;

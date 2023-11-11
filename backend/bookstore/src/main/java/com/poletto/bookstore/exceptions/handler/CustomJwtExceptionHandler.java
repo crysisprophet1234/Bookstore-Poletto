@@ -5,7 +5,7 @@ import java.io.IOException;
 import org.springframework.http.HttpStatus;
 
 import com.poletto.bookstore.converter.CustomObjectMapper;
-import com.poletto.bookstore.exceptions.ExceptionResponse.ExceptionResponse;
+import com.poletto.bookstore.exceptions.exceptionresponse.ExceptionResponse;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;

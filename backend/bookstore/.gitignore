@@ -2,7 +2,7 @@
 !.mvn/wrapper/maven-wrapper.jar
 
 # ssl cert and key
-src/main/resources/key/
+src/main/resources/keystore/
 
 ### STS ###
 .apt_generated
@@ -29,6 +29,7 @@ local.properties
 .settings/
 .loadpath
 .recommenders
+.vscode/
 
 src/main/resources/*.properties
 
@@ -154,6 +155,9 @@ ehthumbs_vista.db
 # Dump file
 *.stackdump
 /db_backup/
+
+# SQL file
+*.sql
 
 # Folder config file
 [Dd]esktop.ini

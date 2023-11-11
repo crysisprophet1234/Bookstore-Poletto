@@ -7,7 +7,7 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.web.access.AccessDeniedHandler;
 
 import com.poletto.bookstore.converter.CustomObjectMapper;
-import com.poletto.bookstore.exceptions.ExceptionResponse.ExceptionResponse;
+import com.poletto.bookstore.exceptions.exceptionresponse.ExceptionResponse;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;

@@ -9,10 +9,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.DisabledException;
+import org.springframework.security.authentication.LockedException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -26,12 +30,14 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
+import com.poletto.bookstore.exceptions.AlreadyExistingAccountException;
 import com.poletto.bookstore.exceptions.DatabaseException;
 import com.poletto.bookstore.exceptions.InvalidStatusException;
 import com.poletto.bookstore.exceptions.ObjectNotValidException;
 import com.poletto.bookstore.exceptions.ResourceNotFoundException;
 import com.poletto.bookstore.exceptions.UnauthorizedException;
-import com.poletto.bookstore.exceptions.ExceptionResponse.ExceptionResponse;
+import com.poletto.bookstore.exceptions.exceptionresponse.ExceptionResponse;
+import com.poletto.bookstore.util.StackTraceFormatter;
 
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.ConstraintViolationException;
@@ -41,7 +47,7 @@ import jakarta.validation.ConstraintViolationException;
 @RestController
 public class CustomizedResponseEntityExceptionHandler extends ResponseEntityExceptionHandler {
 
-	private static final Logger logger = LoggerFactory.getLogger(ResponseEntityExceptionHandler.class);
+	private static final Logger logger = LoggerFactory.getLogger(CustomizedResponseEntityExceptionHandler.class);
 
 	@ExceptionHandler(Exception.class)
 	public final ResponseEntity<ExceptionResponse> handleAllExceptions(Exception ex, WebRequest request) {
@@ -50,16 +56,18 @@ public class CustomizedResponseEntityExceptionHandler extends ResponseEntityExce
 				ex.getLocalizedMessage(), request.getDescription(false));
 
 		logger.warn(exceptionResponse.toString() + clientInfo(request));
+		logger.error(StackTraceFormatter.stackTraceFormatter(ex));
 		return new ResponseEntity<>(exceptionResponse, HttpStatus.INTERNAL_SERVER_ERROR);
 	}
 
-	@ExceptionHandler(DatabaseException.class)
+	@ExceptionHandler({DatabaseException.class, DataIntegrityViolationException.class})
 	public final ResponseEntity<ExceptionResponse> handleDatabaseException(Exception ex, WebRequest request) {
 
-		ExceptionResponse exceptionResponse = new ExceptionResponse(HttpStatus.INTERNAL_SERVER_ERROR, "Somente livros nunca reservados podem ser deletados",
+		ExceptionResponse exceptionResponse = new ExceptionResponse(HttpStatus.INTERNAL_SERVER_ERROR, ex.getMessage(),
 				ex.getLocalizedMessage(), request.getDescription(false));
 
 		logger.warn(exceptionResponse.toString() + clientInfo(request));
+		logger.error(StackTraceFormatter.stackTraceFormatter(ex));
 		return new ResponseEntity<>(exceptionResponse, HttpStatus.INTERNAL_SERVER_ERROR);
 
 	}
@@ -71,7 +79,19 @@ public class CustomizedResponseEntityExceptionHandler extends ResponseEntityExce
 				ex.getLocalizedMessage(), request.getDescription(false));
 
 		logger.warn(exceptionResponse.toString() + clientInfo(request));
+		logger.error(StackTraceFormatter.stackTraceFormatter(ex));
+		return new ResponseEntity<>(exceptionResponse, HttpStatus.UNAUTHORIZED);
 
+	}
+	
+	@ExceptionHandler(value = {BadCredentialsException.class, DisabledException.class, LockedException.class}) 
+	public final ResponseEntity<ExceptionResponse> handleLoginException(Exception ex, WebRequest request) {
+
+		ExceptionResponse exceptionResponse = new ExceptionResponse(HttpStatus.UNAUTHORIZED, ex.getMessage(),
+				ex.getLocalizedMessage(), request.getDescription(false));
+
+		logger.warn(exceptionResponse.toString() + clientInfo(request));
+		logger.error(StackTraceFormatter.stackTraceFormatter(ex));
 		return new ResponseEntity<>(exceptionResponse, HttpStatus.UNAUTHORIZED);
 
 	}
@@ -83,7 +103,7 @@ public class CustomizedResponseEntityExceptionHandler extends ResponseEntityExce
 				ex.getLocalizedMessage(), request.getDescription(false));
 
 		logger.warn(exceptionResponse.toString() + clientInfo(request));
-
+		logger.error(StackTraceFormatter.stackTraceFormatter(ex));
 		return new ResponseEntity<>(exceptionResponse, HttpStatus.NOT_FOUND);
 
 	}
@@ -95,6 +115,7 @@ public class CustomizedResponseEntityExceptionHandler extends ResponseEntityExce
 				ex.getLocalizedMessage(), request.getDescription(false));
 
 		logger.warn(exceptionResponse.toString() + clientInfo(request));
+		logger.error(StackTraceFormatter.stackTraceFormatter(ex));
 		return new ResponseEntity<>(exceptionResponse, HttpStatus.UNPROCESSABLE_ENTITY);
 
 	}
@@ -106,6 +127,7 @@ public class CustomizedResponseEntityExceptionHandler extends ResponseEntityExce
 				ex.getLocalizedMessage(), request.getDescription(false));
 
 		logger.warn(exceptionResponse.toString() + clientInfo(request));
+		logger.error(StackTraceFormatter.stackTraceFormatter(ex));
 		return new ResponseEntity<>(exceptionResponse, HttpStatus.NOT_FOUND);
 
 	}
@@ -117,7 +139,20 @@ public class CustomizedResponseEntityExceptionHandler extends ResponseEntityExce
 				ex.getLocalizedMessage(), request.getDescription(false));
 
 		logger.warn(exceptionResponse.toString() + clientInfo(request));
+		logger.error(StackTraceFormatter.stackTraceFormatter(ex));
 		return new ResponseEntity<>(exceptionResponse, HttpStatus.BAD_REQUEST);
+
+	}
+	
+	@ExceptionHandler(AlreadyExistingAccountException.class)
+	public final ResponseEntity<ExceptionResponse> handleAlreadyExistingAccountException(Exception ex, WebRequest request) {
+
+		ExceptionResponse exceptionResponse = new ExceptionResponse(HttpStatus.CONFLICT, ex.getMessage(),
+				ex.getLocalizedMessage(), request.getDescription(false));
+
+		logger.warn(exceptionResponse.toString() + clientInfo(request));
+		logger.error(StackTraceFormatter.stackTraceFormatter(ex));
+		return new ResponseEntity<>(exceptionResponse, HttpStatus.CONFLICT);
 
 	}
 
@@ -128,6 +163,7 @@ public class CustomizedResponseEntityExceptionHandler extends ResponseEntityExce
 				ex.getLocalizedMessage(), request.getDescription(false));
 
 		logger.warn(exceptionResponse.toString() + clientInfo(request));
+		logger.error(StackTraceFormatter.stackTraceFormatter(ex));
 		return new ResponseEntity<>(exceptionResponse, HttpStatus.BAD_REQUEST);
 
 	}
@@ -157,7 +193,7 @@ public class CustomizedResponseEntityExceptionHandler extends ResponseEntityExce
 				ex.getLocalizedMessage(), request.getDescription(false));
 
 		logger.warn(exceptionResponse.toString() + clientInfo(request));
-
+		logger.error(StackTraceFormatter.stackTraceFormatter(ex));
 		return new ResponseEntity<>(exceptionResponse, HttpStatus.UNPROCESSABLE_ENTITY);
 
 	}

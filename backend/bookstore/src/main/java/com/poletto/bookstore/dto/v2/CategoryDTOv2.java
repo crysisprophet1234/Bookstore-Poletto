@@ -69,7 +69,7 @@ public class CategoryDTOv2 extends RepresentationModel<CategoryDTOv2> implements
 
 	@Override
 	public String toString() {
-		return "CategoryDTOv2 [key=" + key + ", name=" + name + "]";
+		return "{id=" + key + ", name=" + name + "}";
 	}	
 
 }

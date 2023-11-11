@@ -34,12 +34,14 @@ public class UserDTOv2 extends RepresentationModel<UserDTOv2> implements Seriali
 	private String lastname;
 	
 	@Email
+	@NotEmpty
 	private String email;
 
 	@Valid
 	Set<RoleDTOv2> roles = new HashSet<>();
 
 	public UserDTOv2() {
+		
 	}
 
 	public UserDTOv2(Long id, String firstname, String lastname, String email) {

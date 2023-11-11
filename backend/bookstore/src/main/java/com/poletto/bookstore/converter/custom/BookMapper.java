@@ -5,8 +5,10 @@ import org.springframework.stereotype.Service;
 import com.poletto.bookstore.converter.DozerMapperConverter;
 import com.poletto.bookstore.dto.v1.BookDTOv1;
 import com.poletto.bookstore.dto.v1.CategoryDTOv1;
+import com.poletto.bookstore.dto.v2.AuthorDTOv2;
 import com.poletto.bookstore.dto.v2.BookDTOv2;
 import com.poletto.bookstore.dto.v2.CategoryDTOv2;
+import com.poletto.bookstore.entities.Author;
 import com.poletto.bookstore.entities.Book;
 import com.poletto.bookstore.entities.Category;
 import com.poletto.bookstore.entities.enums.BookStatus;
@@ -63,7 +65,7 @@ public class BookMapper {
 		bookDto.setImgUrl(book.getImgUrl());
 		bookDto.setReleaseDate(book.getReleaseDate());
 		bookDto.setStatus((book.getStatus()));
-		bookDto.setAuthor(book.getAuthor());
+		bookDto.setAuthor(DozerMapperConverter.parseObject(book.getAuthor(), AuthorDTOv2.class));
 		
 		bookDto.getCategories().clear();
 		
@@ -83,8 +85,8 @@ public class BookMapper {
 		book.setName(dto.getName());
 		book.setImgUrl(dto.getImgUrl());
 		book.setReleaseDate(dto.getReleaseDate());
-		book.setStatus(BookStatus.valueOf(dto.getStatus()));
-		book.setAuthor(dto.getAuthor());
+		book.setStatus(dto.getStatus());
+		book.setAuthor(DozerMapperConverter.parseObject(dto.getAuthor(), Author.class));
 		
 		book.getCategories().clear();
 		

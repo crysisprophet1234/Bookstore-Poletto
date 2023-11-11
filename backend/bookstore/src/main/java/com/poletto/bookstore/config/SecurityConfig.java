@@ -13,6 +13,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -33,24 +34,6 @@ public class SecurityConfig {
 	@Autowired
 	private AuthenticationProvider authenticationProvider;
 
-	private static final String[] AUTH_WHITELIST = {
-
-			// default resources from spring, swagger, h2 and etc
-			"/h2-console/**", "/swagger-resources", "/swagger-resources/**", "/configuration/ui",
-			"/configuration/security", "/swagger-ui.html", "/webjars/**", "/v3/api-docs/**", "/auth/**", "/actuator/**",
-			"/swagger-ui/**",
-
-			// authentication
-			"/auth/**"
-
-	};
-
-	private static final String[] ENTITIES_ALL_WHITELIST = {
-
-			"books/**", "categories/**", "authors/**"
-
-	};
-
 	@Bean
 	SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
@@ -58,22 +41,29 @@ public class SecurityConfig {
 			http.headers(headers -> headers.frameOptions(frame -> frame.disable()));
 		}
 
-		http.csrf(csrf -> csrf.disable())
-				.authorizeHttpRequests(auth -> auth.requestMatchers(AUTH_WHITELIST).permitAll()
-						.requestMatchers(HttpMethod.GET, ENTITIES_ALL_WHITELIST).permitAll()
-						.requestMatchers(HttpMethod.GET, "reservations/**").hasAnyRole("OPERATOR", "ADMIN")
-						.requestMatchers(HttpMethod.POST, "books/**", "reservations/**").hasAnyRole("OPERATOR", "ADMIN")
-						.requestMatchers(HttpMethod.PUT, "books/**", "reservations/**").hasAnyRole("OPERATOR", "ADMIN")
-						.requestMatchers(HttpMethod.DELETE, "books/**").hasRole("ADMIN").requestMatchers("users/**")
-						.hasRole("ADMIN").anyRequest().permitAll())
-				.requiresChannel(channel -> channel.anyRequest().requiresSecure())
-				.sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-				.authenticationProvider(authenticationProvider)
-				.addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
-				.cors(cors -> cors.configurationSource(corsConfigurationSource()))
-				.exceptionHandling(exHandler -> exHandler
-			        .authenticationEntryPoint(new CustomAuthenticationEntryPoint())
-			        .accessDeniedHandler(new CustomAccessDeniedHandler()));
+		http
+			.csrf(csrf -> csrf.disable())
+			.authorizeHttpRequests(auth -> auth
+					.requestMatchers(AntPathRequestMatcher.antMatcher(HttpMethod.POST, "/auth/**")).permitAll()
+					.requestMatchers(AntPathRequestMatcher.antMatcher(HttpMethod.GET, "/books/**")).permitAll()
+					.requestMatchers(AntPathRequestMatcher.antMatcher(HttpMethod.GET, "/categories/**")).permitAll()
+					.requestMatchers(AntPathRequestMatcher.antMatcher(HttpMethod.GET, "/authors/**")).permitAll()
+					.requestMatchers(AntPathRequestMatcher.antMatcher(HttpMethod.GET, "/reservations/**")).hasRole("OPERATOR")
+					.requestMatchers(AntPathRequestMatcher.antMatcher(HttpMethod.POST, "/books/**")).hasRole("OPERATOR")
+					.requestMatchers(AntPathRequestMatcher.antMatcher(HttpMethod.POST, "/reservations/**")).hasRole("OPERATOR")
+					.requestMatchers(AntPathRequestMatcher.antMatcher(HttpMethod.PUT, "/books/**")).hasRole("OPERATOR")
+					.requestMatchers(AntPathRequestMatcher.antMatcher(HttpMethod.PUT, "/reservations/**")).hasRole("OPERATOR")
+					.requestMatchers(AntPathRequestMatcher.antMatcher(HttpMethod.DELETE, "/books/**")).hasRole("ADMIN")				
+					.requestMatchers(AntPathRequestMatcher.antMatcher("/users/**")).hasRole("ADMIN")
+					.anyRequest().permitAll())
+			.requiresChannel(channel -> channel.anyRequest().requiresSecure())
+			.sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+			.authenticationProvider(authenticationProvider)
+			.addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
+			.cors(cors -> cors.configurationSource(corsConfigurationSource()))
+			.exceptionHandling(exHandler -> exHandler
+		        .authenticationEntryPoint(new CustomAuthenticationEntryPoint())
+		        .accessDeniedHandler(new CustomAccessDeniedHandler()));
 		
 		return http.build();
 	}
@@ -82,7 +72,9 @@ public class SecurityConfig {
 	CorsConfigurationSource corsConfigurationSource() {
 
 		CorsConfiguration corsConfig = new CorsConfiguration();
-		corsConfig.setAllowedOriginPatterns(Arrays.asList("http://localhost:[3000]", "http://localhost:[88]",
+		corsConfig.setAllowedOriginPatterns(Arrays.asList(
+				"http://localhost:[3000]",
+				"http://localhost:[88]",
 				"https://polettobookstore.netlify.app/"));
 		corsConfig.setAllowedMethods(Arrays.asList("POST", "GET", "PUT", "DELETE", "PATCH"));
 		corsConfig.setAllowCredentials(true);

@@ -77,38 +77,36 @@ public class ReservationService {
 		return dtos;
 
 	}
-	
+
 	@Transactional(readOnly = true)
-	public Page<ReservationDTOv2> findAllPaged(Pageable pageable, LocalDate startingDate, LocalDate devolutionDate, Long clientId, Long bookId, String status) {
-		
+	public Page<ReservationDTOv2> findAllPaged(Pageable pageable, LocalDate startingDate, LocalDate devolutionDate,
+			Long clientId, Long bookId, String status) {
+
 		ZoneId zoneId = ZoneId.of("America/Sao_Paulo");
-		
+
 		Instant startDate = startingDate != null ? startingDate.atStartOfDay(zoneId).toInstant() : null;
 		Instant endDate = devolutionDate != null ? devolutionDate.atStartOfDay(zoneId).toInstant() : null;
-		
-		Page<Reservation> reservationPage = reservationRepository.findPaged(
-				startDate,
-				endDate,
-				clientId,
-				bookId,
-				status.toString().toUpperCase(),
-				pageable);
-		
+
+		Page<Reservation> reservationPage = reservationRepository.findPaged(startDate, endDate, clientId, bookId,
+				status.toString().toUpperCase(), pageable);
+
 		logger.info("Resource RESERVATION page found: PAGE NUMBER [" + reservationPage.getNumber() + "] "
-				  + "- CONTENT: " + reservationPage.getContent());
-		
+				+ "- CONTENT: " + reservationPage.getContent());
+
 		Page<ReservationDTOv2> dtos = reservationPage.map(x -> ReservationMapper.convertEntityToDtoV2(x));
-		
+
 		dtos.stream().forEach(dto -> {
 			dto.add(linkTo(methodOn(ReservationController.class).findById(dto.getId())).withSelfRel().withType("GET"))
-					.add(linkTo(methodOn(ReservationController.class).returnReservation(dto.getId())).withRel("return").withType("PUT"));
+					.add(linkTo(methodOn(ReservationController.class).returnReservation(dto.getId())).withRel("return")
+							.withType("PUT"));
 			dto.getBooks().forEach(book -> book
 					.add(linkTo(methodOn(BookController.class).findById(book.getId())).withSelfRel().withType("GET")));
-			dto.getClient().add(linkTo(methodOn(UserController.class).findById(dto.getClient().getId())).withSelfRel().withType("GET"));
+			dto.getClient().add(linkTo(methodOn(UserController.class).findById(dto.getClient().getId())).withSelfRel()
+					.withType("GET"));
 		});
 
 		return dtos;
-		
+
 	}
 
 	@Transactional(readOnly = true)
@@ -190,6 +188,7 @@ public class ReservationService {
 
 	}
 
+	@Transactional
 	public void returnReservation(Long reservationId) {
 
 		try {
@@ -208,9 +207,8 @@ public class ReservationService {
 			}
 
 			reservationRepository.save(reservation);
-
-			logger.info("Resource RESERVATION status changed to FINISHED: " + reservation);
-			logger.info("Resource BOOK status changed to AVAILABLE: " + reservation.getBooks());
+			
+			logger.info("Resource RESERVATION status changed to FINISHED: {}", reservation);
 
 		} catch (EntityNotFoundException ex) {
 
@@ -220,9 +218,13 @@ public class ReservationService {
 
 	}
 
-	public void returnBook(Book book) {
+	private void returnBook(Book book) {
+
 		book.setStatus(BookStatus.AVAILABLE);
 		bookRepository.save(book);
+
+		logger.info("Resource BOOK status changed to AVAILABLE: {}", book);
+
 	}
 
 }

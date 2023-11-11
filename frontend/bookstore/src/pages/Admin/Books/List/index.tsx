@@ -1,18 +1,18 @@
-import { AxiosRequestConfig } from 'axios';
-import { useCallback, useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
-import Pagination from '../../../../components/Pagination';
-import ProductCrudCard from '../../../../components/ProductCrudCard';
-import ProductFilter, { ProductFilterData } from '../../../../components/ProductFilter';
-import { Book } from '../../../../types/book';
-import { SpringPage } from '../../../../types/vendor/spring';
-import { requestBackend } from '../../../../utils/requests';
+import { AxiosRequestConfig } from 'axios'
+import { useCallback, useEffect, useState } from 'react'
+import { Link } from 'react-router-dom'
+import Pagination from '../../../../components/Pagination'
+import ProductCrudCard from '../../../../components/ProductCrudCard'
+import { Book } from '../../../../types/book'
+import { SpringPage } from '../../../../types/vendor/spring'
+import { requestBackend } from '../../../../utils/requests'
+import BookFilter, { BookFilterData } from '../BookFilter'
 
-import './styles.css';
+import './styles.css'
 
 type ControlComponentsData = {
   activePage: number;
-  filterData: ProductFilterData;
+  filterData: BookFilterData;
 };
 
 const List = () => {
@@ -22,14 +22,14 @@ const List = () => {
   const [controlComponentsData, setControlComponentsData] =
     useState<ControlComponentsData>({
       activePage: 0,
-      filterData: { name: '', category: null },
+      filterData: { name: '', category: undefined },
     });
 
   const handlePageChange = (pageNumber: number) => {
     setControlComponentsData({ activePage: pageNumber, filterData: controlComponentsData.filterData });
   };
 
-  const handleSubmitFilter = (data: ProductFilterData) => {
+  const handleSubmitFilter = (data: BookFilterData) => {
     setControlComponentsData({ activePage: 0, filterData: data });
   };
 
@@ -65,7 +65,7 @@ const List = () => {
           </button>
         </Link>
 
-        <ProductFilter onSubmitFilter={handleSubmitFilter} />
+        <BookFilter onSubmitFilter={handleSubmitFilter} />
 
       </div>
 

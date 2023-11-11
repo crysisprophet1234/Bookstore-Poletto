@@ -22,7 +22,7 @@ public class BookDTOv1 implements Serializable {
 	private String imgUrl;
 	private String status;
 	
-	@JsonIgnoreProperties("nacionality")
+	@JsonIgnoreProperties(value = {"nacionality", "books"})
 	private Author author;
 	
 	private Set<CategoryDTOv1> categories = new HashSet<>();

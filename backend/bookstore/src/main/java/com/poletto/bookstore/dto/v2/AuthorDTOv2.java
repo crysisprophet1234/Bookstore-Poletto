@@ -70,7 +70,7 @@ public class AuthorDTOv2 extends RepresentationModel<AuthorDTOv2> implements Ser
 
 	@Override
 	public String toString() {
-		return "AuthorDTOv2 [key=" + key + ", name=" + name + "]";
+		return "AuthorDTOv2 [id=" + key + ", name=" + name + "]";
 	}
 	
 }

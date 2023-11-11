@@ -42,7 +42,7 @@ public class ReservationMapper {
 		dto.setDevolution(reservation.getDevolution());
 		dto.setMoment(reservation.getMoment());
 		dto.setWeeks(reservation.getWeeks());
-		dto.setStatus(reservation.getStatus().toString());
+		dto.setStatus(reservation.getStatus());
 		dto.setClient(UserMapper.convertEntityToDtoV2(reservation.getClient()));
 		
 		dto.getBooks().clear();
@@ -82,7 +82,7 @@ public class ReservationMapper {
 		reservation.setDevolution(dto.getDevolution());
 		reservation.setMoment(dto.getMoment());
 		reservation.setWeeks(dto.getWeeks());
-		reservation.setStatus(ReservationStatus.valueOf(dto.getStatus()));
+		reservation.setStatus(dto.getStatus());
 		reservation.setClient(DozerMapperConverter.parseObject(dto.getClient(), User.class));
 		
 		reservation.getBooks().clear();

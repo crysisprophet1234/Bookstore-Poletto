@@ -1,10 +1,10 @@
-import { Route, Routes } from 'react-router-dom';
-import { ReactComponent as AuthImg } from '../../assets/images/auth-img.svg';
+import { Route, Routes } from 'react-router-dom'
+import AuthImg from '../../assets/images/auth-img.svg?react'
 
-import Login from './Login';
-import Recover from './Recover';
-import Signup from './Signup';
-import './styles.css';
+import Login from './Login'
+import Recover from './Recover'
+import Signup from './Signup'
+import './styles.css'
 
 const Auth = () => {
 
@@ -40,4 +40,4 @@ const Auth = () => {
 
 }
 
-export default Auth;
+export default Auth
