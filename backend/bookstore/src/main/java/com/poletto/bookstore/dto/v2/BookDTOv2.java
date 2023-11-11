@@ -33,6 +33,7 @@ public class BookDTOv2 extends RepresentationModel<BookDTOv2> implements Seriali
 	private Long key;
 
 	@Pattern(regexp = "^[A-Za-z0-9'& -#]+$", message = "aceita apenas letras e números")
+	@NotEmpty
     @Size(min = 1, max = 50)
 	private String name;
 	
