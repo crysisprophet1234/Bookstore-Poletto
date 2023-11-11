@@ -1,9 +1,20 @@
 {
-  "name": "bookstore",
+  "name": "poletto-bookstore",
+  "author": {
+    "name": "Leonardo Poletto Casagrande",
+    "email": "leocasagrande1234@hotmail.com"
+  },
+  "description": "Poletto Bookstore, venda e aluguel de livros",
+  "homepage": "https://polettobookstore.netlify.app/",
+  "repository": {"url": "https://github.com/crysisprophet1234/Bookstore-Poletto"},
+  "badges": [{
+    "url": "https://github.com/crysisprophet1234/Bookstore-Poletto/actions/workflows/main.yaml/badge.svg?branch=main",  
+    "href": "https://github.com/crysisprophet1234/Bookstore-Poletto/actions/workflows/main.yaml",
+    "description": "workflow for generating docker image of the frontend application"}],
+  "keywords": ["poletto", "bookstore", "books", "react-app", "react"],
+  "icon": "./public/book.png",
   "version": "1.0.1",
-  "private": true,
   "dependencies": {
-    "@babel/plugin-proposal-private-property-in-object": "*",
     "@hookform/resolvers": "^2.9.11",
     "@popperjs/core": "^2.11.6",
     "@testing-library/jest-dom": "^5.16.5",
