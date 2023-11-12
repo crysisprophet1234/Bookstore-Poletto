@@ -4,7 +4,7 @@ import { getAuthData } from './storage'
 const API_URL = import.meta.env.VITE_API_URL
 const API_PORT = import.meta.env.VITE_API_PORT
 
-export const BASE_URL = API_URL + ':' + API_PORT
+export const BASE_URL = (import.meta.env.DEV) ? 'https://localhost:8443' :  API_URL + ':' + API_PORT
 
 type LoginData = {
 
