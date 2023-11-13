@@ -21,7 +21,7 @@ public class AuthorDTOv2 extends RepresentationModel<AuthorDTOv2> implements Ser
 	@JsonProperty("id")
 	private Long key;
 	
-	@Pattern(regexp = "^[A-Za-z]+(?: [A-Za-z]+)*$", message = "aceita apenas nomes válidos")
+	@Pattern(regexp = "^[A-Za-z.]+(?: [A-Za-z.]+)*$", message = "aceita apenas nomes válidos")
 	@Size(min = 1, max = 50)
     private String name;
 	
