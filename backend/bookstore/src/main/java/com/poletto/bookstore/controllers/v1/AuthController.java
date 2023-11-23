@@ -14,8 +14,11 @@ import com.poletto.bookstore.dto.v1.UserAuthDTOv1;
 import com.poletto.bookstore.dto.v1.UserDTOv1;
 import com.poletto.bookstore.services.v1.UserService;
 
+import io.swagger.v3.oas.annotations.Hidden;
+
 @RestController
 @RequestMapping (value = "/auth/v1")
+@Hidden
 public class AuthController {
 
 	@Autowired
