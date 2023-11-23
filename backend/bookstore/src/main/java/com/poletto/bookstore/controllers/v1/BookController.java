@@ -24,8 +24,11 @@ import com.poletto.bookstore.dto.v1.BookDTOv1;
 import com.poletto.bookstore.services.v1.BookService;
 import com.poletto.bookstore.util.MediaType;
 
+import io.swagger.v3.oas.annotations.Hidden;
+
 @RestController
 @RequestMapping(value = "/books/v1")
+@Hidden
 public class BookController {
 
 	@Autowired
