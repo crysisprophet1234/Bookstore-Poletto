@@ -12,8 +12,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import com.poletto.bookstore.dto.v1.CategoryDTOv1;
 import com.poletto.bookstore.services.v1.CategoryService;
 
+import io.swagger.v3.oas.annotations.Hidden;
+
 @Controller
 @RequestMapping (value = "/categories/v1")
+@Hidden
 public class CategoryController {
 	
 	@Autowired
