@@ -23,10 +23,12 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import com.poletto.bookstore.dto.v2.BookDTOv2;
 import com.poletto.bookstore.services.v2.BookService;
 
+import io.swagger.v3.oas.annotations.Hidden;
 import jakarta.validation.Valid;
 
 @RestController("BookControllerV2")
 @RequestMapping(value = "/books/v2")
+@Hidden
 public class BookController {
 
 	@Autowired

@@ -2,6 +2,7 @@ import { Suspense, lazy } from 'react'
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom'
 import Navbar from './components/Navbar'
 import ToastMessage from './components/ToastMessage'
+import Account from './pages/Account'
 import Home from './pages/Home'
 import Loading from './pages/Loading'
 const Catalog = lazy(() => import('./pages/Catalog'))
@@ -49,6 +50,12 @@ const AppRoutes = () => (
             } />
 
             <Route path='/admin' element={<Navigate to='/admin/books' />} />
+
+            <Route path='/user/*' element={
+                <Suspense fallback={<Loading />}>
+                    <Account />
+                </Suspense>
+            } />
 
             <Route path='*' element={
                 <Suspense fallback={<Loading />}>

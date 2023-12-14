@@ -19,8 +19,11 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import com.poletto.bookstore.dto.v1.ReservationDTOv1;
 import com.poletto.bookstore.services.v1.ReservationService;
 
+import io.swagger.v3.oas.annotations.Hidden;
+
 @RestController
 @RequestMapping(value = "/reservations/v1")
+@Hidden
 public class ReservationController {
 
 	@Autowired

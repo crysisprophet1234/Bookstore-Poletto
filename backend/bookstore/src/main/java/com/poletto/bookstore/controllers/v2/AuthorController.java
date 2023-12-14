@@ -14,8 +14,11 @@ import org.springframework.web.bind.annotation.RestController;
 import com.poletto.bookstore.dto.v2.AuthorDTOv2;
 import com.poletto.bookstore.services.v2.AuthorService;
 
+import io.swagger.v3.oas.annotations.Hidden;
+
 @RestController("AuthorControllerV2")
 @RequestMapping("/authors/v2")
+@Hidden
 public class AuthorController {
 	
 	@Autowired

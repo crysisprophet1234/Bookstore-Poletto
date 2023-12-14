@@ -15,6 +15,7 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
 
 @JsonPropertyOrder(value = {"id"})
 public class UserDTOv2 extends RepresentationModel<UserDTOv2> implements Serializable {
@@ -26,10 +27,12 @@ public class UserDTOv2 extends RepresentationModel<UserDTOv2> implements Seriali
 	private Long key;
 	
 	@Pattern(regexp = "^[A-Za-z]+$", message = "aceita apenas letras")
+	@Size(min = 1, max = 30)
 	@NotEmpty
 	private String firstname;
 	
 	@Pattern(regexp = "^[A-Za-z]+(\\s[A-Za-z]+)*$", message = "aceita apenas letras")
+	@Size(min = 1, max = 50)
 	@NotEmpty
 	private String lastname;
 	

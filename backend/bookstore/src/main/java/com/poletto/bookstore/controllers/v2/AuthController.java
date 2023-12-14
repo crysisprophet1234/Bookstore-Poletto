@@ -15,10 +15,12 @@ import com.poletto.bookstore.dto.v2.UserDTOv2;
 import com.poletto.bookstore.services.v2.EmailService;
 import com.poletto.bookstore.services.v2.UserService;
 
+import io.swagger.v3.oas.annotations.Hidden;
 import jakarta.validation.Valid;
 
 @RestController("AuthControllerV2")
 @RequestMapping(value = "/auth/v2")
+@Hidden
 public class AuthController {
 
 	@Autowired
