@@ -1,129 +1,45 @@
 package com.poletto.bookstore.services.v3;
 
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
-
-import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.poletto.bookstore.controllers.v3.UserController;
-import com.poletto.bookstore.converter.custom.UserMapper;
-import com.poletto.bookstore.dto.v2.UserDTOv2;
-import com.poletto.bookstore.entities.Reservation;
-import com.poletto.bookstore.entities.Role;
-import com.poletto.bookstore.entities.User;
-import com.poletto.bookstore.exceptions.ResourceNotFoundException;
-import com.poletto.bookstore.repositories.v3.UserRepository;
-import com.poletto.bookstore.util.CustomRedisClient;
+import com.poletto.bookstore.dto.v3.RoleDto;
+import com.poletto.bookstore.dto.v3.UserChangesDto;
+import com.poletto.bookstore.dto.v3.UserDto;
 
 @Service("UserServiceV3")
-public class UserService {
-
-	//criar classes de teste e validar interação com outras entidades (reservation.client basicamente)
-	
-	private static final Logger logger = LoggerFactory.getLogger(UserService.class);
-	
-	@Autowired
-	private CustomRedisClient<String, Object> redisClient;
-
-	@Autowired
-	private UserRepository userRepository;
+public interface UserService {
 
 	@Transactional(readOnly = true)
-	public Page<UserDTOv2> findAllPaged(Pageable pageable) {
-
-		Page<User> entitiesPage = userRepository.findAll(pageable);
-
-		logger.info("Resource USER page found: " + "PAGE NUMBER [" + entitiesPage.getNumber() + "] - CONTENT: "
-				+ entitiesPage.getContent());
-		
-		Page<UserDTOv2> dtosPage = entitiesPage.map(x -> UserMapper.convertEntityToDtoV2(x));
-		
-		dtosPage.stream().forEach(dto -> dto
-				.add(linkTo(methodOn(UserController.class).findById(dto.getId())).withSelfRel().withType("GET"))
-				.add(linkTo(methodOn(UserController.class).delete(dto.getId())).withRel("delete").withType("DELETE"))
-				.add(linkTo(methodOn(UserController.class).update(dto.getId(), UserMapper.convertEntityToAuthDtoV2(UserMapper.convertDtoToEntityV2(dto)))).withRel("update").withType("PUT")));
-
-		return dtosPage;
-
-	}
-
+	Page<UserDto> findAllPaged(Pageable pageable, String userStatus, String accountStatus, Long roleId);
+	
 	@Transactional(readOnly = true)
-	public UserDTOv2 findById(Long id) {
-
-		User entity = userRepository.findById(id).orElseThrow(
-				() -> new ResourceNotFoundException("Resource USER not found. ID " + id));
-
-		logger.info("Resource USER found: " + entity.toString());
-		
-		return UserMapper.convertEntityToDtoV2(entity)
-			.add(linkTo(methodOn(UserController.class).findById(entity.getId())).withSelfRel().withType("GET"))
-			.add(linkTo(methodOn(UserController.class).delete(entity.getId())).withRel("delete").withType("DELETE"))
-			.add(linkTo(methodOn(UserController.class).update(entity.getId(), UserMapper.convertEntityToAuthDtoV2(entity))).withRel("update").withType("PUT"));
-
-	}
-
+	UserDto findById(Long userId);
+	
 	@Transactional
-	public UserDTOv2 update(Long id, UserDTOv2 dto) {
-
-			User entity = userRepository.findById(id)
-					.orElseThrow(() -> new ResourceNotFoundException("Resource USER not found. ID: " + id));
-			
-			String previousEmail = entity.getEmail();
-			
-			List<Reservation> reservations = entity.getOrders();
-			
-			Set<Role> roles = entity.getRoles();
-
-			entity = UserMapper.convertDtoToEntityV2(dto);
-
-			entity.setId(id);
-
-			entity.getRoles().addAll(roles);
-
-			entity = userRepository.save(entity);
-
-			if (redisClient.del("userAuth::" + previousEmail)) {
-				logger.info("Cache userAuth evicted, e-mail: {}", previousEmail);
-			}
-			
-			for (Reservation res: reservations) {
-				res.setClient(entity);
-				if (redisClient.put("reservation::" + res.getId(), res)) {
-					logger.info("Cache reservation::{} updated client to: {}", res.getId(), res);
-				}
-			}
-			
-			logger.info("Resource USER updated: {}", entity);
-			
-			return UserMapper.convertEntityToDtoV2(entity)
-				.add(linkTo(methodOn(UserController.class).findById(entity.getId())).withSelfRel().withType("GET"))
-				.add(linkTo(methodOn(UserController.class).delete(entity.getId())).withRel("delete").withType("DELETE"))
-				.add(linkTo(methodOn(UserController.class).update(entity.getId(), UserMapper.convertEntityToAuthDtoV2(entity))).withRel("update").withType("PUT"));
-
-	}
-
+	UserDto updateEmail(Long userId, UserChangesDto userChangesDto);
+	
 	@Transactional
-	public void delete(Long id) {
-
-		String email = userRepository.getReferenceById(id).getEmail();
-		
-		userRepository.deleteById(id);
-		
-		if (redisClient.del("userAuth::" + email)) {				
-			logger.info("Cache userAuth evicted, id: {} ", id);		
-		}
-		
-		logger.info("Resource USER deleted, id: {}", id);
-
-	}
-
+	UserDto updatePassword(Long userId, UserChangesDto userChangesDto);
+	
+	@Transactional
+	UserDto addUserRoles(Long userId, Set<RoleDto> roles);
+	
+	@Transactional
+	UserDto removeUserRoles(Long userId, Set<RoleDto> roles);
+	
+	@Transactional
+	UserDto updateUserStatus(Long userId, UserChangesDto userChangesDto);
+	
+	@Transactional(readOnly = true)
+	void sendAccountVerificationEmail(Long userId);
+	
+	@Transactional
+	void verifyAccount(UUID verificationToken);
+	
 }
