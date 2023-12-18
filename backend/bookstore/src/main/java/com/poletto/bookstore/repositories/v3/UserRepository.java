@@ -2,37 +2,32 @@ package com.poletto.bookstore.repositories.v3;
 
 import java.util.Optional;
 
-import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.CachePut;
-import org.springframework.cache.annotation.Cacheable;
-import org.springframework.cache.annotation.Caching;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import com.poletto.bookstore.entities.User;
 
+import io.lettuce.core.dynamic.annotation.Param;
 
 @Repository("UserRepositoryV3")
 public interface UserRepository extends JpaRepository<User, Long> {
 	
-	@Cacheable("users")
-	Page<User> findAll(Pageable pageable);
+	@Query("SELECT user "
+		 + "FROM User user "
+		 + "INNER JOIN user.roles roles "
+		 + "WHERE (:roleId IS NULL OR roles.id IN :roleId) "
+		 + "AND (LOWER(:userStatus) = 'all' OR LOWER(cast(user.userStatus as text)) = LOWER(:userStatus)) "
+		 + "AND (LOWER(:accountStatus) = 'all' OR LOWER(cast(user.accountStatus as text)) = LOWER(:accountStatus))")
+	Page<User> findAll(
+		@Param("userStatus") String userStatus,
+		@Param("accountStatus") String accountStatus,
+		@Param("roleId") Long roleId,
+		Pageable pageable
+	);
 	
-	@Cacheable(value = "user", key = "#id")
-	Optional<User> findById(Long id);
-	
-	@Caching(
-			evict = { @CacheEvict(value = {"users", "reservations", "reservation"}, allEntries = true) },
-			put = { @CachePut(value = "user", key = "#entity.id") }
-	)
-	<S extends User> S save(S entity);
-	
-	@Caching(evict = { 
-			@CacheEvict(value = "users", allEntries = true),
-			@CacheEvict(value = "user", key = "#id")
-	})
-	void deleteById(Long id);
+	Optional<User> findByEmail(String email);
 
 }
