@@ -1,61 +1,46 @@
 package com.poletto.bookstore.v3.mocks;
 
-import com.poletto.bookstore.dto.v2.UserAuthDTOv2;
-import com.poletto.bookstore.dto.v2.UserDTOv2;
+import com.poletto.bookstore.dto.v3.UserDto;
 import com.poletto.bookstore.entities.User;
+import com.poletto.bookstore.entities.enums.AccountStatus;
+import com.poletto.bookstore.entities.enums.UserStatus;
 
 public class UserMocks {
 
-	public static UserDTOv2 userMockDto(Long id) {
+	public static UserDto userMockDto(Long id) {
 		
-		return new UserDTOv2(
-				id,
-				"firstname" + id,
-				"lastname" + id,
-				"user" + id + "@mail.com"
-		);
+		UserDto userDto = new UserDto();
+		userDto.setKey(id);
+		userDto.setEmail("mock@mail.com");
+		userDto.setPassword("mockpsw123");
+		userDto.setUserStatus(UserStatus.ACTIVE);
+		userDto.setAccountStatus(AccountStatus.VERIFIED);
 		
-	}
-	
-	public static UserDTOv2 userMockDto() {
-		
-		return new UserDTOv2(
-				1L,
-				"john",
-				"doe",
-				"johndoe@mail.com"
-		);
+		return userDto;
 		
 	}
 	
-	public static UserAuthDTOv2 userAuthDto(Long id) {
+	public static UserDto userMockDto() {
 		
-		return new UserAuthDTOv2(
-				userMockDto(id),
-				"psw",
-				"token"
-		);
+		UserDto userDto = new UserDto();
+		userDto.setKey(1L);
+		userDto.setEmail("mock@mail.com");
+		userDto.setPassword("mockpsw123");
+		userDto.setUserStatus(UserStatus.ACTIVE);
+		userDto.setAccountStatus(AccountStatus.VERIFIED);
 		
-	}
-	
-	public static UserAuthDTOv2 userAuthDto() {
-		
-		return new UserAuthDTOv2(
-				userMockDto(),
-				"psw",
-				"token"
-		);
+		return userDto;
 		
 	}
 	
 	public static User userMockEntity(Long id) {
 		
 		return new User(
-				id,
-				"mail" + id + "@mail.com",
-				"psw" + id,
-				"firstname" + id,
-				"lastname" + id
+			id,
+			"mock@mail.com",
+			"mockpsw123",
+			AccountStatus.VERIFIED,
+			UserStatus.ACTIVE
 		);
 		
 	}
@@ -63,44 +48,22 @@ public class UserMocks {
 	public static User userMockEntity() {
 		
 		return new User(
-				1L,
-				"johndoe@mail.com",
-				"psw",
-				"john",
-				"doe"
+			1L,
+			"mock@mail.com",
+			"mockpsw123",
+			AccountStatus.VERIFIED,
+			UserStatus.ACTIVE
 		);
 		
 	}
 
-	public static UserAuthDTOv2 registerUserMockDto() {
+	public static UserDto registerUserMockDto() {
 		
-		UserAuthDTOv2 userAuthDto = new UserAuthDTOv2();
-		userAuthDto.setFirstname("john");
-		userAuthDto.setLastname("doe");
-		userAuthDto.setEmail("johndoe@mail.com");
-		userAuthDto.setPassword("psw");
+		UserDto userDto = new UserDto();
+		userDto.setEmail("mock@mail.com");
+		userDto.setPassword("mockpsw123");
 		
-		return userAuthDto;
-		
-	}
-	
-	public static UserAuthDTOv2 loginUserMockDto() {
-		
-		UserAuthDTOv2 userAuthDto = new UserAuthDTOv2();
-		userAuthDto.setEmail("johndoe@mail.com");
-		userAuthDto.setPassword("psw");
-		
-		return userAuthDto;
-		
-	}
-	
-	public static UserAuthDTOv2 loginUserMockDto(UserAuthDTOv2 dto) {
-		
-		UserAuthDTOv2 userAuthDto = new UserAuthDTOv2();
-		userAuthDto.setEmail(dto.getEmail());
-		userAuthDto.setPassword(dto.getPassword());
-		
-		return userAuthDto;
+		return userDto;
 		
 	}
 	
