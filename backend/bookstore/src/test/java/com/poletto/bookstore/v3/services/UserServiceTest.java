@@ -126,8 +126,7 @@ public class UserServiceTest {
     }
     
     @Test
-    
-    void givenDefaultPageParapometers_whenRequestingUserPage_thenReceiveUserPage() {
+    void givenDefaultPageParameters_whenRequestingUserPage_thenReceiveUserPage() {
     	
     	logger.info("\n\n<=========  STARTING TEST givenDefaultPageParameters_whenRequestingUserPage_thenReceiveUserPage()  =========>\n");
     	
@@ -159,7 +158,6 @@ public class UserServiceTest {
     }
     
     @Test
-    
     void givenDefinedPageParameters_whenRequestingUserPage_thenReceiveUserPage() {
     	
     	logger.info("\n\n<=========  STARTING TEST givenDefaultPageParameters_whenRequestingUserPage_thenReceiveUserPage()  =========>\n");
@@ -196,7 +194,31 @@ public class UserServiceTest {
     }
     
     @Test
+    void givenAnyPageParameters_whenRequestingUserPage_withoutAdminToken_thenReceiveForbiddenException() {
+    	
+    	logger.info("\n\n<=========  STARTING TEST givenAnyPageParameters_whenRequestingUserPage_withoutAdminToken_thenReceiveForbiddenException()  =========>\n");
+    	
+    	given()
+			.spec(UserAuthMocks.CustomerPrivilegesUser())
+		.when()
+	  		.get("api/v3/users")
+	  	.then()
+	  		.statusCode(403)
+	  		.body("message", equalTo("Access Denied"));
+    	
+    	given()
+			.spec(UserAuthMocks.OperatorPrivilegesUser())
+		.when()
+  			.get("api/v3/users")
+  		.then()
+	  		.statusCode(403)
+	  		.body("message", equalTo("Access Denied"));
+    	
+    	logger.info("test success, when requesting user page without an admin token, the response properly provided the exception and message explaining");
+    	
+    }
     
+    @Test
     void givenExistingUserId_whenRequestingUserById_thenReceiveUserDetails() {
     	
     	logger.info("\n\n<=========  STARTING TEST givenExistingUserId_whenRequestingUserById_thenReceiveUserDetails()  =========>\n");
@@ -243,7 +265,6 @@ public class UserServiceTest {
     }
     
     @Test
-    
     void givenNonExistingUserId_whenRequestingUserById_thenReceiveNotFoundException() {
     	
     	logger.info("\n\n<=========  STARTING TEST givenNonExistingUserId_whenRequestingUserById_thenReceiveNotFoundException()  =========>\n");
@@ -263,8 +284,34 @@ public class UserServiceTest {
     }
     
     @Test
-    @DirtiesContext
+    void givenAnyUserId_whenRequestingUserById_withoutAdminToken_thenReceiveForbiddenException() {
+    	
+    	logger.info("\n\n<=========  STARTING TEST givenAnyUserId_whenRequestingUserById_withoutAdminToken_thenReceiveForbiddenException()  =========>\n");
+    	
+    	Long userId = 1L;
+    	
+    	given()
+			.spec(UserAuthMocks.CustomerPrivilegesUser())
+		.when()
+	  		.get("api/v3/users/{userId}", userId)
+	  	.then()
+	  		.statusCode(403)
+	  		.body("message", equalTo("Access Denied"));
+    	
+    	given()
+			.spec(UserAuthMocks.OperatorPrivilegesUser())
+		.when()
+  			.get("api/v3/users/{userId}", userId)
+  		.then()
+	  		.statusCode(403)
+	  		.body("message", equalTo("Access Denied"));
+    	
+    	logger.info("test success, when requesting user by id without an admin token, the response properly provided the exception and message explaining");
+    	
+    }
     
+    @Test
+    @DirtiesContext
     void givenValidNewEmail_withOwnToken_whenUpdatingUserEmail_thenUpdateEmailAndReceiveUpdatedData() {
     	
     	logger.info("\n\n<=========  STARTING TEST givenValidNewEmail_withOwnToken_whenUpdatingUserEmail_thenUpdateEmailAndReceiveUpdatedData()  =========>\n");
@@ -305,7 +352,6 @@ public class UserServiceTest {
     }
     
     @Test
-    
     void givenValidNewEmail_withInvalidToken_whenUpdatingUserEmail_thenReceiveUnauthorizedException() {
     	
     	logger.info("\n\n<=========  STARTING TEST givenValidNewEmail_withInvalidToken_whenUpdatingUserEmail_thenReceiveUnauthorizedException()  =========>\n");
@@ -331,7 +377,6 @@ public class UserServiceTest {
     }
     
     @Test
-    
     void givenInvalidNewEmail_whenUpdatingUserEmail_thenReceiveInvalidEmailException() {
     	
     	logger.info("\n\n<=========  STARTING TEST givenInvalidNewEmail_whenUpdatingUserEmail_thenReceiveInvalidEmailException()  =========>\n");
@@ -387,7 +432,6 @@ public class UserServiceTest {
     }
     
     @Test
-    
     void givenAlreadyExistingEmail_whenUpdatingUserEmail_thenReceiveConflictException() {
     	
     	logger.info("\n\n<=========  STARTING TEST givenAlreadyExistingEmail_whenUpdatingUserEmail_thenReceiveConflictException()  =========>\n");
@@ -413,8 +457,7 @@ public class UserServiceTest {
     }
     
     @Test
-    @DirtiesContext
-    
+    @DirtiesContext 
     void givenValidNewPassword_withOwnToken_whenUpdatingUserPassword_thenUpdatePasswordAndReceiveUpdatedData() {
     	
     	logger.info("\n\n<=========  STARTING TEST givenValidNewPasswordAndToken_whenUpdatingUserPassword_thenUpdatePasswordAndReceiveUpdatedData()  =========>\n");
@@ -454,8 +497,7 @@ public class UserServiceTest {
     	
     }
     
-    @Test
-    
+    @Test  
     void givenValidNewPassword_withInvalidToken_whenUpdatingUserPassword_thenReceiveUnauthorizedException() {
     	
     	logger.info("\n\n<=========  STARTING TEST givenValidNewPasswordButInvalidToken_whenUpdatingUserPassword_thenReceiveUnauthorizedException()  =========>\n");
@@ -481,7 +523,6 @@ public class UserServiceTest {
     }
     
     @Test
-    
     void givenInvalidNewPassword_whenUpdatingUserPassword_thenReceiveInvalidPasswordException() {
 
         logger.info("\n\n<=========  STARTING TEST givenInvalidNewPassword_whenUpdatingUserPassword_thenReceiveInvalidPasswordException()  =========>\n");
@@ -580,7 +621,6 @@ public class UserServiceTest {
     
     @Test
     @DirtiesContext
-    
     void givenValidRolesSet_withAdminToken_whenAddingUserRoles_thenAddRolesAndReceiveUpdatedData() {
     	
     	logger.info("\n\n<=========  STARTING TEST givenValidRolesSet_withAdminToken_whenAddingUserRoles_thenAddRolesAndReceiveUpdatedData()  =========>\n");
@@ -623,7 +663,6 @@ public class UserServiceTest {
     }
     
     @Test
-    
     void givenValidRolesSet_withoutAdminToken_whenAddingUserRoles_thenReceiveForbiddenException() {
     	
     	logger.info("\n\n<=========  STARTING TEST givenValidRolesSetWithoutAdminToken_whenAddingUserRoles_thenReceiveForbiddenException()  =========>\n");
@@ -637,7 +676,7 @@ public class UserServiceTest {
     	);
         
         given()
-			.spec(UserAuthMocks.AdminPrivilegesUser(userDto))
+			.spec(UserAuthMocks.CustomerPrivilegesUser())
 			.body(newRoles)
 			.contentType(ContentType.JSON)
 		.when()
@@ -660,7 +699,6 @@ public class UserServiceTest {
     }
 
     @Test
-    
     void givenInvalidRolesSet_whenAddingUserRoles_thenReceiveInvalidRolesException() {
     	
     	logger.info("\n\n<=========  STARTING TEST givenInvalidRolesSet_whenAddingUserRoles_thenReceiveInvalidRolesException()  =========>\n");
@@ -717,7 +755,6 @@ public class UserServiceTest {
 
     @Test
     @DirtiesContext
-    
     void givenValidRolesSet_withAdminToken_whenRemovingUserRoles_thenAddRolesAndReceiveUpdatedData() {
     	
     	logger.info("\n\n<=========  STARTING TEST givenValidRolesSetWithAdminToken_whenRemovingUserRoles_thenAddRolesAndReceiveUpdatedData()  =========>\n");
@@ -760,7 +797,6 @@ public class UserServiceTest {
     }
     
     @Test
-    
     void givenValidRolesSet_withoutAdminToken_whenRemovingUserRoles_thenReceiveForbiddenException() {
     	
     	logger.info("\n\n<=========  STARTING TEST givenValidRolesSetWithoutAdminToken_whenRemovingUserRoles_thenReceiveForbiddenException()  =========>\n");
@@ -774,7 +810,7 @@ public class UserServiceTest {
     	);
         
         given()
-			.spec(UserAuthMocks.AdminPrivilegesUser(userDto))
+			.spec(UserAuthMocks.OperatorPrivilegesUser())
 			.body(rolesToBeRemoved)
 			.contentType(ContentType.JSON)
 		.when()
@@ -797,7 +833,6 @@ public class UserServiceTest {
     }
 
     @Test
-    
     void givenNonPresentRoleSet_whenRemovingUserRoles_thenReceiveInvalidRolesException() {
     	
     	logger.info("\n\n<=========  STARTING TEST givenInvalidRolesSet_whenRemovingUserRoles_thenReceiveInvalidRolesException()  =========>\n");
@@ -825,7 +860,6 @@ public class UserServiceTest {
     }
     
     @Test
-    
     void givenInvalidRolesSet_whenRemovingUserRoles_thenReceiveInvalidRolesException() {
     	
     	logger.info("\n\n<=========  STARTING TEST givenInvalidRolesSet_whenRemovingUserRoles_thenReceiveInvalidRolesException()  =========>\n");
@@ -882,7 +916,6 @@ public class UserServiceTest {
 
     @Test
     @DirtiesContext
-    
     void givenValidUserStatus_withAdminToken_whenUpdatingUserStatus_thenUpdateUserStatusAndReceiveUpdatedData() {
     	
     	logger.info("\n\n<=========  STARTING TEST givenValidUserStatus_withAdminToken_whenUpdatingUserStatus_thenUpdateUserStatusAndReceiveUpdatedData()  =========>\n");
@@ -921,7 +954,6 @@ public class UserServiceTest {
     }
     
     @Test
-    
     void givenValidUserStatus_withoutAdminToken_whenUpdatingUserStatus_thenReceiveUnauthorizedException() {
     	
     	logger.info("\n\n<=========  STARTING TEST givenValidUserStatus_withoutAdminToken_whenUpdatingUserStatus_thenReceiveUnauthorizedException()  =========>\n");
@@ -933,7 +965,7 @@ public class UserServiceTest {
     	userChangesDto.setUserStatus(UserStatus.INACTIVE);
     	
     	given()
-    		.spec(UserAuthMocks.AdminPrivilegesUser(userDto))
+    		.spec(UserAuthMocks.CustomerPrivilegesUser())
 			.body(userChangesDto)
 			.contentType(ContentType.JSON)
 		.when()
@@ -956,7 +988,6 @@ public class UserServiceTest {
     }
 
     @Test
-    
     void givenAlreadySettedUserStatus_whenUpdatingUserStatus_thenReceiveInvalidStatusException() {
     	
     	logger.info("\n\n<=========  STARTING TEST givenAlreadySettedUserStatus_whenUpdatingUserStatus_thenReceiveInvalidStatusException()  =========>\n");
@@ -982,7 +1013,6 @@ public class UserServiceTest {
     }
     
     @Test
-    
     void givenInvalidUserStatus_whenUpdatingUserStatus_thenReceiveInvalidStatusException() {
     	
     	logger.info("\n\n<=========  STARTING TEST givenInvalidUserStatus_whenUpdatingUserStatus_thenReceiveInvalidStatusException()  =========>\n");
@@ -1038,7 +1068,6 @@ public class UserServiceTest {
 
     @Test
     @DirtiesContext
-    
     void givenExistingUserId_whenSendingVerificationEmailToNewUser_thenCreateTokenAndSendItByEmail() {
     	
     	logger.info("\n\n<=========  STARTING TEST givenExistingUserId_whenSendingVerificationEmailToNewUser_thenCreateTokenAndSendItByEmail()  =========>\n");
@@ -1048,7 +1077,7 @@ public class UserServiceTest {
     	Long newUserId = userDto.getKey();
     	
     	given()
-    		.spec(UserAuthMocks.TokenFromGivenUser(UserMocks.registerUserMockDto()))
+    		.spec(UserAuthMocks.OperatorPrivilegesUser())
     	.when()
     		.get("/api/v3/users/{newUserId}/send-verification-email", newUserId)
     	.then()
@@ -1076,7 +1105,6 @@ public class UserServiceTest {
     
     @Test
     @DirtiesContext
-    
     void givenExistingUserId_whenSendingVerificationEmailToUser_withAlreadyPresentValidToken_thenSendValidTokenByEmail() {
     	
     	logger.info("\n\n<=========  STARTING TEST givenExistingUserId_whenSendingVerificationEmailToUser_withAlreadyPresentValidToken_thenSendValidTokenByEmail()  =========>\n");
@@ -1094,7 +1122,7 @@ public class UserServiceTest {
     	verificationToken = verificationTokenRepository.save(verificationToken);
     	
     	given()
-    		.spec(UserAuthMocks.TokenFromGivenUser(UserMocks.registerUserMockDto()))
+    		.spec(UserAuthMocks.OperatorPrivilegesUser())
     	.when()
     		.get("/api/v3/users/{newUserId}/send-verification-email", newUserId)
     	.then()
@@ -1117,7 +1145,6 @@ public class UserServiceTest {
     
     @Test
     @DirtiesContext
-    
     void givenExistingUserId_whenSendingVerificationEmailToUser_withAlreadyPresentExpiredToken_thenCreateTokenAndSendItByEmail() {
     	
     	logger.info("\n\n<=========  STARTING TEST givenExistingUserId_whenSendingVerificationEmailToUser_withAlreadyPresentExpiredToken_thenCreateTokenAndSendItByEmail()  =========>\n");
@@ -1135,7 +1162,7 @@ public class UserServiceTest {
     	verificationToken = verificationTokenRepository.save(verificationToken);
     	
     	given()
-    		.spec(UserAuthMocks.TokenFromGivenUser(UserMocks.registerUserMockDto()))
+    		.spec(UserAuthMocks.OperatorPrivilegesUser())
     	.when()
     		.get("/api/v3/users/{newUserId}/send-verification-email", newUserId)
     	.then()
@@ -1158,7 +1185,6 @@ public class UserServiceTest {
     
     @Test
     @DirtiesContext
-    
     void givenNonExistingUserId_whenSendingVerificationEmailToUser_thenReceiveNotFoundException() {
     	
     	logger.info("\n\n<=========  STARTING TEST givenExistingUserId_whenSendingVerificationEmailToUser_withAlreadyPresentExpiredToken_thenCreateTokenAndSendItByEmail()  =========>\n");
@@ -1179,7 +1205,6 @@ public class UserServiceTest {
 
     @Test
     @DirtiesContext
-    
     void givenExistingAndValidToken_whenVerifyingAccount_thenUpdateUserAccountStatus() {
     	
     	logger.info("\n\n<=========  STARTING TEST givenExistingAndValidToken_whenVerifyingAccount_thenUpdateUserAccountStatus()  =========>\n");
@@ -1215,7 +1240,6 @@ public class UserServiceTest {
     
     @Test
     @DirtiesContext
-    
     void givenExistingButExpiratedToken_whenVerifyingAccount_thenReceiveInvalidTokenException() {
     	
     	logger.info("\n\n<=========  STARTING TEST givenExistingButExpiratedToken_whenVerifyingAccount_thenReceiveInvalidTokenException()  =========>\n");
@@ -1252,7 +1276,6 @@ public class UserServiceTest {
     
     @Test
     @DirtiesContext
-    
     void givenNonExistingToken_whenVerifyingAccount_thenReceiveInvalidTokenException() {
     	
     	logger.info("\n\n<=========  STARTING TEST givenNonExistingToken_whenVerifyingAccount_thenReceiveInvalidTokenException()  =========>\n");
@@ -1280,4 +1303,3 @@ public class UserServiceTest {
     }
     
 }
-        

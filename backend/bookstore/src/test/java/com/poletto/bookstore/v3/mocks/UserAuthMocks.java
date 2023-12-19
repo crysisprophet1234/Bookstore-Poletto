@@ -21,43 +21,41 @@ public class UserAuthMocks {
 		user.put("email", "admin@mail.com");
 		user.put("password", "123456");
 
-		Response response = given()
-				.basePath("api/auth/v3/authenticate")
-				.contentType(ContentType.JSON)
-				.body(user)
-				.then()
-				.when()
-				.post()
-				.then()
-				.extract()
-				.response();
-
-		JsonPath jsonPath = JsonPath.from(response.getBody().asString());
-
-		return new RequestSpecBuilder().addHeader("Authorization", "Bearer " + jsonPath.getString("token")).build();
+		return new RequestSpecBuilder()
+				.addHeader("Authorization", "Bearer " + extractToken(user)).build();
 
 	}
 
+	public static RequestSpecification OperatorPrivilegesUser() {
+		
+		Map<String, String> user = new HashMap<>();
+		user.put("email", "operator@mail.com");
+		user.put("password", "123456");
+
+		return new RequestSpecBuilder()
+				.addHeader("Authorization", "Bearer " + extractToken(user)).build();
+		
+	}
+	
+	public static RequestSpecification CustomerPrivilegesUser() {
+		
+		Map<String, String> user = new HashMap<>();
+		user.put("email", "customer@mail.com");
+		user.put("password", "123456");
+
+		return new RequestSpecBuilder()
+				.addHeader("Authorization", "Bearer " + extractToken(user)).build();
+		
+	}
+	
 	public static RequestSpecification AdminPrivilegesUser(UserDto userDto) {
 		
 		Map<String, String> user = new HashMap<>();
 		user.put("email", userDto.getEmail());
 		user.put("password", "123456");
 
-		Response response = given()
-				.basePath("api/auth/v3/authenticate")
-				.contentType(ContentType.JSON)
-				.body(user)
-				.then()
-				.when()
-				.post()
-				.then()
-				.extract()
-				.response();
-
-		JsonPath jsonPath = JsonPath.from(response.getBody().asString());
-
-		return new RequestSpecBuilder().addHeader("Authorization", "Bearer " + jsonPath.getString("token")).build();
+		return new RequestSpecBuilder()
+				.addHeader("Authorization", "Bearer " + extractToken(user)).build();
 
 	}
 	
@@ -67,8 +65,15 @@ public class UserAuthMocks {
 		user.put("email", userDto.getEmail());
 		user.put("password", userDto.getPassword());
 
+		return new RequestSpecBuilder()
+				.addHeader("Authorization", "Bearer " + extractToken(user)).build();
+
+	}
+
+	private static String extractToken(Map<String, String> user) {
+		
 		Response response = given()
-				.basePath("api/auth/v3/authenticate")
+				.basePath("api/v3/auth/authenticate")
 				.contentType(ContentType.JSON)
 				.body(user)
 				.then()
@@ -79,9 +84,9 @@ public class UserAuthMocks {
 				.response();
 
 		JsonPath jsonPath = JsonPath.from(response.getBody().asString());
-
-		return new RequestSpecBuilder().addHeader("Authorization", "Bearer " + jsonPath.getString("token")).build();
-
+		
+		return jsonPath.getString("token");
+		
 	}
-
+	
 }
