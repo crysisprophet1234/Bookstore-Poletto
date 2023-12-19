@@ -1,14 +1,8 @@
 package com.poletto.bookstore.controllers.v3;
 
-import java.net.URI;
-
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-import org.springframework.data.domain.Sort.Direction;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -17,12 +11,9 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-import com.poletto.bookstore.dto.v2.BookDTOv2;
+import com.poletto.bookstore.dto.v3.BookDto;
 import com.poletto.bookstore.exceptions.exceptionresponse.ExceptionResponse;
-import com.poletto.bookstore.services.v3.BookService;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -32,14 +23,13 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.Pattern;
 
-@RestController("BookControllerV3")
 @RequestMapping(value = "/books/v3")
 @Tag(name = "Book Controller V3", description = "Endpoints related to book resources management")
-public class BookController {
-
-	@Autowired
-	private BookService bookService;
+@Validated
+public interface BookController {
 	
 	@GetMapping
 	@Operation(
@@ -55,23 +45,38 @@ public class BookController {
 			@ApiResponse(description = "Internal error", responseCode = "500", content = @Content(schema = @Schema(implementation = ExceptionResponse.class)))
 		}
 	)
-	public ResponseEntity<Page<BookDTOv2>> findAllPaged(
-			@Parameter(description = "Page index") @RequestParam(value = "page", defaultValue = "0") Integer page,
-			@Parameter(description = "Page size") @RequestParam(value = "size", defaultValue = "12") Integer size,
-			@Parameter(description = "Page sorting direction") @RequestParam(value = "sort", defaultValue = "asc") String sort,
-			@Parameter(description = "Page sorting option") @RequestParam(value = "orderBy", defaultValue = "id") String orderBy,
-			@Parameter(description = "Book category ID") @RequestParam(value = "categoryId", defaultValue = "") Long categoryId,
-			@Parameter(description = "Book or author name") @RequestParam(value = "name", defaultValue = "") String name,
-			@Parameter(description = "Book status") @RequestParam(value = "status", defaultValue = "all") String status
-		) {
-		Pageable pageable = PageRequest.of(page, size, Sort.by(Direction.valueOf(sort.toUpperCase()), orderBy));
+	ResponseEntity<Page<BookDto>> findAllPaged(
+		@Parameter(description = "Page index") @RequestParam(value = "page", defaultValue = "0") Integer page,
+		@Parameter(description = "Page size") @RequestParam(value = "size", defaultValue = "12") Integer size,
 		
-		Page<BookDTOv2> books = bookService.findAllPaged(pageable, categoryId, name.trim(), status);
-
-		return ResponseEntity.ok(books);
-
-	}
-
+		@Parameter(description = "Page sorting direction")
+		@RequestParam(value = "sort", defaultValue = "asc")
+		@Pattern(
+			regexp = "^(?i)(ASC|DESC)$",
+			message = "Parâmetro sort deve ser ASC ou DESC"
+		)
+		String sort,
+		
+		@Parameter(description = "Page sorting option")
+		@RequestParam(value = "orderBy", defaultValue = "id")
+		@Pattern(
+			regexp = "^(?i)(ID|TITLE|AUTHOR|STATUS)$",
+			message = "Parâmetro orderBy deve ser ID, Title, Author (name) ou STATUS"
+		)
+		String orderBy,
+		
+		@Parameter(description = "Book category ID") @RequestParam(value = "categoryId", defaultValue = "") @Min(1) Long categoryId,
+		@Parameter(description = "Book or author name") @RequestParam(value = "name", defaultValue = "") String name,
+		
+		@Parameter(description = "Book status")
+		@RequestParam(value = "status", defaultValue = "all")	
+		@Pattern(
+			regexp = "^(?i)(ACTIVE|INACTIVE|ALL)$",
+			message = "Parâmetro status deve ser ACTIVE, INACTIVE ou ALL"
+		)
+		String status
+	);
+	
 	@GetMapping(value = "/{id}")
 	@Operation(
 		summary = "Returns a book by ID",
@@ -87,13 +92,10 @@ public class BookController {
 			@ApiResponse(description = "Internal error", responseCode = "500", content = @Content(schema = @Schema(implementation = ExceptionResponse.class)))
 		}
 	)
-	public ResponseEntity<BookDTOv2> findById(
-			@Parameter(description = "Book ID")
-			@PathVariable Long id
-		) {
-		BookDTOv2 entity = bookService.findById(id);
-		return ResponseEntity.ok().body(entity);
-	}
+	ResponseEntity<BookDto> findById(
+		@Parameter(description = "Book ID")
+		@PathVariable @Min(1) Long id
+	);
 	
 	@PostMapping
 	@Operation(
@@ -112,18 +114,14 @@ public class BookController {
 			@ApiResponse(description = "Internal error", responseCode = "500", content = @Content(schema = @Schema(implementation = ExceptionResponse.class)))
 		}
 	)
-	public ResponseEntity<BookDTOv2> insert(
-			@Parameter(
-				description = "Payload with new book data",
-				content = @Content(schema = @Schema(implementation = BookDTOv2.class))
-			)
-			@RequestBody @Valid BookDTOv2 dto
-		) {
-		dto = bookService.insert(dto);
-		URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(dto.getId()).toUri();
-		return ResponseEntity.created(uri).body(dto);
-	}
-
+	ResponseEntity<BookDto> insert(
+		@Parameter(
+			description = "Payload with new book data",
+			content = @Content(schema = @Schema(implementation = BookDto.class))
+		)
+		@RequestBody @Valid BookDto dto
+	);
+	
 	@PutMapping(value = "/{id}")
 	@Operation(
 		summary = "Updates book by ID",
@@ -141,19 +139,16 @@ public class BookController {
 			@ApiResponse(description = "Internal error", responseCode = "500", content = @Content(schema = @Schema(implementation = ExceptionResponse.class)))
 		}
 	)
-	public ResponseEntity<BookDTOv2> update(
-			@Parameter(description = "Book ID")
-			@PathVariable Long id,
-			@Parameter(
-				description = "Payload with new book data to be updated",
-				content = @Content(schema = @Schema(implementation = BookDTOv2.class))
-			)
-			@RequestBody @Valid BookDTOv2 dto
-		) {
-		BookDTOv2 bookDTO = bookService.update(id, dto);
-		return ResponseEntity.ok().body(bookDTO);
-	}
-
+	ResponseEntity<BookDto> update(
+		@Parameter(description = "Book ID")
+		@PathVariable @Min(1) Long id,
+		@Parameter(
+			description = "Payload with new book data to be updated",
+			content = @Content(schema = @Schema(implementation = BookDto.class))
+		)
+		@RequestBody @Valid BookDto dto
+	);
+	
 	@DeleteMapping(value = "/{id}")
 	@Operation(
 		summary = "Deletes a book by ID",
@@ -168,9 +163,9 @@ public class BookController {
 			@ApiResponse(description = "Internal error", responseCode = "500", content = @Content(schema = @Schema(implementation = ExceptionResponse.class)))
 		}
 	)
-	public ResponseEntity<Void> delete(@PathVariable Long id) {
-		bookService.delete(id);
-		return ResponseEntity.noContent().build();
-	}
+	ResponseEntity<Void> delete(
+		@Parameter(description = "Book ID")
+		@PathVariable @Min(1) Long id
+	);
 
 }

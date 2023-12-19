@@ -1,20 +1,13 @@
 package com.poletto.bookstore.controllers.v3;
 
-import java.net.URI;
-
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-import com.poletto.bookstore.dto.v2.UserAuthDTOv2;
-import com.poletto.bookstore.dto.v2.UserDTOv2;
+import com.poletto.bookstore.dto.v3.UserDto;
 import com.poletto.bookstore.exceptions.exceptionresponse.ExceptionResponse;
-import com.poletto.bookstore.services.v2.EmailService;
-import com.poletto.bookstore.services.v3.AuthService;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -24,21 +17,15 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 
-@RestController("AuthControllerV3")
-@RequestMapping(value = "/auth/v3")
+@RequestMapping(value = "/v3/auth")
 @Tag(name = "Auth Controller V3", description = "Endpoints related to account creating and authentication")
-public class AuthController {
-
-	@Autowired
-	private AuthService authService;
+@Validated
+public interface AuthController {
 	
-	@Autowired
-	private EmailService emailService;
-
 	@PostMapping("/register")
 	@Operation(
-		summary = "Register a new account",
-		description = "Register a new account with data provided and returns new user data",
+		summary = "Register a user new account",
+		description = "Register a new user account with email and password provided and returns new user data",
 		responses = {
 			@ApiResponse(
 				description = "Resource created",
@@ -50,17 +37,10 @@ public class AuthController {
 			@ApiResponse(description = "Internal error", responseCode = "500", content = @Content(schema = @Schema(implementation = ExceptionResponse.class)))
 		}
 	)
-	public ResponseEntity<UserDTOv2> insert(
-			@Parameter(
-				description = "New account data with firstname, lastname, e-mail and password",
-				content = @Content(schema = @Schema(implementation = UserAuthDTOv2.class)))
-			@RequestBody @Valid UserAuthDTOv2 userDTO
-		) {
-		UserDTOv2 dto = authService.register(userDTO);
-		URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(dto.getId()).toUri();
-		emailService.sendEmailFromTemplate(dto.getEmail(), "Confirmação de criação de conta", dto.getFirstname() + " " + dto.getLastname());
-		return ResponseEntity.created(uri).body(dto);
-	}
+	ResponseEntity<UserDto> insert(
+		@Parameter(description = "New account data with email and password")
+		@RequestBody @Valid UserDto userDTO
+	);
 	
 	@Operation(
 		summary = "Authenticates user",
@@ -76,14 +56,9 @@ public class AuthController {
 		}
 	)
 	@PostMapping("/authenticate")
-	public ResponseEntity<UserAuthDTOv2> authenticate(
-			@Parameter(
-				description = "Email and password for login",
-				content = @Content(schema = @Schema(example = "")))
-			@RequestBody UserAuthDTOv2 userDTO
-		) {
-		UserAuthDTOv2 dto = authService.authenticate(userDTO);
-		return ResponseEntity.ok().body(dto);
-	}
+	ResponseEntity<UserDto> authenticate(
+		@Parameter(description = "Email and password for login")
+		@RequestBody UserDto userDTO
+	);
 
 }
