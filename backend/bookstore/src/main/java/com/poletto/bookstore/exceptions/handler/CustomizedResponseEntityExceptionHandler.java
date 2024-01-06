@@ -14,6 +14,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.LockedException;
@@ -32,7 +33,9 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 
 import com.poletto.bookstore.exceptions.AlreadyExistingAccountException;
 import com.poletto.bookstore.exceptions.DatabaseException;
+import com.poletto.bookstore.exceptions.InvalidPersonForAddressUpdateException;
 import com.poletto.bookstore.exceptions.InvalidStatusException;
+import com.poletto.bookstore.exceptions.InvalidTokenException;
 import com.poletto.bookstore.exceptions.ObjectNotValidException;
 import com.poletto.bookstore.exceptions.ResourceNotFoundException;
 import com.poletto.bookstore.exceptions.UnauthorizedException;
@@ -132,7 +135,7 @@ public class CustomizedResponseEntityExceptionHandler extends ResponseEntityExce
 
 	}
 
-	@ExceptionHandler(InvalidStatusException.class)
+	@ExceptionHandler({InvalidStatusException.class, InvalidTokenException.class, InvalidPersonForAddressUpdateException.class})
 	public final ResponseEntity<ExceptionResponse> handleInvalidStatusException(Exception ex, WebRequest request) {
 
 		ExceptionResponse exceptionResponse = new ExceptionResponse(HttpStatus.BAD_REQUEST, ex.getMessage(),
@@ -166,6 +169,18 @@ public class CustomizedResponseEntityExceptionHandler extends ResponseEntityExce
 		logger.error(StackTraceFormatter.stackTraceFormatter(ex));
 		return new ResponseEntity<>(exceptionResponse, HttpStatus.BAD_REQUEST);
 
+	}
+	
+	@Override
+	protected ResponseEntity<Object> handleHttpMessageNotReadable(
+			HttpMessageNotReadableException ex, HttpHeaders headers, HttpStatusCode status, WebRequest request) {
+
+		ExceptionResponse exceptionResponse = new ExceptionResponse(HttpStatus.BAD_REQUEST, ex.getMessage(),
+				ex.getLocalizedMessage(), request.getDescription(false));
+
+		logger.warn(exceptionResponse.toString() + clientInfo(request));
+		logger.error(StackTraceFormatter.stackTraceFormatter(ex));
+		return new ResponseEntity<>(exceptionResponse, HttpStatus.BAD_REQUEST);
 	}
 
 	@Override
