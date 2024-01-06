@@ -50,25 +50,25 @@ public class AuthServiceImpl implements AuthService {
 	@Transactional
 	public UserDto register(UserDto dto) {
 
-		User entity = UserMapperV3.INSTANCE.userDtoToUser(dto);
+		User userEntity = UserMapperV3.INSTANCE.userDtoToUser(dto);
 		
 		if (authRepository.existsByEmail(dto.getEmail())) {
 			throw new AlreadyExistingAccountException(dto.getEmail());
 		}
 
-		entity.getRoles().add(roleRepository.getReferenceById(1L));
+		userEntity.getRoles().add(roleRepository.getReferenceById(1L));
 		
-		entity.setAccountStatus(AccountStatus.UNVERIFIED);
+		userEntity.setAccountStatus(AccountStatus.UNVERIFIED);
 		
-		entity.setUserStatus(UserStatus.ACTIVE);
+		userEntity.setUserStatus(UserStatus.ACTIVE);
 
-		entity.setPassword(passwordEncoder.encode(dto.getPassword()));
+		userEntity.setPassword(passwordEncoder.encode(dto.getPassword()));
 		
-		entity = authRepository.save(entity);
+		userEntity = authRepository.save(userEntity);
 
-		logger.info("Resource USER saved: " + entity.toString());
+		logger.info("Resource USER saved: " + userEntity.toString());
 
-		return userDtoWithLinks(UserMapperV3.INSTANCE.userToUserDto(entity));
+		return userDtoWithLinks(UserMapperV3.INSTANCE.userToUserDto(userEntity));
 
 	}
 	
@@ -80,16 +80,16 @@ public class AuthServiceImpl implements AuthService {
 			new UsernamePasswordAuthenticationToken(dto.getEmail(), dto.getPassword())
 		);
 
-		User entity = authRepository.findByEmail(dto.getEmail()).orElseThrow(
+		User userEntity = authRepository.findByEmail(dto.getEmail()).orElseThrow(
 				() -> new ResourceNotFoundException("Resource USER not found. Email " + dto.getEmail()));
 		
-		if (entity.getUserStatus() != UserStatus.ACTIVE) {
-			throw new UnauthorizedException("User account " + dto.getEmail() + " is actually " + entity.getUserStatus());
+		if (userEntity.getUserStatus() != UserStatus.ACTIVE) {
+			throw new UnauthorizedException("User account " + dto.getEmail() + " is actually " + userEntity.getUserStatus());
 		}
 		
-		UserDto authenticatedUserDto = UserMapperV3.INSTANCE.userToUserDto(entity);
+		UserDto authenticatedUserDto = UserMapperV3.INSTANCE.userToUserDto(userEntity);
 
-		String jwtToken = jwtService.generateToken(entity);
+		String jwtToken = jwtService.generateToken(userEntity);
 
 		authenticatedUserDto.setToken(jwtToken);
 
