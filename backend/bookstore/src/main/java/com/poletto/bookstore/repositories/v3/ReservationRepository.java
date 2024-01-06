@@ -1,6 +1,6 @@
 package com.poletto.bookstore.repositories.v3;
 
-import java.time.Instant;
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 import org.springframework.cache.annotation.CacheEvict;
@@ -25,11 +25,11 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
 		 + "WHERE (:clientId IS NULL OR res.client.id = :clientId) "
 		 + "AND (:bookId IS NULL OR books.id.book.id IN (:bookId)) "
 		 + "AND (:status = 'ALL' OR res.status = :status) "
-		 + "AND (cast(:startingDate as timestamp) IS NULL OR res.moment >= cast(:startingDate as timestamp)) "
-		 + "AND (cast(:devolutionDate as timestamp) IS NULL OR res.devolution <= cast(:devolutionDate as timestamp))")
+		 + "AND (cast(:reservationDate as timestamp) IS NULL OR res.reservationDate >= cast(:reservationDate as timestamp)) "
+		 + "AND (cast(:devolutionDate as timestamp) IS NULL OR res.devolutionDate <= cast(:devolutionDate as timestamp))")
 	Page<Reservation> findPaged(
-			@Param("startingDate") Instant startingDate,
-			@Param("devolutionDate") Instant devolutionDate,
+			@Param("reservationDate") LocalDateTime reservationDate,
+			@Param("devolutionDate") LocalDateTime devolutionDate,
 			@Param("clientId") Long clientId,
 			@Param("bookId") Long bookId,
 			@Param("status") String status,
