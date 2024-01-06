@@ -65,7 +65,7 @@ public class SecurityConfig {
 					.requestMatchers(AntPathRequestMatcher.antMatcher(HttpMethod.PUT, "/v3/users/verify-account")).hasRole("CUSTOMER")
 					.requestMatchers(AntPathRequestMatcher.antMatcher(HttpMethod.GET, "/v3/persons/**/")).hasRole("CUSTOMER")
 					.requestMatchers(AntPathRequestMatcher.antMatcher(HttpMethod.PUT, "/v3/persons/**/update")).hasRole("CUSTOMER")
-					.requestMatchers(AntPathRequestMatcher.antMatcher(HttpMethod.POST, "/v3/persons/create")).hasRole("CUSTOMER")
+					.requestMatchers(AntPathRequestMatcher.antMatcher(HttpMethod.POST, "/v3/persons/create")).permitAll()
 					.requestMatchers(AntPathRequestMatcher.antMatcher(HttpMethod.POST, "/v3/persons/**/addresses/create")).hasRole("CUSTOMER")
 					.requestMatchers(AntPathRequestMatcher.antMatcher(HttpMethod.PUT, "/v3/persons/**/addresses/**/update")).hasRole("CUSTOMER"))
 					//.anyRequest().permitAll())
