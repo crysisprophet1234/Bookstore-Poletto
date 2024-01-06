@@ -258,8 +258,7 @@ public class UserServiceImpl implements UserService {
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
 		
 		Map<String, Object> model = new HashMap<>();
-		//TODO: person name when available
-		model.put("username", "Mock username");
+		model.put("username", userEntity.getPerson().getFirstName() + " " + userEntity.getPerson().getLastName());
 		model.put("verification_link", verifyAccountURL);
 		model.put("expiration_date", formatter.format(verificationToken.getExpiresAt()));
 		
