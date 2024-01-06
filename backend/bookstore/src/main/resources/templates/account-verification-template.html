@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang='pt-br'>
+
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verificação de conta</title>
+
+</head>
+
+<style>
+    hr {
+        height: 2px;
+        background-color: #0d6efd;
+        border: none;
+    }
+
+    h1 {
+        font-size: 24px;
+    }
+
+    p {
+        color: #666;
+        font-size: 16px;
+    }
+
+    div {
+        background-color: #fafafa;
+        padding: 10px;
+    }
+
+    div p {
+        color: #a8a8a8;
+        text-align: center;
+    }
+
+    @media (min-width: 768px) {
+        h1 {
+            font-size: 30px;
+        }
+
+        p {
+            font-size: 18px;
+        }
+
+        hr {
+            height: 4px;
+        }
+    }
+
+    @media (min-width: 1200px) {
+        h1 {
+            font-size: 36px;
+        }
+
+        p {
+            font-size: 20px;
+        }
+    }
+</style>
+
+<body>
+
+    <h1>POLETTO Bookstore</h1>
+
+    <hr />
+
+    <p>Prezado(a) <strong>{username},</strong></p>
+
+    <p>Para concluir o processo de criação de sua conta na nossa loja de livros, precisamos que você
+        verifique seu endereço de e-mail.</p>
+
+    <p>Para isso, clique no link abaixo:</p>
+
+    <a href="{verification_link}">
+        <strong>Clique aqui para verificar sua conta</strong>
+    </a>
+
+    <p>Este link expirará em {expiration_date}.</p>
+
+    <p>Obrigado,</p>
+
+    <p><strong>Equipe Bookstore Poletto</strong></p>
+
+    <hr />
+
+    <div style="background-color: #fafafa; padding: 10px;">
+        <p style=" color: #a8a8a8; text-align: center;">Este e-mail foi gerado automaticamente para lhe notificar
+            sobre mudanças em sua conta Poletto Bookstore. Por favor não responda.</p>
+    </div>
+
+</body>
+
+</html>
