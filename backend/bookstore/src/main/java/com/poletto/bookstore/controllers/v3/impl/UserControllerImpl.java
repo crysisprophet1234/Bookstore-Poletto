@@ -22,7 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.poletto.bookstore.controllers.v3.UserController;
 import com.poletto.bookstore.dto.v3.RoleDto;
-import com.poletto.bookstore.dto.v3.UserChangesDto;
+import com.poletto.bookstore.dto.v3.UserUpdateDto;
 import com.poletto.bookstore.dto.v3.UserDto;
 import com.poletto.bookstore.services.v3.UserService;
 
@@ -66,7 +66,7 @@ public class UserControllerImpl implements UserController {
 	@PutMapping(value = "/{userId}/change-email")
 	public ResponseEntity<UserDto> updateEmail(
 			@PathVariable Long userId,
-			@RequestBody UserChangesDto userChangesDto,
+			@RequestBody UserUpdateDto userChangesDto,
 			@RequestHeader(value =  HttpHeaders.AUTHORIZATION) String authHeader
 		) {
 		
@@ -82,7 +82,7 @@ public class UserControllerImpl implements UserController {
 	@PutMapping(value = "/{userId}/change-password")
 	public ResponseEntity<UserDto> updatePassword(
 			@PathVariable Long userId,
-			@RequestBody UserChangesDto userChangesDto,
+			@RequestBody UserUpdateDto userChangesDto,
 			@RequestHeader(value =  HttpHeaders.AUTHORIZATION) String authHeader
 		) {
 		
@@ -116,7 +116,7 @@ public class UserControllerImpl implements UserController {
 
 	@Override
 	@PutMapping(value = "/{userId}/change-status")
-	public ResponseEntity<UserDto> updateUserStatus(@PathVariable Long userId, @RequestBody UserChangesDto userChangesDto) {
+	public ResponseEntity<UserDto> updateUserStatus(@PathVariable Long userId, @RequestBody UserUpdateDto userChangesDto) {
 		
 		UserDto updatedUserDto = userService.updateUserStatus(userId, userChangesDto);
 		

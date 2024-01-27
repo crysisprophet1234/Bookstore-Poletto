@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import com.poletto.bookstore.dto.v3.RoleDto;
-import com.poletto.bookstore.dto.v3.UserChangesDto;
+import com.poletto.bookstore.dto.v3.UserUpdateDto;
 import com.poletto.bookstore.dto.v3.UserDto;
 import com.poletto.bookstore.exceptions.exceptionresponse.ExceptionResponse;
 
@@ -142,7 +142,7 @@ public interface UserController {
 			description = "New user e-mail",
 			content = @Content(schema = @Schema(name = "email", defaultValue = "NewEmail@host.com"))
 		)
-		@RequestBody @Valid UserChangesDto userChangesDto,
+		@RequestBody @Valid UserUpdateDto userChangesDto,
 		@Parameter(description = "Authorization header token") 
 		@RequestHeader(value = HttpHeaders.AUTHORIZATION) String authorization
 	);
@@ -168,9 +168,9 @@ public interface UserController {
 		@PathVariable @Min(1) Long userId,
 		@Parameter(
 			description = "New user password",
-			content = @Content(schema = @Schema(name = "password", implementation = UserChangesDto.class))
+			content = @Content(schema = @Schema(name = "password", implementation = UserUpdateDto.class))
 		)
-		@RequestBody @Valid UserChangesDto userChangesDto,
+		@RequestBody @Valid UserUpdateDto userChangesDto,
 		@Parameter(description = "Authorization header token") 
 		@RequestHeader(value = HttpHeaders.AUTHORIZATION) String authorization
 	);
@@ -250,7 +250,7 @@ public interface UserController {
 			description = "New user status",
 			content = @Content(schema = @Schema(name = "status", defaultValue = "ACTIVE"))
 		)
-		@RequestBody @Valid UserChangesDto userChangesDto
+		@RequestBody @Valid UserUpdateDto userChangesDto
 	);
 	
 	@GetMapping(value = "/{userId}/send-verification-email")
