@@ -54,7 +54,9 @@ import com.poletto.bookstore.repositories.v3.UserRepository;
 import com.poletto.bookstore.repositories.v3.VerificationTokenRepository;
 import com.poletto.bookstore.services.v3.EmailService;
 import com.poletto.bookstore.services.v3.impl.AuthServiceImpl;
+import com.poletto.bookstore.services.v3.impl.PersonServiceImpl;
 import com.poletto.bookstore.services.v3.impl.UserServiceImpl;
+import com.poletto.bookstore.v3.mocks.PersonMocks;
 import com.poletto.bookstore.v3.mocks.UserAuthMocks;
 import com.poletto.bookstore.v3.mocks.UserMocks;
 
@@ -97,11 +99,15 @@ public class UserServiceTest {
 	@InjectMocks
 	private AuthServiceImpl authService;
 	
+	@Autowired
+	@InjectMocks
+	private PersonServiceImpl personService;
+	
 	@SpyBean
 	private EmailService emailService;
 	
 	private static UserDto userDto;
-	private static UserUpdateDto userChangesDto;
+	private static UserUpdateDto userUpdateDto;
 	private static VerificationToken verificationToken;
  
     @BeforeEach
@@ -112,14 +118,14 @@ public class UserServiceTest {
         useRelaxedHTTPSValidation();
         filters(new RequestLoggingFilter(), new ResponseLoggingFilter()); 
         
-        userChangesDto = new UserUpdateDto();
+        userUpdateDto = new UserUpdateDto();
 	
     }
     
     @AfterEach
     public void tearDown() {
     	
-    	userChangesDto = null;
+    	userUpdateDto = null;
     	userDto = null;
     	verificationToken = null;
     	
@@ -324,11 +330,11 @@ public class UserServiceTest {
     	
     	userDto = userService.findById(userId);
     	
-    	userChangesDto.setEmail("AdminNewEmail@mail.com");
+    	userUpdateDto.setEmail("AdminNewEmail@mail.com");
     	
     	response = given()
     				.spec(UserAuthMocks.AdminPrivilegesUser(userDto))
-    				.body(userChangesDto)
+    				.body(userUpdateDto)
     				.contentType(ContentType.JSON)
     			  .when()
     			  	.put("api/v3/users/{userId}/change-email", userId)
@@ -343,7 +349,7 @@ public class UserServiceTest {
 		
 		assertNotEquals(userDto.getEmail(), jsonPath.get("email"));
 		
-		assertEquals(userChangesDto.getEmail(), jsonPath.get("email"));
+		assertEquals(userUpdateDto.getEmail(), jsonPath.get("email"));
 		
 		userDto = userService.findById(userId);
 		
@@ -364,11 +370,11 @@ public class UserServiceTest {
     	
     	userDto = userService.findById(userId);
     	
-    	userChangesDto.setEmail("AdminNewEmail@mail.com");
+    	userUpdateDto.setEmail("AdminNewEmail@mail.com");
     	
     	given()
 			.spec(UserAuthMocks.AdminPrivilegesUser())
-			.body(userChangesDto)
+			.body(userUpdateDto)
 			.contentType(ContentType.JSON)
 		.when()
 	  		.put("api/v3/users/{userId}/change-email", userId)
@@ -391,25 +397,25 @@ public class UserServiceTest {
     	
     	logger.info("setting a malformed email");
     	
-    	userChangesDto.setEmail("invalid_email");
+    	userUpdateDto.setEmail("invalid_email");
     	
     	given()
     		.spec(UserAuthMocks.AdminPrivilegesUser(userDto))
-			.body(userChangesDto)
+			.body(userUpdateDto)
 			.contentType(ContentType.JSON)
 		.when()
 	  		.put("api/v3/users/{userId}/change-email", userId)
 	  	.then()
 	  		.statusCode(422)
-	  		.body("message", equalTo("userChangesDto: campo [email] deve ser um endereço de e-mail bem formado. Valor passado: '" + userChangesDto.getEmail() + "'"));
+	  		.body("message", equalTo("userUpdateDto: campo [email] deve ser um endereço de e-mail bem formado. Valor passado: '" + userUpdateDto.getEmail() + "'"));
     	
     	logger.info("setting a null email");
     	
-    	userChangesDto.setEmail(null);
+    	userUpdateDto.setEmail(null);
     	
     	given()
     		.spec(UserAuthMocks.AdminPrivilegesUser(userDto))
-			.body(userChangesDto)
+			.body(userUpdateDto)
 			.contentType(ContentType.JSON)
 		.when()
   			.put("api/v3/users/{userId}/change-email", userId)
@@ -419,11 +425,11 @@ public class UserServiceTest {
     	
     	logger.info("setting a empty email");
     	
-    	userChangesDto.setEmail("");
+    	userUpdateDto.setEmail("");
     	
     	given()
     		.spec(UserAuthMocks.AdminPrivilegesUser(userDto))
-			.body(userChangesDto)
+			.body(userUpdateDto)
 			.contentType(ContentType.JSON)
 		.when()
   			.put("api/v3/users/{userId}/change-email", userId)
@@ -444,17 +450,17 @@ public class UserServiceTest {
     	
     	userDto = userService.findById(userId);
     	
-    	userChangesDto.setEmail("admin@mail.com");
+    	userUpdateDto.setEmail("admin@mail.com");
     	
     	given()
     		.spec(UserAuthMocks.AdminPrivilegesUser(userDto))
-			.body(userChangesDto)
+			.body(userUpdateDto)
 			.contentType(ContentType.JSON)
 		.when()
 	  		.put("api/v3/users/{userId}/change-email", userId)
 	  	.then()
 	  		.statusCode(409)
-	  		.body("message", equalTo("Email providenciado " + userChangesDto.getEmail() + " já está em uso"));
+	  		.body("message", equalTo("Email providenciado " + userUpdateDto.getEmail() + " já está em uso"));
     	
     	logger.info("test success, given an already existing email, the response properly provided the already existing email exception with message explaining");
     	
@@ -470,11 +476,11 @@ public class UserServiceTest {
 
         userDto = userService.findById(userId);
 
-        userChangesDto.setPassword("newpsw1234");
+        userUpdateDto.setPassword("newpsw1234");
 
         response = given()
                     .spec(UserAuthMocks.AdminPrivilegesUser(userDto))
-                    .body(userChangesDto)
+                    .body(userUpdateDto)
                     .contentType(ContentType.JSON)
                   .when()
                     .put("api/v3/users/{userId}/change-password", userId)
@@ -510,11 +516,11 @@ public class UserServiceTest {
     	
     	userDto = userService.findById(userId);
     	
-    	userChangesDto.setPassword("abcd1234");
+    	userUpdateDto.setPassword("abcd1234");
     	
     	given()
 	        .spec(UserAuthMocks.AdminPrivilegesUser())
-	        .body(userChangesDto)
+	        .body(userUpdateDto)
 	        .contentType(ContentType.JSON)
         .when()
             .put("api/v3/users/{userId}/change-password", userId)
@@ -537,81 +543,81 @@ public class UserServiceTest {
         
         logger.info("setting a password with more than 12 characteres");
         
-        userChangesDto.setPassword("WayTooLongPassword1234");
+        userUpdateDto.setPassword("WayTooLongPassword1234");
 
         given()
 	        .spec(UserAuthMocks.AdminPrivilegesUser(userDto))
-	        .body(userChangesDto)
+	        .body(userUpdateDto)
 	        .contentType(ContentType.JSON)
         .when()
         	.put("api/v3/users/{userId}/change-password", userId)
     	.then()
         	.statusCode(422)
-        	.body("message", equalTo("userChangesDto: campo [password] deve conter entre 6 e 12 caracteres, com ao menos 1 letra e 1 número. Valor passado: '"+ userChangesDto.getPassword() + "'"));
+        	.body("message", equalTo("userUpdateDto: campo [password] deve conter entre 6 e 12 caracteres, com ao menos 1 letra e 1 número. Valor passado: '"+ userUpdateDto.getPassword() + "'"));
         
         logger.info("setting a password with less than 6 characteres");
         
-        userChangesDto.setPassword("psw12");
+        userUpdateDto.setPassword("psw12");
 
         given()
 	        .spec(UserAuthMocks.AdminPrivilegesUser(userDto))
-	        .body(userChangesDto)
+	        .body(userUpdateDto)
 	        .contentType(ContentType.JSON)
         .when()
         	.put("api/v3/users/{userId}/change-password", userId)
     	.then()
         	.statusCode(422)
-        	.body("message", equalTo("userChangesDto: campo [password] deve conter entre 6 e 12 caracteres, com ao menos 1 letra e 1 número. Valor passado: '"+ userChangesDto.getPassword() + "'"));
+        	.body("message", equalTo("userUpdateDto: campo [password] deve conter entre 6 e 12 caracteres, com ao menos 1 letra e 1 número. Valor passado: '"+ userUpdateDto.getPassword() + "'"));
         
         logger.info("setting a password without letters");
         
-        userChangesDto.setPassword("12345678");
+        userUpdateDto.setPassword("12345678");
 
         given()
 	        .spec(UserAuthMocks.AdminPrivilegesUser(userDto))
-	        .body(userChangesDto)
+	        .body(userUpdateDto)
 	        .contentType(ContentType.JSON)
         .when()
         	.put("api/v3/users/{userId}/change-password", userId)
     	.then()
         	.statusCode(422)
-        	.body("message", equalTo("userChangesDto: campo [password] deve conter entre 6 e 12 caracteres, com ao menos 1 letra e 1 número. Valor passado: '"+ userChangesDto.getPassword() + "'"));
+        	.body("message", equalTo("userUpdateDto: campo [password] deve conter entre 6 e 12 caracteres, com ao menos 1 letra e 1 número. Valor passado: '"+ userUpdateDto.getPassword() + "'"));
         
         logger.info("setting a password without numbers");
         
-        userChangesDto.setPassword("abcdefgh");
+        userUpdateDto.setPassword("abcdefgh");
 
         given()
 	        .spec(UserAuthMocks.AdminPrivilegesUser(userDto))
-	        .body(userChangesDto)
+	        .body(userUpdateDto)
 	        .contentType(ContentType.JSON)
         .when()
         	.put("api/v3/users/{userId}/change-password", userId)
     	.then()
         	.statusCode(422)
-        	.body("message", equalTo("userChangesDto: campo [password] deve conter entre 6 e 12 caracteres, com ao menos 1 letra e 1 número. Valor passado: '"+ userChangesDto.getPassword() + "'"));
+        	.body("message", equalTo("userUpdateDto: campo [password] deve conter entre 6 e 12 caracteres, com ao menos 1 letra e 1 número. Valor passado: '"+ userUpdateDto.getPassword() + "'"));
         
         logger.info("setting a empty password");
         
-        userChangesDto.setPassword("");
+        userUpdateDto.setPassword("");
 
         given()
 	        .spec(UserAuthMocks.AdminPrivilegesUser(userDto))
-	        .body(userChangesDto)
+	        .body(userUpdateDto)
 	        .contentType(ContentType.JSON)
         .when()
         	.put("api/v3/users/{userId}/change-password", userId)
     	.then()
         	.statusCode(422)
-        	.body("message", equalTo("userChangesDto: campo [password] deve conter entre 6 e 12 caracteres, com ao menos 1 letra e 1 número. Valor passado: (empty)"));
+        	.body("message", equalTo("userUpdateDto: campo [password] deve conter entre 6 e 12 caracteres, com ao menos 1 letra e 1 número. Valor passado: (empty)"));
 
         logger.info("setting a null password");
         
-        userChangesDto.setPassword(null);
+        userUpdateDto.setPassword(null);
 
         given()
 	        .spec(UserAuthMocks.AdminPrivilegesUser(userDto))
-	        .body(userChangesDto)
+	        .body(userUpdateDto)
 	        .contentType(ContentType.JSON)
         .when()
         	.put("api/v3/users/{userId}/change-password", userId)
@@ -928,11 +934,11 @@ public class UserServiceTest {
     	
     	userDto = userService.findById(activeUserId);
     	
-    	userChangesDto.setUserStatus(UserStatus.INACTIVE);
+    	userUpdateDto.setUserStatus(UserStatus.INACTIVE);
     	
     	response = given()
     				.spec(UserAuthMocks.AdminPrivilegesUser(userDto))
-    				.body(userChangesDto)
+    				.body(userUpdateDto)
     				.contentType(ContentType.JSON)
     			  .when()
     			  	.put("api/v3/users/{userId}/change-status", activeUserId)
@@ -947,7 +953,7 @@ public class UserServiceTest {
 		
 		assertNotEquals(userDto.getUserStatus().toString(), jsonPath.get("userStatus"));
 		
-		assertEquals(userChangesDto.getUserStatus().toString(), jsonPath.get("userStatus"));
+		assertEquals(userUpdateDto.getUserStatus().toString(), jsonPath.get("userStatus"));
 		
 		userDto = userService.findById(activeUserId);
 		
@@ -966,11 +972,11 @@ public class UserServiceTest {
     	
     	userDto = userService.findById(customerUserId);
     	
-    	userChangesDto.setUserStatus(UserStatus.INACTIVE);
+    	userUpdateDto.setUserStatus(UserStatus.INACTIVE);
     	
     	given()
     		.spec(UserAuthMocks.CustomerPrivilegesUser())
-			.body(userChangesDto)
+			.body(userUpdateDto)
 			.contentType(ContentType.JSON)
 		.when()
   			.put("api/v3/users/{userId}/change-status", customerUserId)
@@ -979,7 +985,7 @@ public class UserServiceTest {
 	  		.body("message", equalTo("Access Denied"));
     	
     	given()
-			.body(userChangesDto)
+			.body(userUpdateDto)
 			.contentType(ContentType.JSON)
 		.when()
 	  		.put("api/v3/users/{userId}/change-status", customerUserId)
@@ -1000,11 +1006,11 @@ public class UserServiceTest {
     	
     	userDto = userService.findById(activeUserId);
     	
-    	userChangesDto.setUserStatus(userDto.getUserStatus());
+    	userUpdateDto.setUserStatus(userDto.getUserStatus());
     	
     	given()
 			.spec(UserAuthMocks.AdminPrivilegesUser(userDto))
-			.body(userChangesDto)
+			.body(userUpdateDto)
 			.contentType(ContentType.JSON)
 		.when()
 	  		.put("api/v3/users/{userId}/change-status", activeUserId)
@@ -1080,6 +1086,8 @@ public class UserServiceTest {
     	
     	Long newUserId = userDto.getKey();
     	
+    	personService.create(newUserId, PersonMocks.insertPersonMock(userDto));
+    	
     	given()
     		.spec(UserAuthMocks.OperatorPrivilegesUser())
     	.when()
@@ -1116,6 +1124,8 @@ public class UserServiceTest {
     	userDto = authService.register(UserMocks.registerUserMockDto());
     	
     	Long newUserId = userDto.getKey();
+    	
+    	personService.create(newUserId, PersonMocks.insertPersonMock(userDto));
     	
     	verificationToken = new VerificationToken();
     	verificationToken.setCreatedAt(LocalDateTime.now());
@@ -1156,6 +1166,8 @@ public class UserServiceTest {
     	userDto = authService.register(UserMocks.registerUserMockDto());
     	
     	Long newUserId = userDto.getKey();
+    	
+    	personService.create(newUserId, PersonMocks.insertPersonMock(userDto));
     	
     	verificationToken = new VerificationToken();
     	verificationToken.setCreatedAt(LocalDateTime.now().minusDays(10));
