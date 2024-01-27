@@ -34,15 +34,17 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.boot.test.web.server.LocalServerPort;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 
 import com.poletto.bookstore.dto.v3.RoleDto;
-import com.poletto.bookstore.dto.v3.UserChangesDto;
+import com.poletto.bookstore.dto.v3.UserUpdateDto;
 import com.poletto.bookstore.dto.v3.UserDto;
 import com.poletto.bookstore.entities.User;
 import com.poletto.bookstore.entities.VerificationToken;
@@ -66,6 +68,7 @@ import io.restassured.response.Response;
 @ActiveProfiles("test")
 @ExtendWith(MockitoExtension.class)
 @TestMethodOrder(OrderAnnotation.class)
+@PropertySource("classpath:application-test.properties")
 public class UserServiceTest {
 	
 	private static final Logger logger = LoggerFactory.getLogger(UserServiceTest.class);
@@ -73,7 +76,8 @@ public class UserServiceTest {
 	@LocalServerPort
 	private int serverPort;
 	
-	private final String serverBaseURI = "https://localhost";
+	@Value("${server.test.url}")
+	private String serverBaseURI;
 	
 	private Response response;
 	private JsonPath jsonPath;
@@ -97,7 +101,7 @@ public class UserServiceTest {
 	private EmailService emailService;
 	
 	private static UserDto userDto;
-	private static UserChangesDto userChangesDto;
+	private static UserUpdateDto userChangesDto;
 	private static VerificationToken verificationToken;
  
     @BeforeEach
@@ -108,7 +112,7 @@ public class UserServiceTest {
         useRelaxedHTTPSValidation();
         filters(new RequestLoggingFilter(), new ResponseLoggingFilter()); 
         
-        userChangesDto = new UserChangesDto();
+        userChangesDto = new UserUpdateDto();
 	
     }
     
