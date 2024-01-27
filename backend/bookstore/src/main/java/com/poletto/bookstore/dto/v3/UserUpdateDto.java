@@ -11,7 +11,7 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Pattern;
 
-public class UserChangesDto implements Serializable {
+public class UserUpdateDto implements Serializable {
 
 	private static final long serialVersionUID = 3L;
 	
@@ -30,11 +30,11 @@ public class UserChangesDto implements Serializable {
 	@Valid
 	private Set<RoleDto> roles = new HashSet<>();
 	
-	public UserChangesDto() {
+	public UserUpdateDto() {
 		
 	}
 
-	public UserChangesDto(
+	public UserUpdateDto(
 			String email,
 			String password,
 			AccountStatus accountStatus,
