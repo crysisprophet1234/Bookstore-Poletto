@@ -23,7 +23,7 @@ public class Author implements Serializable {
 	private Long id;
 
 	private String name;
-	private String nacionality;
+	private String nationality;
 	
 	@OneToMany(mappedBy = "author")
 	private List<Book> books = new ArrayList<>();
@@ -35,7 +35,7 @@ public class Author implements Serializable {
 	public Author(Long id, String name, String nacionality) {
 		this.id = id;
 		this.name = name;
-		this.nacionality = nacionality;
+		this.nationality = nacionality;
 	}
 
 	public Long getId() {
@@ -54,12 +54,12 @@ public class Author implements Serializable {
 		this.name = name;
 	}
 
-	public String getNacionality() {
-		return nacionality;
+	public String getNationality() {
+		return nationality;
 	}
 
-	public void setNacionality(String nacionality) {
-		this.nacionality = nacionality;
+	public void setNationality(String nacionality) {
+		this.nationality = nacionality;
 	}
 	
 	public List<Book> getBooks() {
@@ -85,7 +85,7 @@ public class Author implements Serializable {
 
 	@Override
 	public String toString() {
-		return "Author [id=" + id + ", name=" + name + ", nacionality=" + nacionality + "]";
+		return "Author [id=" + id + ", name=" + name + ", nationality=" + nationality + "]";
 	}
 
 }
