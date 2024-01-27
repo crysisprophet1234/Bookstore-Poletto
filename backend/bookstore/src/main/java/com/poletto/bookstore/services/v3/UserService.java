@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.poletto.bookstore.dto.v3.RoleDto;
-import com.poletto.bookstore.dto.v3.UserChangesDto;
+import com.poletto.bookstore.dto.v3.UserUpdateDto;
 import com.poletto.bookstore.dto.v3.UserDto;
 
 @Service("UserServiceV3")
@@ -22,10 +22,10 @@ public interface UserService {
 	UserDto findById(Long userId);
 	
 	@Transactional
-	UserDto updateEmail(Long userId, UserChangesDto userChangesDto);
+	UserDto updateEmail(Long userId, UserUpdateDto userChangesDto);
 	
 	@Transactional
-	UserDto updatePassword(Long userId, UserChangesDto userChangesDto);
+	UserDto updatePassword(Long userId, UserUpdateDto userChangesDto);
 	
 	@Transactional
 	UserDto addUserRoles(Long userId, Set<RoleDto> roles);
@@ -34,7 +34,7 @@ public interface UserService {
 	UserDto removeUserRoles(Long userId, Set<RoleDto> roles);
 	
 	@Transactional
-	UserDto updateUserStatus(Long userId, UserChangesDto userChangesDto);
+	UserDto updateUserStatus(Long userId, UserUpdateDto userChangesDto);
 	
 	@Transactional(readOnly = true)
 	void sendAccountVerificationEmail(Long userId);
