@@ -6,6 +6,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.poletto.bookstore.dto.v3.BookDto;
+import com.poletto.bookstore.dto.v3.BookStatusUpdateDto;
+import com.poletto.bookstore.dto.v3.BookUpdateDto;
 
 @Service("BookServiceV3")
 public interface BookService {
@@ -14,15 +16,15 @@ public interface BookService {
 	Page<BookDto> findAll(Pageable pageable, Long categoryId, String name, String status);
 	
 	@Transactional(readOnly = true)
-	BookDto findById(Long id);
+	BookDto findById(Long bookId);
 	
 	@Transactional
 	BookDto insert(BookDto dto);
 	
 	@Transactional
-	BookDto update(Long id, BookDto dto);
+	BookDto update(Long bookId, BookUpdateDto dto);
 	
 	@Transactional
-	void delete(Long id);
+	BookDto updateBookStatus(Long bookId, BookStatusUpdateDto bookStatusUpdateDto);
 
 }
