@@ -25,10 +25,12 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.boot.test.web.server.LocalServerPort;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.hateoas.Link;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
@@ -54,6 +56,7 @@ import io.restassured.response.Response;
 @ActiveProfiles("test")
 @ExtendWith(MockitoExtension.class)
 @TestMethodOrder(OrderAnnotation.class)
+@PropertySource("classpath:application-test.properties")
 public class PersonServiceTest {
 
 	private static final Logger logger = LoggerFactory.getLogger(PersonServiceTest.class);
@@ -61,7 +64,8 @@ public class PersonServiceTest {
 	@LocalServerPort
 	private int serverPort;
 	
-	private final String serverBaseURI = "https://localhost";
+	@Value("${server.test.url}")
+	private String serverBaseURI;
 	
 	private Response response;
 	private JsonPath jsonPath;
@@ -121,11 +125,11 @@ public class PersonServiceTest {
     	personDto = personService.findById(personId);
     	
     	response = given()
-				.spec(UserAuthMocks.CustomerPrivilegesUser())
-			  .when()
-			  	.get("/api/v3/persons/{personId}", personId)
-			  .then()
-			  	.extract().response();
+					.spec(UserAuthMocks.CustomerPrivilegesUser())
+				  .when()
+				  	.get("/api/v3/persons/{personId}", personId)
+				  .then()
+				  	.extract().response();
     	
     	jsonPath = JsonPath.from(response.getBody().asString());
 		
@@ -276,9 +280,9 @@ public class PersonServiceTest {
     
     @Test
     @DirtiesContext
-    void givenValidData_whenCreatingPerson_withoutToken_thenReceiveForbiddenException() {
+    void givenValidData_whenCreatingPerson_withoutToken_thenReceiveUnauthorizedException() {
     	
-    	logger.info("\n\n<=========  STARTING TEST givenValidData_whenCreatingPerson_withoutToken_thenReceiveForbiddenException()  =========>\n");
+    	logger.info("\n\n<=========  STARTING TEST givenValidData_whenCreatingPerson_withoutToken_thenReceiveUnauthorizedException()  =========>\n");
     	
     	Long newUserId = 9999L;
     	
@@ -326,147 +330,50 @@ public class PersonServiceTest {
         Map<String, Object> invalidDataMap = new HashMap<>(dataMap);
         
         logger.info("setting invalid firstname");
-        
         invalidDataMap.put("firstName", "invalid firstname 333");
-    	
-    	given()
-			.spec(UserAuthMocks.CustomerPrivilegesUser())
-			.body(invalidDataMap)
-			.contentType(ContentType.JSON)
-		.when()
-		  	.post("/api/v3/persons/create")
-		.then()
-			.statusCode(422)
-			.body("message", equalTo("personDto: campo [firstName] aceita apenas letras. Valor passado: '" + invalidDataMap.get("firstName") + "'"));
-    	
+        testCreatePersonWithInvalidData(invalidDataMap, "personDto: campo [firstName] aceita apenas letras. Valor passado: '" + invalidDataMap.get("firstName") + "'");
     	invalidDataMap = new HashMap<>(dataMap);
     	
     	logger.info("setting invalid lastname");
-        
     	invalidDataMap.put("lastName", "invalid lastname 333");
-        
-        given()
-			.spec(UserAuthMocks.CustomerPrivilegesUser())
-			.body(invalidDataMap)
-			.contentType(ContentType.JSON)
-		.when()
-	  		.post("/api/v3/persons/create")
-	  	.then()
-			.statusCode(422)
-			.body("message", equalTo("personDto: campo [lastName] aceita apenas letras. Valor passado: '" + invalidDataMap.get("lastName") + "'"));
-        
+    	testCreatePersonWithInvalidData(invalidDataMap, "personDto: campo [lastName] aceita apenas letras. Valor passado: '" + invalidDataMap.get("lastName") + "'");       
         invalidDataMap = new HashMap<>(dataMap);
         
-        logger.info("setting invalid date of birth");
-        
+        logger.info("setting invalid date of birth"); 
         invalidDataMap.put("dateOfBirth", "3990-05-15");
-        
-        given()
-			.spec(UserAuthMocks.CustomerPrivilegesUser())
-			.body(invalidDataMap)
-			.contentType(ContentType.JSON)
-		.when()
-  			.post("/api/v3/persons/create")
-  		.then()
-			.statusCode(422)
-			.body("message", equalTo("personDto: campo [dateOfBirth] não pode ser data atual ou futura. Valor passado: '" + invalidDataMap.get("dateOfBirth") + "'"));
-        
+        testCreatePersonWithInvalidData(invalidDataMap, "personDto: campo [dateOfBirth] não pode ser data atual ou futura. Valor passado: '" + invalidDataMap.get("dateOfBirth") + "'");        
         invalidDataMap = new HashMap<>(dataMap);
         
         logger.info("setting invalid gender");
-        
         invalidDataMap.put("gender", "invalid gender 333");
-        
-        given()
-			.spec(UserAuthMocks.CustomerPrivilegesUser())
-			.body(invalidDataMap)
-			.contentType(ContentType.JSON)
-		.when()
-  			.post("/api/v3/persons/create")
-  		.then()
-			.statusCode(422)
-			.body("message", equalTo("personDto: campo [gender] aceita apenas letras. Valor passado: '" + invalidDataMap.get("gender") + "'"));
-        
+        testCreatePersonWithInvalidData(invalidDataMap, "personDto: campo [gender] aceita apenas letras. Valor passado: '" + invalidDataMap.get("gender") + "'");          
         invalidDataMap = new HashMap<>(dataMap);
         
         logger.info("setting invalid phone");
-        
         invalidDataMap.put("phone", "invalid num");
-        
-        given()
-			.spec(UserAuthMocks.CustomerPrivilegesUser())
-			.body(invalidDataMap)
-			.contentType(ContentType.JSON)
-		.when()
-  			.post("/api/v3/persons/create")
-  		.then()
-			.statusCode(422)
-			.body("message", equalTo("personDto: campo [phone] aceita apenas números no formato 99877776666. Valor passado: '" + invalidDataMap.get("phone") + "'"));
-        
+        testCreatePersonWithInvalidData(invalidDataMap, "personDto: campo [phone] aceita apenas números no formato 99877776666. Valor passado: '" + invalidDataMap.get("phone") + "'");
         invalidDataMap = new HashMap<>(dataMap);
         
-        logger.info("setting invalid phone");
-        
+        logger.info("setting invalid phone");  
         invalidDataMap.put("phone", "99876543210111");
-        
-        given()
-			.spec(UserAuthMocks.CustomerPrivilegesUser())
-			.body(invalidDataMap)
-			.contentType(ContentType.JSON)
-		.when()
-  			.post("/api/v3/persons/create")
-  		.then()
-			.statusCode(422)
-			.body("message", equalTo("personDto: campo [phone] aceita apenas números no formato 99877776666. Valor passado: '" + invalidDataMap.get("phone") + "'"));
-        
+        testCreatePersonWithInvalidData(invalidDataMap, "personDto: campo [phone] aceita apenas números no formato 99877776666. Valor passado: '" + invalidDataMap.get("phone") + "'");      
         invalidDataMap = new HashMap<>(dataMap);
         
         logger.info("setting invalid cpf");
-        
         invalidDataMap.put("cpf", "invalid num");
-        
-        given()
-			.spec(UserAuthMocks.CustomerPrivilegesUser())
-			.body(invalidDataMap)
-			.contentType(ContentType.JSON)
-		.when()
-  			.post("/api/v3/persons/create")
-  		.then()
-			.statusCode(422)
-			.body("message", equalTo("personDto: campo [cpf] aceita apenas números no formato 11122233344. Valor passado: '" + invalidDataMap.get("cpf") + "'"));
-        
+        testCreatePersonWithInvalidData(invalidDataMap, "personDto: campo [cpf] aceita apenas números no formato 11122233344. Valor passado: '" + invalidDataMap.get("cpf") + "'");      
         invalidDataMap = new HashMap<>(dataMap);
         
-        logger.info("setting invalid cpf");
-        
+        logger.info("setting invalid cpf");  
         invalidDataMap.put("cpf", "99876543210111");
-        
-        given()
-			.spec(UserAuthMocks.CustomerPrivilegesUser())
-			.body(invalidDataMap)
-			.contentType(ContentType.JSON)
-		.when()
-  			.post("/api/v3/persons/create")
-  		.then()
-			.statusCode(422)
-			.body("message", equalTo("personDto: campo [cpf] aceita apenas números no formato 11122233344. Valor passado: '" + invalidDataMap.get("cpf") + "'"));
-        
+        testCreatePersonWithInvalidData(invalidDataMap, "personDto: campo [cpf] aceita apenas números no formato 11122233344. Valor passado: '" + invalidDataMap.get("cpf") + "'");    
         invalidDataMap = new HashMap<>(dataMap);
         
         logger.info("setting invalid user");
-        
         invalidDataMap.put("user", null);
-        
-        given()
-			.spec(UserAuthMocks.CustomerPrivilegesUser())
-			.body(invalidDataMap)
-			.contentType(ContentType.JSON)
-		.when()
-  			.post("/api/v3/persons/create")
-  		.then()
-			.statusCode(422)
-			.body("message", equalTo("personDto: campo [user] não deve ser nulo. Valor passado: (null)"));
-        
+        testCreatePersonWithInvalidData(invalidDataMap, "personDto: campo [user] não deve ser nulo. Valor passado: (null)");
+        invalidDataMap = new HashMap<>(dataMap);
+  
         logger.info("test success, when trying to insert new person with invalid data, the response properly provided the exception with details");
     	
     }
@@ -574,114 +481,39 @@ public class PersonServiceTest {
         Map<String, Object> invalidDataMap = new HashMap<>(dataMap);
         
         logger.info("setting invalid firstname");
-        
         invalidDataMap.put("firstName", "invalid firstname 333");
-    	
-    	given()
-			.spec(UserAuthMocks.CustomerPrivilegesUser())
-			.body(invalidDataMap)
-			.contentType(ContentType.JSON)
-		.when()
-		  	.put("/api/v3/persons/{newUserId}/update", newPersonId)
-		.then()
-			.statusCode(422)
-			.body("message", equalTo("personUpdateDto: campo [firstName] aceita apenas letras. Valor passado: '" + invalidDataMap.get("firstName") + "'"));
-    	
+    	testUpdatePersonWithInvalidData(newPersonId, invalidDataMap, "personUpdateDto: campo [firstName] aceita apenas letras. Valor passado: '" + invalidDataMap.get("firstName") + "'");
     	invalidDataMap = new HashMap<>(dataMap);
     	
-    	logger.info("setting invalid lastname");
-        
+    	logger.info("setting invalid lastname"); 
     	invalidDataMap.put("lastName", "invalid lastname 333");
-        
-        given()
-			.spec(UserAuthMocks.CustomerPrivilegesUser())
-			.body(invalidDataMap)
-			.contentType(ContentType.JSON)
-		.when()
-	  		.put("/api/v3/persons/{newUserId}/update", newPersonId)
-	  	.then()
-			.statusCode(422)
-			.body("message", equalTo("personUpdateDto: campo [lastName] aceita apenas letras. Valor passado: '" + invalidDataMap.get("lastName") + "'"));
-        
+    	testUpdatePersonWithInvalidData(newPersonId, invalidDataMap, "personUpdateDto: campo [lastName] aceita apenas letras. Valor passado: '" + invalidDataMap.get("lastName") + "'"); 
         invalidDataMap = new HashMap<>(dataMap);
         
         logger.info("setting invalid gender");
-        
         invalidDataMap.put("gender", "invalid gender 333");
-        
-        given()
-			.spec(UserAuthMocks.CustomerPrivilegesUser())
-			.body(invalidDataMap)
-			.contentType(ContentType.JSON)
-		.when()
-  			.put("/api/v3/persons/{newUserId}/update", newPersonId)
-  		.then()
-			.statusCode(422)
-			.body("message", equalTo("personUpdateDto: campo [gender] aceita apenas letras. Valor passado: '" + invalidDataMap.get("gender") + "'"));
-        
+        testUpdatePersonWithInvalidData(newPersonId, invalidDataMap, "personUpdateDto: campo [gender] aceita apenas letras. Valor passado: '" + invalidDataMap.get("gender") + "'");    
         invalidDataMap = new HashMap<>(dataMap);
         
         logger.info("setting invalid phone");
-        
         invalidDataMap.put("phone", "invalid num");
-        
-        given()
-			.spec(UserAuthMocks.CustomerPrivilegesUser())
-			.body(invalidDataMap)
-			.contentType(ContentType.JSON)
-		.when()
-  			.put("/api/v3/persons/{newUserId}/update", newPersonId)
-  		.then()
-			.statusCode(422)
-			.body("message", equalTo("personUpdateDto: campo [phone] aceita apenas números no formato 99877776666. Valor passado: '" + invalidDataMap.get("phone") + "'"));
-        
+        testUpdatePersonWithInvalidData(newPersonId, invalidDataMap, "personUpdateDto: campo [phone] aceita apenas números no formato 99877776666. Valor passado: '" + invalidDataMap.get("phone") + "'");
         invalidDataMap = new HashMap<>(dataMap);
         
         logger.info("setting invalid phone");
-        
         invalidDataMap.put("phone", "99876543210111");
-        
-        given()
-			.spec(UserAuthMocks.CustomerPrivilegesUser())
-			.body(invalidDataMap)
-			.contentType(ContentType.JSON)
-		.when()
-  			.put("/api/v3/persons/{newUserId}/update", newPersonId)
-  		.then()
-			.statusCode(422)
-			.body("message", equalTo("personUpdateDto: campo [phone] aceita apenas números no formato 99877776666. Valor passado: '" + invalidDataMap.get("phone") + "'"));
-        
+        testUpdatePersonWithInvalidData(newPersonId, invalidDataMap, "personUpdateDto: campo [phone] aceita apenas números no formato 99877776666. Valor passado: '" + invalidDataMap.get("phone") + "'");    
         invalidDataMap = new HashMap<>(dataMap);
         
         logger.info("setting invalid nationality");
-        
         invalidDataMap.put("nationality", "invalid nationality 333");
-        
-        given()
-			.spec(UserAuthMocks.CustomerPrivilegesUser())
-			.body(invalidDataMap)
-			.contentType(ContentType.JSON)
-		.when()
-  			.put("/api/v3/persons/{newUserId}/update", newPersonId)
-  		.then()
-			.statusCode(422)
-			.body("message", equalTo("personUpdateDto: campo [nationality] aceita apenas letras. Valor passado: '" + invalidDataMap.get("nationality") + "'")); 
-        
+        testUpdatePersonWithInvalidData(newPersonId, invalidDataMap, "personUpdateDto: campo [nationality] aceita apenas letras. Valor passado: '" + invalidDataMap.get("nationality") + "'");        
         invalidDataMap = new HashMap<>(dataMap);
         
         logger.info("setting invalid profilePictureUrl");
-        
         invalidDataMap.put("profilePictureUrl", "invalid picture url");
-        
-        given()
-			.spec(UserAuthMocks.CustomerPrivilegesUser())
-			.body(invalidDataMap)
-			.contentType(ContentType.JSON)
-		.when()
-  			.put("/api/v3/persons/{newUserId}/update", newPersonId)
-  		.then()
-			.statusCode(422)
-			.body("message", equalTo("personUpdateDto: campo [profilePictureUrl] deve ser uma URL válida. Valor passado: '" + invalidDataMap.get("profilePictureUrl") + "'")); 
+        testUpdatePersonWithInvalidData(newPersonId, invalidDataMap, "personUpdateDto: campo [profilePictureUrl] deve ser uma URL válida. Valor passado: '" + invalidDataMap.get("profilePictureUrl") + "'");
+        invalidDataMap = new HashMap<>(dataMap);
            
         logger.info("test success, when trying to update a person with invalid data, the response properly provided the exception with details");
     	
@@ -796,147 +628,43 @@ public class PersonServiceTest {
 	    Map<String, Object> invalidAddressMap = new HashMap<>(addressMap);
         
         logger.info("setting invalid cep");
-        
         invalidAddressMap.put("cep", "invalid cep input");
-    	
-        given()
-			.spec(UserAuthMocks.CustomerPrivilegesUser())
-			.body(invalidAddressMap)
-			.contentType(ContentType.JSON)
-		.when()
-	  		.post("/api/v3/persons/{personId}/addresses/create", newPersonId)
-	  	.then()
-			.statusCode(422)
-			.body("message", equalTo("addressDto: campo [cep] aceita apenas números no formato 11222333. Valor passado: '" + invalidAddressMap.get("cep") + "'"));
-        
+    	testCreateAddressWithInvalidData(newPersonId, invalidAddressMap, "addressDto: campo [cep] aceita apenas números no formato 11222333. Valor passado: '" + invalidAddressMap.get("cep") + "'");  
         invalidAddressMap = new HashMap<>(addressMap);
         
         logger.info("setting invalid lenght cep");
-        
         invalidAddressMap.put("cep", "112223334");
-    	
-        given()
-			.spec(UserAuthMocks.CustomerPrivilegesUser())
-			.body(invalidAddressMap)
-			.contentType(ContentType.JSON)
-		.when()
-	  		.post("/api/v3/persons/{personId}/addresses/create", newPersonId)
-	  	.then()
-			.statusCode(422)
-			.body("message", equalTo("addressDto: campo [cep] aceita apenas números no formato 11222333. Valor passado: '" + invalidAddressMap.get("cep") + "'"));
-        
+        testCreateAddressWithInvalidData(newPersonId, invalidAddressMap, "addressDto: campo [cep] aceita apenas números no formato 11222333. Valor passado: '" + invalidAddressMap.get("cep") + "'");        
         invalidAddressMap = new HashMap<>(addressMap);
         
         logger.info("setting invalid addressName");
-        
         invalidAddressMap.put("addressName", "invalid address name !@#$%¨&*()");
-    	
-        given()
-			.spec(UserAuthMocks.CustomerPrivilegesUser())
-			.body(invalidAddressMap)
-			.contentType(ContentType.JSON)
-		.when()
-	  		.post("/api/v3/persons/{personId}/addresses/create", newPersonId)
-	  	.then()
-			.statusCode(422)
-			.body("message", equalTo("addressDto: campo [addressName] aceita apenas números e letras. Valor passado: '" + invalidAddressMap.get("addressName") + "'"));
-        
+        testCreateAddressWithInvalidData(newPersonId, invalidAddressMap, "addressDto: campo [addressName] aceita apenas números e letras. Valor passado: '" + invalidAddressMap.get("addressName") + "'");       
         invalidAddressMap = new HashMap<>(addressMap);
         
-        logger.info("setting not parsable number");
-        
-        invalidAddressMap.put("number", "invalid number");
-    	
-        given()
-			.spec(UserAuthMocks.CustomerPrivilegesUser())
-			.body(invalidAddressMap)
-			.contentType(ContentType.JSON)
-		.when()
-	  		.post("/api/v3/persons/{personId}/addresses/create", newPersonId)
-	  	.then()
-			.statusCode(400)
-			.body("message", containsString("JSON parse error"));
-        
-        invalidAddressMap = new HashMap<>(addressMap);
-        
-        logger.info("setting invalid lenght number");
-        
+        logger.info("setting invalid lenght number"); 
         invalidAddressMap.put("number", "9999999");
-    	
-        given()
-			.spec(UserAuthMocks.CustomerPrivilegesUser())
-			.body(invalidAddressMap)
-			.contentType(ContentType.JSON)
-		.when()
-	  		.post("/api/v3/persons/{personId}/addresses/create", newPersonId)
-	  	.then()
-			.statusCode(422)
-			.body("message", equalTo("addressDto: campo [number] deve ser menor que ou igual à 9999. Valor passado: '" + invalidAddressMap.get("number") + "'"));
-        
+        testCreateAddressWithInvalidData(newPersonId, invalidAddressMap, "addressDto: campo [number] deve ser menor que ou igual à 9999. Valor passado: '" + invalidAddressMap.get("number") + "'");
         invalidAddressMap = new HashMap<>(addressMap);
         
         logger.info("setting invalid complement");
-        
         invalidAddressMap.put("complement", "invalid complement !@#$%¨&*()");
-    	
-        given()
-			.spec(UserAuthMocks.CustomerPrivilegesUser())
-			.body(invalidAddressMap)
-			.contentType(ContentType.JSON)
-		.when()
-	  		.post("/api/v3/persons/{personId}/addresses/create", newPersonId)
-	  	.then()
-			.statusCode(422)
-			.body("message", equalTo("addressDto: campo [complement] aceita apenas números e letras. Valor passado: '" + invalidAddressMap.get("complement") + "'"));
-        
+        testCreateAddressWithInvalidData(newPersonId, invalidAddressMap, "addressDto: campo [complement] aceita apenas números e letras. Valor passado: '" + invalidAddressMap.get("complement") + "'");      
         invalidAddressMap = new HashMap<>(addressMap);
         
         logger.info("setting invalid district");
-        
         invalidAddressMap.put("district", "invalid district !@#$%¨&*()");
-    	
-        given()
-			.spec(UserAuthMocks.CustomerPrivilegesUser())
-			.body(invalidAddressMap)
-			.contentType(ContentType.JSON)
-		.when()
-	  		.post("/api/v3/persons/{personId}/addresses/create", newPersonId)
-	  	.then()
-			.statusCode(422)
-			.body("message", equalTo("addressDto: campo [district] aceita apenas números e letras. Valor passado: '" + invalidAddressMap.get("district") + "'"));
-        
+        testCreateAddressWithInvalidData(newPersonId, invalidAddressMap, "addressDto: campo [district] aceita apenas números e letras. Valor passado: '" + invalidAddressMap.get("district") + "'");      
         invalidAddressMap = new HashMap<>(addressMap);
         
         logger.info("setting invalid city");
-        
         invalidAddressMap.put("city", "invalid city 333");
-    	
-        given()
-			.spec(UserAuthMocks.CustomerPrivilegesUser())
-			.body(invalidAddressMap)
-			.contentType(ContentType.JSON)
-		.when()
-	  		.post("/api/v3/persons/{personId}/addresses/create", newPersonId)
-	  	.then()
-			.statusCode(422)
-			.body("message", equalTo("addressDto: campo [city] aceita apenas letras. Valor passado: '" + invalidAddressMap.get("city") + "'"));
-        
+        testCreateAddressWithInvalidData(newPersonId, invalidAddressMap, "addressDto: campo [city] aceita apenas letras. Valor passado: '" + invalidAddressMap.get("city") + "'");
         invalidAddressMap = new HashMap<>(addressMap);
         
         logger.info("setting invalid state");
-        
         invalidAddressMap.put("state", "AA");
-    	
-        given()
-			.spec(UserAuthMocks.CustomerPrivilegesUser())
-			.body(invalidAddressMap)
-			.contentType(ContentType.JSON)
-		.when()
-	  		.post("/api/v3/persons/{personId}/addresses/create", newPersonId)
-	  	.then()
-			.statusCode(422)
-			.body("message", equalTo("addressDto: campo [state] deve ser um código válido de UF. Valor passado: '" + invalidAddressMap.get("state") + "'"));
-        
+        testCreateAddressWithInvalidData(newPersonId, invalidAddressMap, "addressDto: campo [state] deve ser um código válido de UF. Valor passado: '" + invalidAddressMap.get("state") + "'");        
         invalidAddressMap = new HashMap<>(addressMap);
         
         logger.info("test success, when trying to add a person address with invalid data, the response properly provided the exception with details");  
@@ -1050,34 +778,24 @@ public class PersonServiceTest {
 	    Map<String, Object> invalidAddressMap = new HashMap<>(addressMap);
 	    
 	    logger.info("setting invalid addressName");
-        
         invalidAddressMap.put("addressName", "invalid address name !@#$%¨&*()");
-    	
-        given()
-			.spec(UserAuthMocks.CustomerPrivilegesUser())
-			.body(invalidAddressMap)
-			.contentType(ContentType.JSON)
-		.when()
-	  		.put("/api/v3/persons/{personId}/addresses/{addressId}/update", newPersonId, newAddressId)
-	  	.then()
-			.statusCode(422)
-			.body("message", equalTo("addressDto: campo [addressName] aceita apenas números e letras. Valor passado: '" + invalidAddressMap.get("addressName") + "'"));
-        
+    	testUpdateAddressWithInvalidData(
+			newPersonId,
+			newAddressId,
+			invalidAddressMap,
+			"addressDto: campo [addressName] aceita apenas números e letras. Valor passado: '" + invalidAddressMap.get("addressName") + "'"
+		);    
         invalidAddressMap = new HashMap<>(addressMap);
         
         logger.info("setting invalid complement");
-        
         invalidAddressMap.put("complement", "invalid complement name !@#$%¨&*()");
-    	
-        given()
-			.spec(UserAuthMocks.CustomerPrivilegesUser())
-			.body(invalidAddressMap)
-			.contentType(ContentType.JSON)
-		.when()
-	  		.put("/api/v3/persons/{personId}/addresses/{addressId}/update", newPersonId, newAddressId)
-	  	.then()
-			.statusCode(422)
-			.body("message", equalTo("addressDto: campo [complement] aceita apenas números e letras. Valor passado: '" + invalidAddressMap.get("complement") + "'"));
+        testUpdateAddressWithInvalidData(
+			newPersonId,
+			newAddressId,
+			invalidAddressMap,
+			"addressDto: campo [complement] aceita apenas números e letras. Valor passado: '" + invalidAddressMap.get("complement") + "'"
+		); 
+        invalidAddressMap = new HashMap<>(addressMap);
         
         logger.info("test success, when trying to update a person address with invalid data, the response properly provided the exception with details");  
     	
@@ -1116,4 +834,59 @@ public class PersonServiceTest {
     	logger.info("test success, when trying to update an address providing person id not related to this address, the response properly provided the exception and message explaining");
     	
     }
+
+    private void testCreatePersonWithInvalidData(Map<String, Object> invalidDataMap, String expectedErrorMessage) {
+	
+    	given()
+	        .spec(UserAuthMocks.OperatorPrivilegesUser())
+	        .body(invalidDataMap)
+	        .contentType(ContentType.JSON)
+	    .when()
+        	.post("/api/v3/persons/create")
+        .then()
+	        .statusCode(422)
+	        .body("message", equalTo(expectedErrorMessage));
+    }
+    
+    private void testUpdatePersonWithInvalidData(Long personId, Map<String, Object> invalidDataMap, String expectedErrorMessage) {
+    	
+    	given()
+	        .spec(UserAuthMocks.OperatorPrivilegesUser())
+	        .body(invalidDataMap)
+	        .contentType(ContentType.JSON)
+	    .when()
+        	.put("/api/v3/persons/{personId}/update", personId)
+        .then()
+	        .statusCode(422)
+	        .body("message", equalTo(expectedErrorMessage));
+    }
+    
+    private void testCreateAddressWithInvalidData(Long personId, Map<String, Object> invalidDataMap, String expectedErrorMessage) {
+       	
+        given()
+			.spec(UserAuthMocks.CustomerPrivilegesUser())
+			.body(invalidDataMap)
+			.contentType(ContentType.JSON)
+		.when()
+	  		.post("/api/v3/persons/{personId}/addresses/create", personId)
+	  	.then()
+			.statusCode(422)
+			.body("message", equalTo(expectedErrorMessage));
+        	
+    }
+    
+    private void testUpdateAddressWithInvalidData(Long personId, Long addressId, Map<String, Object> invalidDataMap, String expectedErrorMessage) {
+       	
+	    given()
+			.spec(UserAuthMocks.CustomerPrivilegesUser())
+			.body(invalidDataMap)
+			.contentType(ContentType.JSON)
+		.when()
+	  		.put("/api/v3/persons/{personId}/addresses/{addressId}/update", personId, addressId)
+	  	.then()
+			.statusCode(422)
+			.body("message", equalTo(expectedErrorMessage));
+        	
+    }
+
 }
