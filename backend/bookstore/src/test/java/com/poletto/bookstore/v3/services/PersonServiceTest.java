@@ -6,7 +6,6 @@ import static io.restassured.RestAssured.given;
 import static io.restassured.RestAssured.port;
 import static io.restassured.RestAssured.useRelaxedHTTPSValidation;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
