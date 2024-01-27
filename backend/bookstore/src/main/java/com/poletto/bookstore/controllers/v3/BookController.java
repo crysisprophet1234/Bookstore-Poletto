@@ -3,7 +3,6 @@ package com.poletto.bookstore.controllers.v3;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -13,6 +12,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import com.poletto.bookstore.dto.v3.BookDto;
+import com.poletto.bookstore.dto.v3.BookStatusUpdateDto;
+import com.poletto.bookstore.dto.v3.BookUpdateDto;
 import com.poletto.bookstore.exceptions.exceptionresponse.ExceptionResponse;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -26,7 +27,7 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.Pattern;
 
-@RequestMapping(value = "/books/v3")
+@RequestMapping(value = "/v3/books")
 @Tag(name = "Book Controller V3", description = "Endpoints related to book resources management")
 @Validated
 public interface BookController {
@@ -77,7 +78,7 @@ public interface BookController {
 		String status
 	);
 	
-	@GetMapping(value = "/{id}")
+	@GetMapping(value = "/{bookId}")
 	@Operation(
 		summary = "Returns a book by ID",
 		description = "Get book details based on the ID provided",
@@ -94,10 +95,10 @@ public interface BookController {
 	)
 	ResponseEntity<BookDto> findById(
 		@Parameter(description = "Book ID")
-		@PathVariable @Min(1) Long id
+		@PathVariable @Min(1) Long bookId
 	);
 	
-	@PostMapping
+	@PostMapping(value = "/create")
 	@Operation(
 		summary = "Creates a new book",
 		description = "Creates a new book with provided data and then return new book details",
@@ -122,7 +123,7 @@ public interface BookController {
 		@RequestBody @Valid BookDto dto
 	);
 	
-	@PutMapping(value = "/{id}")
+	@PutMapping(value = "/{bookId}/update")
 	@Operation(
 		summary = "Updates book by ID",
 		description = "Updates a book by ID and then return updated data",
@@ -141,31 +142,36 @@ public interface BookController {
 	)
 	ResponseEntity<BookDto> update(
 		@Parameter(description = "Book ID")
-		@PathVariable @Min(1) Long id,
+		@PathVariable @Min(1) Long bookId,
 		@Parameter(
 			description = "Payload with new book data to be updated",
-			content = @Content(schema = @Schema(implementation = BookDto.class))
+			content = @Content(schema = @Schema(implementation = BookUpdateDto.class))
 		)
-		@RequestBody @Valid BookDto dto
+		@RequestBody @Valid BookUpdateDto dto
 	);
 	
-	@DeleteMapping(value = "/{id}")
+	@PutMapping(value = "/{bookId}/change-status")
 	@Operation(
-		summary = "Deletes a book by ID",
-		description = "Deletes book based on the ID provided",
+		summary = "Change a book status by ID",
+		description = "Changes a book status based on the book ID provided",
 		security = @SecurityRequirement(name = "bearerAuth"),
 		responses = {
 			@ApiResponse(
 				description = "Success",
-				responseCode = "204"
+				responseCode = "200"
 			),
 			@ApiResponse(description = "Not Found", responseCode = "404", content = @Content(schema = @Schema(implementation = ExceptionResponse.class))),
 			@ApiResponse(description = "Internal error", responseCode = "500", content = @Content(schema = @Schema(implementation = ExceptionResponse.class)))
 		}
 	)
-	ResponseEntity<Void> delete(
+	ResponseEntity<BookDto> updateBookStatus(
 		@Parameter(description = "Book ID")
-		@PathVariable @Min(1) Long id
+		@PathVariable @Min(1) Long bookId,
+		@Parameter(
+			description = "Payload with property bookStatus and value ACTIVE or INACTIVE",
+			content = @Content(schema = @Schema(implementation = BookStatusUpdateDto.class))
+		)
+		@RequestBody BookStatusUpdateDto bookStatusUpdateDto
 	);
 
 }
