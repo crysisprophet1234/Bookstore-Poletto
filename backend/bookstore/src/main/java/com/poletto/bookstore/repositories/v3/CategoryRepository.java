@@ -14,10 +14,8 @@ import com.poletto.bookstore.entities.Category;
 @Repository("CategoryRepositoryV3")
 public interface CategoryRepository extends JpaRepository<Category, Long> {
 	
-	@Cacheable(value = "categoriesList")
 	List<Category> findAll();
 	
-	@Cacheable(value = "categoriesPage")
 	Page<Category> findAll(Pageable pageable);
 	
 	@Cacheable(value = "category", key = "#id")

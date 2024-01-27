@@ -14,10 +14,8 @@ import com.poletto.bookstore.entities.Author;
 @Repository("AuthorRepositoryV3")
 public interface AuthorRepository extends JpaRepository<Author, Long> {
 	
-	@Cacheable(value = "authorsList")
 	List<Author> findAll();
 	
-	@Cacheable(value = "authorsPage")
 	Page<Author> findAll(Pageable pageable);
 	
 	@Cacheable(value = "author", key = "#id")
